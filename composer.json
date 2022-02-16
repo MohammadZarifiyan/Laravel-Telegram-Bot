@@ -1,0 +1,29 @@
+{
+    "name": "mohammad-zarifiyan/telegram",
+    "description": "A package that let you make scalable Telegram bots.",
+    "type": "library",
+    "require": {
+        "guzzlehttp/guzzle": "^7"
+    },
+    "autoload": {
+        "psr-4": {
+            "MohammadZarifiyan\\Telegram\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Mohammad Zarifiyan",
+            "email": "mohammadzarifiyan82@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "MohammadZarifiyan\\Telegram\\Providers\\TelegramServiceProvider"
+            ],
+            "aliases": {
+                "Telegram": "MohammadZarifiyan\\Telegram\\Facades\\Telegram"
+            }
+        }
+    }
+}
