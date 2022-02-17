@@ -2,7 +2,7 @@
     "name": "mohammad-zarifiyan/telegram",
     "description": "A package that let you make scalable Telegram bots.",
     "type": "library",
-    "version": "1.0",
+    "keywords": ["Telegram", "Laravel", "Lumen"],
     "require": {
         "guzzlehttp/guzzle": "^7"
     },
