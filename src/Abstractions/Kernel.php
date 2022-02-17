@@ -22,7 +22,7 @@ abstract class Kernel
      */
     public function handleUpdate(Request $request)
     {
-        $user = $this->getGainer();
+        $gainer = $this->getGainer();
 
         /**
          * Handle update using available commands.
@@ -37,7 +37,7 @@ abstract class Kernel
                     && property_exists($resolved_command, 'handle')
                     && $resolved_command->signature === substr($text, 1))
                 {
-                    $resolved_command->handle($user);
+                    $resolved_command->handle($gainer);
 
                     return;
                 }
@@ -47,18 +47,16 @@ abstract class Kernel
         /**
          * Handle update using available handlers.
          */
-        $user = $request->user();
-
-        if ($user->handler) {
+        if ($gainer->handler) {
             $method = sprintf(
                 'handle%s',
                 Str::studly(Telegram::getUpdateType())
             );
 
-            $resolved_handler = $this->container->make($user->handler);
+            $resolved_handler = $this->container->make($gainer->handler);
 
             if ($resolved_handler && method_exists($resolved_handler, $method)) {
-                $resolved_handler->{$method}($user);
+                $resolved_handler->{$method}($gainer);
             }
         }
     }
