@@ -23,6 +23,14 @@ class Kernel extends Abstractions\Kernel
      */
     public function getGainer(): Model
     {
-        return User::create(['telegram_id' => Telegram::getUser()->id]); // Assumes that User model uses TelegramGainer trait
+        $telegram_id = Telegram::getUser()->id;
+
+        return User::where('telegram_id', '=', $telegram_id)->firstOr(function () use ($telegram_id) {
+            $id = User::insertGetId([
+                'telegram_id' => $telegram_id
+            ]);
+
+            return User::find($id);
+        });
     }
 }
