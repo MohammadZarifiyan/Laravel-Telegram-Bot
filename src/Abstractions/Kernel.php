@@ -33,8 +33,8 @@ abstract class Kernel
 
                 if (
                     $resolved_command
-                    && method_exists($resolved_command, 'signature')
-                    && property_exists($resolved_command, 'handle')
+                    && method_exists($command, 'handle')
+                    && property_exists($command, 'signature')
                     && $resolved_command->signature === substr($text, 1))
                 {
                     $resolved_command->handle($gainer);
