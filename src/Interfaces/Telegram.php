@@ -35,6 +35,14 @@ interface Telegram
     public function sendResponse(Response|string $response): ClientResponse;
 
     /**
+     * Sends responses using Telegram API asynchronous.
+     *
+     * @param array<Response|string> $responses
+     * @return array<ClientResponse>
+     */
+    public function sendAsyncResponses(array $responses): array;
+
+    /**
      * Returns type of incoming Telegram update.
      *
      * @return string|null

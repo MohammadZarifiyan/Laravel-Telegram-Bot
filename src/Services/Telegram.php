@@ -3,17 +3,24 @@
 namespace MohammadZarifiyan\Telegram\Services;
 
 use Exception;
+use Illuminate\Http\Client\Pool;
 use Illuminate\Http\Client\Response as ClientResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Http;
 use MohammadZarifiyan\Telegram\Interfaces\Response;
 use MohammadZarifiyan\Telegram\Traits\ReplyMarkup;
 
 class Telegram implements \MohammadZarifiyan\Telegram\Interfaces\Telegram
 {
+    public string $baseUrl;
+
+    /**
+     * @throws Exception
+     */
     public function __construct(public Request $request)
     {
-        //
+        $this->baseUrl = $this->getBaseUrl();
     }
 
     /**
@@ -22,15 +29,18 @@ class Telegram implements \MohammadZarifiyan\Telegram\Interfaces\Telegram
      */
     public function sendResponse(Response|string $response): ClientResponse
     {
-        $resolved_response = is_string($response) ? app($response) :  $response;
+        return $this->getPreparedRequest($response);
+    }
 
-        return Http::baseUrl($this->getBaseUrl())
-            ->get(
-                $resolved_response->method(),
-                in_array(ReplyMarkup::class, class_uses_recursive($resolved_response))
-                    ? $resolved_response->resolveWithReplayMarkup()
-                    : $resolved_response->data()
-            );
+    /**
+     * @inheritDoc
+     */
+    public function sendAsyncResponses(array $responses): array
+    {
+        return Http::pool(fn(Pool $pool) => array_map(
+            fn (Response $response) => $this->getPreparedRequest($response, $pool),
+            $responses
+        ));
     }
 
     /**
@@ -48,6 +58,39 @@ class Telegram implements \MohammadZarifiyan\Telegram\Interfaces\Telegram
         }
 
         return sprintf('https://api.telegram.org/bot%s', $api_key);
+    }
+
+    /**
+     * Returns resolved response
+     *
+     * @param Response|string $response
+     * @return Response
+     */
+    public function getResolvedResponse(Response|string $response): Response
+    {
+        return is_string($response) ? App::make($response) : $response;
+    }
+
+    /**
+     * Merges all needed parameters to return response body
+     *
+     * @param Response $response
+     * @return array
+     */
+    public function getResponseBody(Response $response): array
+    {
+        return in_array(ReplyMarkup::class, class_uses_recursive($response))
+            ? $response->resolveWithReplayMarkup()
+            : $response->data();
+    }
+
+    public function getPreparedRequest(Response|string $response, ?Pool $client = null): array|ClientResponse
+    {
+        $pending_request = $client ? $client->baseUrl($this->baseUrl) : Http::baseUrl($this->baseUrl);
+
+        $resolved_response = $this->getResolvedResponse($response);
+
+        return $pending_request->get($resolved_response->method(), $this->getResponseBody($resolved_response));
     }
 
     /**

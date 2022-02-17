@@ -3,10 +3,12 @@
 namespace MohammadZarifiyan\Telegram\Facades;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Facade;
 
 /**
  * @method static sendResponse(string|\MohammadZarifiyan\Telegram\Interfaces\Response $response)
+ * @method static sendAsyncResponses(array $responses)
  * @method static getUpdateType
  * @method static getChatType
  * @method static getUser
@@ -21,6 +23,6 @@ class Telegram extends Facade
 
     public static function handleUpdate(Request $request)
     {
-        return app(\MohammadZarifiyan\Telegram\Kernel::class)->handleUpdate($request);
+        return App::make(\MohammadZarifiyan\Telegram\Kernel::class)->handleUpdate($request);
     }
 }
