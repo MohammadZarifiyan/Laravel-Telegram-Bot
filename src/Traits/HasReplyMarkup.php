@@ -4,7 +4,7 @@ namespace MohammadZarifiyan\Telegram\Traits;
 
 use Exception;
 
-trait ReplyMarkup
+trait HasReplyMarkup
 {
     /**
      * Returns data with reply_markup attribute

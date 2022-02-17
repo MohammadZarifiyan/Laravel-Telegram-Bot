@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Http;
 use MohammadZarifiyan\Telegram\Interfaces\Response;
-use MohammadZarifiyan\Telegram\Traits\ReplyMarkup;
+use MohammadZarifiyan\Telegram\Traits\HasReplyMarkup;
 
 class Telegram implements \MohammadZarifiyan\Telegram\Interfaces\Telegram
 {
@@ -79,7 +79,7 @@ class Telegram implements \MohammadZarifiyan\Telegram\Interfaces\Telegram
      */
     public function getResponseBody(Response $response): array
     {
-        return in_array(ReplyMarkup::class, class_uses_recursive($response))
+        return in_array(HasReplyMarkup::class, class_uses_recursive($response))
             ? $response->resolveWithReplayMarkup()
             : $response->data();
     }
