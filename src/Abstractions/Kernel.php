@@ -20,6 +20,7 @@ abstract class Kernel
     /**
      * Handles incoming Telegram update.
      *
+     * @param Request $request
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     public function handleUpdate(Request $request)
@@ -31,10 +32,8 @@ abstract class Kernel
          */
         if ($text = $request->input('message.text')) {
             foreach ($this->commands() as $command) {
-                $resolved_breaker = $this->container->make($command);
-
-                if ($resolved_breaker->signature === substr($text, 1)) {
-                    $resolved_breaker->handle($gainer);
+                if ($command->signature === substr($text, 1)) {
+                    $command->handle($request, $gainer);
 
                     return;
                 }
@@ -53,9 +52,7 @@ abstract class Kernel
          * Handle update using available breakers.
          */
         foreach ($this->breakers() as $breaker) {
-            $resolved_breaker = $this->container->make($breaker);
-
-            if (method_exists($resolved_breaker, $method) && $resolved_breaker->handle($gainer)) {
+            if (method_exists($breaker, $method) && $breaker->handle($request, $gainer)) {
                 return;
             }
         }
@@ -67,7 +64,7 @@ abstract class Kernel
             $resolved_handler = $this->container->make($gainer->handler);
 
             if (method_exists($resolved_handler, $method)) {
-                $resolved_handler->{$method}($gainer);
+                $resolved_handler->{$method}($request, $gainer);
             }
         }
     }
