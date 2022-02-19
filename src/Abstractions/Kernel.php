@@ -33,12 +33,7 @@ abstract class Kernel
             foreach ($this->commands() as $command) {
                 $resolved_breaker = $this->container->make($command);
 
-                if (
-                    $resolved_breaker
-                    && method_exists($command, 'handle')
-                    && property_exists($command, 'signature')
-                    && $resolved_breaker->signature === substr($text, 1))
-                {
+                if ($resolved_breaker->signature === substr($text, 1)) {
                     $resolved_breaker->handle($gainer);
 
                     return;
@@ -60,12 +55,8 @@ abstract class Kernel
         foreach ($this->breakers() as $breaker) {
             $resolved_breaker = $this->container->make($breaker);
 
-            if ($resolved_breaker && method_exists($resolved_breaker, $method)) {
-                $result = $resolved_breaker->handle($gainer);
-
-                if ($result) {
-                    return;
-                }
+            if (method_exists($resolved_breaker, $method) && $resolved_breaker->handle($gainer)) {
+                return;
             }
         }
 
@@ -75,7 +66,7 @@ abstract class Kernel
         if ($gainer->handler) {
             $resolved_handler = $this->container->make($gainer->handler);
 
-            if ($resolved_handler && method_exists($resolved_handler, $method)) {
+            if (method_exists($resolved_handler, $method)) {
                 $resolved_handler->{$method}($gainer);
             }
         }
