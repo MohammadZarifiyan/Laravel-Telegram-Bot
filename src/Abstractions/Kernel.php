@@ -31,16 +31,39 @@ abstract class Kernel
          */
         if ($text = $request->input('message.text')) {
             foreach ($this->commands() as $command) {
-                $resolved_command = $this->container->make($command);
+                $resolved_breaker = $this->container->make($command);
 
                 if (
-                    $resolved_command
+                    $resolved_breaker
                     && method_exists($command, 'handle')
                     && property_exists($command, 'signature')
-                    && $resolved_command->signature === substr($text, 1))
+                    && $resolved_breaker->signature === substr($text, 1))
                 {
-                    $resolved_command->handle($gainer);
+                    $resolved_breaker->handle($gainer);
 
+                    return;
+                }
+            }
+        }
+
+        /**
+         * method that uses to handle update
+         */
+        $method = sprintf(
+            'handle%s',
+            Str::studly(Telegram::getUpdateType())
+        );
+
+        /**
+         * Handle update using available breakers.
+         */
+        foreach ($this->breakers() as $breaker) {
+            $resolved_breaker = $this->container->make($breaker);
+
+            if ($resolved_breaker && method_exists($resolved_breaker, $method)) {
+                $result = $resolved_breaker->handle($gainer);
+
+                if ($result) {
                     return;
                 }
             }
@@ -50,11 +73,6 @@ abstract class Kernel
          * Handle update using available handlers.
          */
         if ($gainer->handler) {
-            $method = sprintf(
-                'handle%s',
-                Str::studly(Telegram::getUpdateType())
-            );
-
             $resolved_handler = $this->container->make($gainer->handler);
 
             if ($resolved_handler && method_exists($resolved_handler, $method)) {
@@ -76,4 +94,12 @@ abstract class Kernel
      * @return array
      */
     abstract public function commands(): array;
+
+    /**
+     * An array of breakers classes that run before handlers and don't care about which handler should be used.
+     * if all breakers returns false then handlers will execute
+     *
+     * @return array
+     */
+    abstract public function breakers(): array;
 }

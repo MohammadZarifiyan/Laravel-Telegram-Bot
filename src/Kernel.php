@@ -17,6 +17,15 @@ class Kernel extends Abstractions\Kernel
             //
         ];
     }
+    /**
+     * @inheritDoc
+     */
+    public function breakers(): array
+    {
+        return [
+            //
+        ];
+    }
 
     /**
      * @inheritDoc
