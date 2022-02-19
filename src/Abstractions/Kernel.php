@@ -10,9 +10,11 @@ use MohammadZarifiyan\Telegram\Facades\Telegram;
 
 abstract class Kernel
 {
-    public function __construct(public Container $container)
+    public $container;
+
+    public function __construct(Container $container)
     {
-        //
+        $this->container = $container;
     }
 
     /**

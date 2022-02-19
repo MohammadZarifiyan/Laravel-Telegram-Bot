@@ -13,13 +13,15 @@ use MohammadZarifiyan\Telegram\Traits\HasReplyMarkup;
 
 class Telegram implements \MohammadZarifiyan\Telegram\Interfaces\Telegram
 {
-    public string $baseUrl;
+    public $baseUrl;
+    public $request;
 
     /**
      * @throws Exception
      */
-    public function __construct(public Request $request)
+    public function __construct(Request $request)
     {
+        $this->request = $request;
         $this->baseUrl = $this->getBaseUrl();
     }
 
