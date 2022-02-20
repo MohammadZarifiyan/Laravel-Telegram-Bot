@@ -2,6 +2,7 @@
 
 namespace MohammadZarifiyan\Telegram\Abstractions;
 
+use Exception;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -22,9 +23,14 @@ abstract class Kernel
      *
      * @param Request $request
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     * @throws Exception
      */
     public function handleUpdate(Request $request)
     {
+        if (!Telegram::getUpdateType()) {
+            throw new Exception('This request doesnt have any valid Telegram update.');
+        }
+
         $gainer = $this->getGainer();
 
         /**
@@ -52,7 +58,7 @@ abstract class Kernel
          * Handle update using available breakers.
          */
         foreach ($this->breakers() as $breaker) {
-            if (method_exists($breaker, $method) && $breaker->handle($request, $gainer)) {
+            if (method_exists($breaker, $method) && $breaker->{$method}($request, $gainer)) {
                 return;
             }
         }
