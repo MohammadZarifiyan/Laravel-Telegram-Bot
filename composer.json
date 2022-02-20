@@ -4,7 +4,7 @@
     "type": "library",
     "keywords": ["Telegram", "Laravel", "Lumen"],
     "require": {
-        "php": "8.0",
+        "php": "^8",
         "illuminate/http": "^7|^8|^9",
         "illuminate/container": "^7|^8|^9"
     },
