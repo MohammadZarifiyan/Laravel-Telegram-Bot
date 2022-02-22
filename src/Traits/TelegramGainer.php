@@ -2,6 +2,8 @@
 
 namespace MohammadZarifiyan\Telegram\Traits;
 
+use MohammadZarifiyan\Telegram\Casts\Serializable;
+
 trait TelegramGainer
 {
     /**
@@ -17,7 +19,8 @@ trait TelegramGainer
         ]);
 
         static::mergeCasts([
-            'telegram_id' => 'integer'
+            'telegram_id' => 'integer',
+            'handler' => Serializable::class
         ]);
     }
 }
