@@ -77,7 +77,7 @@ class TelegramServiceProvider extends ServiceProvider
     {
         Blueprint::macro('telegram', function () {
             static::bigInteger('telegram_id')->nullable();
-            static::string('handler')->nullable()->comment('Full classname of current responsible handler');
+            static::text('handler')->nullable()->comment('Full classname of current responsible handler');
         });
     }
 }
