@@ -8,7 +8,7 @@ class Serializable implements CastsAttributes
 {
     public function get($model, string $key, $value, array $attributes)
     {
-        return unserialize($value);
+        return @unserialize($value) ?: $value;
     }
 
     public function set($model, string $key, $value, array $attributes)

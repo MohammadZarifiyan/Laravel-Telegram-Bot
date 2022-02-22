@@ -67,7 +67,7 @@ abstract class Kernel
          * Handle update using available handlers.
          */
         if ($gainer->handler) {
-            $resolved_handler = $this->container->make($gainer->handler);
+            $resolved_handler = is_object($gainer->handler) ? $gainer->handler : $this->container->make($gainer->handler);
 
             if (method_exists($resolved_handler, $method)) {
                 $resolved_handler->{$method}($request, $gainer);
