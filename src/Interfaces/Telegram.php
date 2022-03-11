@@ -62,4 +62,18 @@ interface Telegram
      * @return object|null
      */
     public function getUser(): ?object;
+
+	/**
+	 * Determines that request is a bot command update or not.
+	 *
+	 * @return bool
+	 */
+	public function isCommand(): bool;
+
+	/**
+	 * Returns command signature based on request.
+	 *
+	 * @return string|null
+	 */
+	public function commandSignature(): ?string;
 }

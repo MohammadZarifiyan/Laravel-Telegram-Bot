@@ -36,9 +36,9 @@ abstract class Kernel
         /**
          * Handle update using available commands.
          */
-        if ($text = $request->input('message.text')) {
+        if ($command_signature = Telegram::commandSignature()) {
             foreach ($this->commands() as $command) {
-                if ($command->signature === substr($text, 1)) {
+                if ($command->signature === $command_signature) {
                     $command->handle($request, $gainer);
 
                     return;

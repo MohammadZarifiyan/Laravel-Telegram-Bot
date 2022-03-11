@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Facade;
  * @method static getUpdateType
  * @method static getChatType
  * @method static getUser
+ * @method static isCommand
+ * @method static commandSignature
  */
 
 class Telegram extends Facade

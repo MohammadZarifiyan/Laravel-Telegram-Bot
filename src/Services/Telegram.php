@@ -132,4 +132,31 @@ class Telegram implements \MohammadZarifiyan\Telegram\Interfaces\Telegram
 
         return $match ? (object) $match : null;
     }
+
+	/**
+	 * @inheritDoc
+	 */
+	public function isCommand(): bool
+	{
+		$types = $this->request->input('message.entities.*.type');
+
+		return $types && count($types) && in_array('bot_command', $types);
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function commandSignature(): ?string
+	{
+		if ($this->isCommand()) {
+			$text = $this->request->input('message.text');
+
+			return substr(
+				explode(' ', $text)[0],
+				1
+			);
+		}
+
+		return null;
+	}
 }
