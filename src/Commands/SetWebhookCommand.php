@@ -20,7 +20,7 @@ class SetWebhookCommand extends Command
             $response = Telegram::sendResponse(SetWebhookResponse::class);
 
             if ($response->status() !== Response::HTTP_OK) {
-                throw new Exception($response->object()?->description ?? 'An error has occurred.');
+                throw new Exception($response->object()->description ?? 'An error has occurred.');
             }
 
             $this->info('Webhook set successfully.');

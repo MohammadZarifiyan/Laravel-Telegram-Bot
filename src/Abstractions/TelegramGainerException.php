@@ -4,7 +4,6 @@ namespace MohammadZarifiyan\Telegram\Abstractions;
 
 use Exception;
 use Symfony\Component\HttpFoundation\Response;
-use function MohammadZarifiyan\Telegram\Traits\response;
 
 abstract class TelegramGainerException extends Exception
 {
