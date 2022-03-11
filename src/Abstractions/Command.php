@@ -12,7 +12,7 @@ abstract class Command
      *
      * @var string
      */
-    public $signature;
+    public string $signature;
 
     /**
      * Execute the Telegram command.

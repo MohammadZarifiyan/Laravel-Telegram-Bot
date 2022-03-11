@@ -13,7 +13,7 @@ use MohammadZarifiyan\Telegram\Traits\HasReplyMarkup;
 
 class Telegram implements \MohammadZarifiyan\Telegram\Interfaces\Telegram
 {
-    public $baseUrl;
+    public string $baseUrl;
 
     /**
      * @throws Exception
