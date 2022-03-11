@@ -23,6 +23,6 @@ class Telegram extends Facade
 
     public static function handleUpdate(Request $request)
     {
-        return App::make(\MohammadZarifiyan\Telegram\Kernel::class)->handleUpdate($request);
+        return App::make(\MohammadZarifiyan\Telegram\Abstractions\Kernel::class)->handleUpdate($request);
     }
 }

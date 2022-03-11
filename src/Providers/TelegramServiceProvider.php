@@ -21,11 +21,9 @@ class TelegramServiceProvider extends ServiceProvider
         );
 
         $this->app->singleton(
-            \MohammadZarifiyan\Telegram\Kernel::class,
+			\MohammadZarifiyan\Telegram\Abstractions\Kernel::class,
             config('telegram.kernel')
         );
-
-        $this->mergeConfigFrom(__DIR__.'/../config/telegram.php', 'telegram');
     }
 
     /**

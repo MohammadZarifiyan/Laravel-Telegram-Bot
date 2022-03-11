@@ -1,12 +1,12 @@
 <?php
 
-namespace MohammadZarifiyan\Telegram;
+namespace App\Telegram;
 
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use MohammadZarifiyan\Telegram\Facades\Telegram;
 
-class Kernel extends Abstractions\Kernel
+class Kernel extends \MohammadZarifiyan\Telegram\Abstractions\Kernel
 {
     /**
      * @inheritDoc

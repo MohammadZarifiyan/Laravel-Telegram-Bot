@@ -12,8 +12,8 @@ return [
     'api_key' => env('TELEGRAM_API_KEY'),
 
     /**
-     * Classes
+     * Class bindings
      */
     'service' => \MohammadZarifiyan\Telegram\Services\Telegram::class,
-    'kernel' => \MohammadZarifiyan\Telegram\Kernel::class,
+    'kernel' => \App\Telegram\Kernel::class,
 ];
