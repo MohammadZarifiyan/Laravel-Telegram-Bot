@@ -3,26 +3,21 @@
 namespace MohammadZarifiyan\Telegram\Abstractions;
 
 use Exception;
-use Illuminate\Contracts\Container\Container;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
 use MohammadZarifiyan\Telegram\Facades\Telegram;
+use MohammadZarifiyan\Telegram\TelegramRequest;
+use ReflectionException;
+use ReflectionMethod;
 
 abstract class Kernel
 {
-    public $container;
-
-    public function __construct(Container $container)
-    {
-        $this->container = $container;
-    }
-
     /**
      * Handles incoming Telegram update.
      *
      * @param Request $request
-     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      * @throws Exception
      */
     public function handleUpdate(Request $request)
@@ -67,13 +62,70 @@ abstract class Kernel
          * Handle update using available handlers.
          */
         if ($gainer->handler) {
-            $resolved_handler = is_object($gainer->handler) ? $gainer->handler : $this->container->make($gainer->handler);
-
-            if (method_exists($resolved_handler, $method)) {
-                $resolved_handler->{$method}($request, $gainer);
-            }
+            $this->callHandlerMethod(
+				$this->resolveHandler($gainer),
+				$method,
+				$request,
+				$gainer
+			);
         }
     }
+
+	/**
+	 * Resolves handler for specified Telegram gainer.
+	 *
+	 * @param Model $gainer
+	 * @return mixed
+	 */
+	protected function resolveHandler(Model $gainer)
+	{
+		return is_object($gainer->handler) ? $gainer->handler : App::make($gainer->handler);
+	}
+
+	/**
+	 * Returns validated request if exists, otherwise returns initial request.
+	 *
+	 * @param $handler
+	 * @param string $method
+	 * @param Request $request
+	 * @return Request
+	 * @throws ReflectionException
+	 */
+	protected function getValidatedRequest($handler, string $method, Request $request): Request
+	{
+		$parameters = (new ReflectionMethod($handler, $method))->getParameters();
+
+		$request_type = $parameters[0]->getType();
+
+		return $request_type && is_subclass_of($request_type, TelegramRequest::class)
+			? App::make($request_type)
+			: $request;
+	}
+
+	/**
+	 * Calls update handler method on handler class.
+	 *
+	 * @param $handler
+	 * @param string $method
+	 * @param Request $request
+	 * @param Model $gainer
+	 */
+	protected function callHandlerMethod($handler, string $method, Request $request, Model $gainer)
+	{
+		if (method_exists($handler, $method)) {
+			try {
+				$verified_request = $this->getValidatedRequest($handler, $method, $request);
+			}
+			catch (ReflectionException) {
+				return;
+			}
+
+			$handler->{$method}(
+				$verified_request,
+				$gainer
+			);
+		}
+	}
 
     /**
      * Get or create the gainer that handlers should work with

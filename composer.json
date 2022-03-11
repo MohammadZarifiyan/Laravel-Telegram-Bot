@@ -2,11 +2,12 @@
     "name": "mohammad-zarifiyan/telegram",
     "description": "A package that helps to create Telegram bots easily.",
     "type": "library",
-    "keywords": ["Telegram", "Laravel", "Lumen"],
+    "keywords": ["Telegram", "Laravel"],
+    "version": "2.2.0",
     "require": {
-        "php": "^8",
-        "illuminate/http": "^7|^8|^9",
-        "illuminate/container": "^7|^8|^9"
+        "php": "^8.0",
+        "illuminate/support": ">=7",
+        "illuminate/http": ">=7"
     },
     "autoload": {
         "psr-4": {

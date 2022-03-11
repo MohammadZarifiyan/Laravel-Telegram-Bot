@@ -32,14 +32,10 @@ class Kernel extends \MohammadZarifiyan\Telegram\Abstractions\Kernel
      */
     public function getGainer(): Model
     {
-        $telegram_id = Telegram::getUser()->id;
+        $user = Telegram::getUser();
 
-        return User::where('telegram_id', '=', $telegram_id)->firstOr(function () use ($telegram_id) {
-            $id = User::insertGetId([
-                'telegram_id' => $telegram_id
-            ]);
-
-            return User::find($id);
-        });
+        return User::firstOrCreate([
+			'telegram_id' => $user->id
+		]);
     }
 }
