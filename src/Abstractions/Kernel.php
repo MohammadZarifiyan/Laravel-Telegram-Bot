@@ -97,8 +97,8 @@ abstract class Kernel
 
 		$request_type = $parameters[0]->getType();
 
-		return $request_type && is_subclass_of($request_type, TelegramRequest::class)
-			? App::make($request_type)
+		return $request_type && is_subclass_of($request_type->getName(), TelegramRequest::class)
+			? App::make($request_type->getName())
 			: $request;
 	}
 
