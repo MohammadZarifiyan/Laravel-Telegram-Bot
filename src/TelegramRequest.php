@@ -4,12 +4,12 @@ namespace MohammadZarifiyan\Telegram;
 
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\ValidationException;
+use MohammadZarifiyan\Telegram\Exceptions\TelegramValidationException;
 
 class TelegramRequest extends FormRequest
 {
 	public function failedValidation(Validator $validator)
 	{
-		throw (new ValidationException($validator))->errorBag($this->errorBag);
+		throw (new TelegramValidationException($validator))->errorBag($this->errorBag);
 	}
 }
