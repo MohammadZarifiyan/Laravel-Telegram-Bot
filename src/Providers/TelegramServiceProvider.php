@@ -4,7 +4,10 @@ namespace MohammadZarifiyan\Telegram\Providers;
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Routing\Router;
 use MohammadZarifiyan\Telegram\Commands\SetWebhookCommand;
+use MohammadZarifiyan\Telegram\Middlewares\ChatTypeMiddleware;
+use MohammadZarifiyan\Telegram\Middlewares\UpdateTypeMiddleware;
 
 class TelegramServiceProvider extends ServiceProvider
 {
@@ -44,6 +47,8 @@ class TelegramServiceProvider extends ServiceProvider
                 SetWebhookCommand::class
             ]);
         }
+
+		$this->makeMiddlewareAliases();
     }
 
     /**
@@ -78,4 +83,17 @@ class TelegramServiceProvider extends ServiceProvider
             static::text('handler')->nullable()->comment('Full classname of current responsible handler');
         });
     }
+
+	/**
+	 * Makes middleware aliases for entire app.
+	 *
+	 * @throws \Illuminate\Contracts\Container\BindingResolutionException
+	 */
+	public function makeMiddlewareAliases()
+	{
+		$router = $this->app->make(Router::class);
+
+		$router->aliasMiddleware('update-type', UpdateTypeMiddleware::class);
+		$router->aliasMiddleware('chat-type', ChatTypeMiddleware::class);
+	}
 }
