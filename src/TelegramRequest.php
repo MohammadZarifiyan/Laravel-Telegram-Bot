@@ -10,6 +10,6 @@ class TelegramRequest extends FormRequest
 {
 	public function failedValidation(Validator $validator)
 	{
-		throw (new TelegramValidationException($validator))->errorBag($this->errorBag);
+		throw new TelegramValidationException($validator);
 	}
 }
