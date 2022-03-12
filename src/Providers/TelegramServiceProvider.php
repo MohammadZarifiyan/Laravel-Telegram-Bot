@@ -40,8 +40,6 @@ class TelegramServiceProvider extends ServiceProvider
 
         $this->declareMacros();
 
-        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
-
         if ($this->app->runningInConsole()) {
             $this->commands([
                 SetWebhookCommand::class
