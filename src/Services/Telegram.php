@@ -90,7 +90,7 @@ class Telegram implements \MohammadZarifiyan\Telegram\Interfaces\Telegram
 
         $resolved_response = $this->getResolvedResponse($response);
 
-        return $pending_request->get($resolved_response->method(), $this->getResponseBody($resolved_response));
+        return $pending_request->post($resolved_response->method(), $this->getResponseBody($resolved_response));
     }
 
     /**
