@@ -5,7 +5,7 @@
     "keywords": ["Telegram", "Laravel"],
     "version": "2.5.1",
     "require": {
-        "php": "^8.0",
+        "php": "^8",
         "illuminate/validation": ">=7",
         "illuminate/support": ">=7",
         "illuminate/http": ">=7"
