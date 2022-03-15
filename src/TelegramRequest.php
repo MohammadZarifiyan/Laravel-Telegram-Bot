@@ -8,6 +8,9 @@ use MohammadZarifiyan\Telegram\Exceptions\TelegramValidationException;
 
 class TelegramRequest extends FormRequest
 {
+	/**
+	 * @throws TelegramValidationException
+	 */
 	public function failedValidation(Validator $validator)
 	{
 		throw new TelegramValidationException($validator);

@@ -26,6 +26,14 @@ interface Telegram
         'chat_join_request',
     ];
 
+	/**
+	 * Changes api key for running request lifecycle.
+	 *
+	 * @param string $token
+	 * @return Telegram
+	 */
+    public function setApiKey(string $token): static;
+
     /**
      * Sends response using Telegram API.
      *

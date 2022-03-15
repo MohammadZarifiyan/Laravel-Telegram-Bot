@@ -20,7 +20,11 @@ class TelegramServiceProvider extends ServiceProvider
     {
         $this->app->singleton(
             \MohammadZarifiyan\Telegram\Interfaces\Telegram::class,
-            config('telegram.service')
+            function () {
+				$service = $this->app->make(config('telegram.service'));
+
+				return $service->setApiKey(config('telegram.api_key'));
+			}
         );
 
         $this->app->singleton(

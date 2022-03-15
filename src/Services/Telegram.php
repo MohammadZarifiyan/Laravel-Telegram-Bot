@@ -14,6 +14,7 @@ use MohammadZarifiyan\Telegram\Traits\HasReplyMarkup;
 class Telegram implements \MohammadZarifiyan\Telegram\Interfaces\Telegram
 {
     public string $baseUrl;
+	public string $apiKey;
 
     /**
      * @throws Exception
@@ -22,6 +23,16 @@ class Telegram implements \MohammadZarifiyan\Telegram\Interfaces\Telegram
     {
         $this->baseUrl = $this->getBaseUrl();
     }
+
+	/**
+	 * @inheritDoc
+	 */
+	public function setApiKey(string $token): static
+	{
+		$this->apiKey = $token;
+
+		return $this;
+	}
 
     /**
      * @inheritDoc
@@ -51,13 +62,11 @@ class Telegram implements \MohammadZarifiyan\Telegram\Interfaces\Telegram
      */
     private function getBaseUrl(): string
     {
-        $api_key = config('telegram.api_key');
-
-        if (!$api_key) {
+        if (!isset($this->apiKey)) {
             throw new Exception('Telegram API Key is not set.');
         }
 
-        return sprintf('https://api.telegram.org/bot%s', $api_key);
+        return sprintf('https://api.telegram.org/bot%s', $this->apiKey);
     }
 
     /**

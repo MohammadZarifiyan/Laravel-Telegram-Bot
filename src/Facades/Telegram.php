@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Facade;
 
 /**
+ * @method static setApiKey(string $token)
  * @method static sendResponse(string|\MohammadZarifiyan\Telegram\Interfaces\Response $response)
  * @method static sendAsyncResponses(array $responses)
  * @method static getUpdateType
