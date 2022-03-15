@@ -3,6 +3,7 @@
 namespace App\Telegram;
 
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Model;
 use MohammadZarifiyan\Telegram\Facades\Telegram;
 
@@ -30,7 +31,7 @@ class Kernel extends \MohammadZarifiyan\Telegram\Abstractions\Kernel
     /**
      * @inheritDoc
      */
-    public function getGainer(): Model
+    public function getGainer(Request $request): Model
     {
         $user = Telegram::getUser();
 
