@@ -26,9 +26,4 @@ class TelegramValidationException extends Exception
 	{
 		return response(status: Response::HTTP_OK);
 	}
-
-	public function report()
-	{
-		return true;
-	}
 }
