@@ -13,7 +13,6 @@ use MohammadZarifiyan\Telegram\Traits\HasReplyMarkup;
 
 class Telegram implements \MohammadZarifiyan\Telegram\Interfaces\Telegram
 {
-    public string $baseUrl;
 	public string $apiKey;
 
     /**
@@ -21,7 +20,7 @@ class Telegram implements \MohammadZarifiyan\Telegram\Interfaces\Telegram
      */
     public function __construct(public Request $request)
     {
-        $this->baseUrl = $this->getBaseUrl();
+        //
     }
 
 	/**
@@ -93,9 +92,14 @@ class Telegram implements \MohammadZarifiyan\Telegram\Interfaces\Telegram
             : $response->data();
     }
 
-    public function getPreparedRequest(Response|string $response, ?Pool $client = null): array|ClientResponse
+	/**
+	 * @throws Exception
+	 */
+	public function getPreparedRequest(Response|string $response, ?Pool $client = null): array|ClientResponse
     {
-        $pending_request = $client ? $client->baseUrl($this->baseUrl) : Http::baseUrl($this->baseUrl);
+		$base_url = $this->getBaseUrl();
+
+        $pending_request = $client ? $client->baseUrl($base_url) : Http::baseUrl($base_url);
 
         $resolved_response = $this->getResolvedResponse($response);
 
