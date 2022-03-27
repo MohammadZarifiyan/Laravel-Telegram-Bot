@@ -3,6 +3,7 @@
 namespace MohammadZarifiyan\Telegram\Services;
 
 use Exception;
+use GuzzleHttp\Promise\Promise;
 use Illuminate\Http\Client\Pool;
 use Illuminate\Http\Client\Response as ClientResponse;
 use Illuminate\Http\Request;
@@ -95,7 +96,7 @@ class Telegram implements \MohammadZarifiyan\Telegram\Interfaces\Telegram
 	/**
 	 * @throws Exception
 	 */
-	public function getPreparedRequest(Response|string $response, ?Pool $client = null): array|ClientResponse
+	public function getPreparedRequest(Response|string $response, ?Pool $client = null): Promise|ClientResponse|array
     {
 		$base_url = $this->getBaseUrl();
 
