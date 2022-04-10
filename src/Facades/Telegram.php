@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static getUser
  * @method static isCommand
  * @method static commandSignature
+ * @method static handleUpdate(Request $request)
  */
 
 class Telegram extends Facade
@@ -22,10 +23,5 @@ class Telegram extends Facade
     public static function getFacadeAccessor()
     {
         return \MohammadZarifiyan\Telegram\Interfaces\Telegram::class;
-    }
-
-    public static function handleUpdate(Request $request)
-    {
-        return App::make(\MohammadZarifiyan\Telegram\Abstractions\Kernel::class)->handleUpdate($request);
     }
 }

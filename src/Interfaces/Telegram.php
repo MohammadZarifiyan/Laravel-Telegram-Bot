@@ -27,12 +27,19 @@ interface Telegram
     ];
 
 	/**
-	 * Changes api key for running request lifecycle.
+	 * Changes API key for running request lifecycle.
 	 *
 	 * @param string $token
 	 * @return Telegram
 	 */
     public function setApiKey(string $token): static;
+	
+	/**
+	 * Returns current API key.
+	 *
+	 * @return string|null
+	 */
+	public function getApiKey(): ?string;
 
     /**
      * Sends response using Telegram API.

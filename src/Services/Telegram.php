@@ -34,6 +34,14 @@ class Telegram implements \MohammadZarifiyan\Telegram\Interfaces\Telegram
 		return $this;
 	}
 
+	/**
+	 * @inheritDoc
+	 */
+	public function getApiKey(): ?string
+	{
+		return $this->apiKey ?? null;
+	}
+
     /**
      * @inheritDoc
      * @throws Exception
@@ -128,7 +136,7 @@ class Telegram implements \MohammadZarifiyan\Telegram\Interfaces\Telegram
             'message', 'edited_message', 'my_chat_member', 'chat_member', 'chat_join_request' => $this->request->input(sprintf('%s.chat.type', $update_type)),
             'channel_post', 'edited_channel_post' => 'channel',
             'inline_query', 'chosen_inline_result', 'callback_query', 'shipping_query', 'pre_checkout_query', 'poll_answer' => 'private',
-            'poll' => null,
+			default => null
         };
     }
 
