@@ -86,11 +86,6 @@ class TelegramServiceProvider extends ServiceProvider
             static::bigInteger('telegram_id')->nullable();
             static::text('handler')->nullable()->comment('Full classname of current responsible handler');
         });
-		
-		Telegram::macro(
-			'handleUpdate',
-			fn (Request $request) => App::make(\MohammadZarifiyan\Telegram\Abstractions\Kernel::class)->handleUpdate($request)
-		);
     }
 
 	/**
