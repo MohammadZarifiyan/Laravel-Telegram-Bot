@@ -44,7 +44,7 @@ abstract class Kernel
         /**
          * method that uses to handle update
          */
-        $method = sprintf(
+        $updated_handler_method = sprintf(
             'handle%s',
             Str::studly(Telegram::getUpdateType())
         );
@@ -53,8 +53,10 @@ abstract class Kernel
          * Handle update using available breakers.
          */
         foreach ($this->breakers() as $breaker) {
-            if (method_exists($breaker, $method) && $breaker->{$method}($request, $gainer)) {
-                return;
+			$method = $this->getMethod($breaker, $updated_handler_method);
+			
+            if ($method && $breaker->{$method}($request, $gainer)) {
+				return;
             }
         }
 
@@ -62,12 +64,16 @@ abstract class Kernel
          * Handle update using available handlers.
          */
         if ($gainer->handler) {
-            $this->callHandlerMethod(
-				$this->resolveHandler($gainer),
-				$method,
-				$request,
-				$gainer
-			);
+			$resolved_handler = $this->resolveHandler($gainer);
+			
+            if ($method = $this->getMethod($gainer->handler, $updated_handler_method)) {
+				$this->callHandlerMethod(
+					$resolved_handler,
+					$method,
+					$request,
+					$gainer
+				);
+			}
         }
     }
 
@@ -127,6 +133,11 @@ abstract class Kernel
 				$gainer
 			);
 		}
+	}
+	
+	public function getMethod(object $object, string $updateHandlerMethod): ?string
+	{
+		return method_exists($object, $updateHandlerMethod) ? $updateHandlerMethod : 'handle';
 	}
 
 	/**
