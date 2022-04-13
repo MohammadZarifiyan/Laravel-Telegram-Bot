@@ -68,7 +68,7 @@ abstract class Kernel
         if ($gainer->handler) {
 			$resolved_handler = $this->resolveHandler($gainer);
 			
-            if ($method = $this->getMethod($gainer->handler, $updated_handler_method)) {
+            if ($method = $this->getMethod($resolved_handler, $updated_handler_method)) {
 				$this->callHandlerMethod(
 					$resolved_handler,
 					$method,
