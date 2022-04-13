@@ -27,6 +27,8 @@ abstract class Kernel
         }
 
         $gainer = $this->getGainer($request);
+		
+		Telegram::setGainer($gainer);
 
         /**
          * Handle update using available commands.

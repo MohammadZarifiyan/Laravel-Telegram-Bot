@@ -3,6 +3,7 @@
 namespace MohammadZarifiyan\Telegram\Interfaces;
 
 use Illuminate\Http\Client\Response as ClientResponse;
+use Illuminate\Database\Eloquent\Model;
 
 interface Telegram
 {
@@ -77,6 +78,21 @@ interface Telegram
      * @return object|null
      */
     public function getUser(): ?object;
+
+    /**
+     * Returns gainer that caused the incoming Telegram update.
+     *
+     * @return object|null
+     */
+    public function getGainer(): ?Model;
+	
+	/**
+	 * Sets gainer that caused the incoming Telegram update.
+	 *
+	 * @param Model $gainer
+	 * @return Telegram
+	 */
+    public function setGainer(Model $gainer): static;
 
 	/**
 	 * Determines that request is a bot command update or not.

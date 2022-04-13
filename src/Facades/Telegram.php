@@ -5,6 +5,7 @@ namespace MohammadZarifiyan\Telegram\Facades;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Facade;
+use Illuminate\Database\Eloquent\Model;
 
 /**
  * @method static setApiKey(string $token)
@@ -13,6 +14,8 @@ use Illuminate\Support\Facades\Facade;
  * @method static getUpdateType
  * @method static getChatType
  * @method static getUser
+ * @method static setGainer(Model $gainer)
+ * @method static getGainer
  * @method static isCommand
  * @method static commandSignature
  */
