@@ -4,6 +4,7 @@ namespace MohammadZarifiyan\Telegram\Services;
 
 use Exception;
 use GuzzleHttp\Promise\Promise;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Client\Pool;
 use Illuminate\Http\Client\Response as ClientResponse;
 use Illuminate\Http\Request;
@@ -14,7 +15,9 @@ use MohammadZarifiyan\Telegram\Traits\HasReplyMarkup;
 
 class Telegram implements \MohammadZarifiyan\Telegram\Interfaces\Telegram
 {
-	public string $apiKey;
+	protected string $apiKey;
+	
+	protected Model $gainer;
 
     /**
      * @throws Exception
@@ -180,5 +183,17 @@ class Telegram implements \MohammadZarifiyan\Telegram\Interfaces\Telegram
 		}
 
 		return null;
+	}
+	
+	public function getGainer(): ?Model
+	{
+		if (isset($this->gainer)) {
+			return $this->gainer;
+		}
+	}
+	
+	public function setGainer(Model $gainer): static
+	{
+		$this->gainer = $gainer;
 	}
 }
