@@ -36,7 +36,7 @@ abstract class Kernel
         if ($command_signature = Telegram::commandSignature()) {
             foreach ($this->commands() as $command) {
                 if ($command->signature === $command_signature) {
-                    $command->handle($request, $gainer);
+                    $command->handle($request);
 
                     return;
                 }
@@ -72,8 +72,7 @@ abstract class Kernel
 				$this->callHandlerMethod(
 					$resolved_handler,
 					$method,
-					$request,
-					$gainer
+					$request
 				);
 			}
         }
@@ -118,9 +117,8 @@ abstract class Kernel
 	 * @param $handler
 	 * @param string $method
 	 * @param Request $request
-	 * @param Model $gainer
 	 */
-	protected function callHandlerMethod($handler, string $method, Request $request, Model $gainer)
+	protected function callHandlerMethod($handler, string $method, Request $request)
 	{
 		if (method_exists($handler, $method)) {
 			try {
@@ -130,10 +128,7 @@ abstract class Kernel
 				return;
 			}
 
-			$handler->{$method}(
-				$verified_request,
-				$gainer
-			);
+			$handler->{$method}($verified_request);
 		}
 	}
 	
