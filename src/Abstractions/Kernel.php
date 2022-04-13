@@ -134,7 +134,15 @@ abstract class Kernel
 	
 	public function getMethod(object $object, string $updateHandlerMethod): ?string
 	{
-		return method_exists($object, $updateHandlerMethod) ? $updateHandlerMethod : 'handle';
+		if (method_exists($object, $updateHandlerMethod)) {
+			return $updateHandlerMethod;
+		}
+		
+		if (method_exists($object, 'handle')) {
+			return 'handle';
+		}
+		
+		return null;
 	}
 
 	/**
