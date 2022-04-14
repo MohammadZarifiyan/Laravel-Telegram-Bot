@@ -72,7 +72,8 @@ abstract class Kernel
 				$this->callHandlerMethod(
 					$resolved_handler,
 					$method,
-					$request
+					$request,
+					$gainer
 				);
 			}
         }
@@ -118,7 +119,7 @@ abstract class Kernel
 	 * @param string $method
 	 * @param Request $request
 	 */
-	protected function callHandlerMethod($handler, string $method, Request $request)
+	protected function callHandlerMethod($handler, string $method, Request $request, Model $gainer)
 	{
 		if (method_exists($handler, $method)) {
 			try {
@@ -128,7 +129,7 @@ abstract class Kernel
 				return;
 			}
 
-			$handler->{$method}($verified_request);
+			$handler->{$method}($verified_request, $gainer);
 		}
 	}
 	
