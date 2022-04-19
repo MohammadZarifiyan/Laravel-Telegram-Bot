@@ -9,9 +9,7 @@ trait HasReplyMarkup
      */
     public function resolveWithReplayMarkup(): array
     {
-		$replay_markup = static::replyMarkup();
-		
-		$resolved_reply_markup = try_resolve($replay_markup);
+		$resolved_reply_markup = try_resolve(static::replyMarkup());
 	
 		$data = static::data();
 
