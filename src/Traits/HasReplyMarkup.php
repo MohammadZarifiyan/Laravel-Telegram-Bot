@@ -2,33 +2,33 @@
 
 namespace MohammadZarifiyan\Telegram\Traits;
 
-use Exception;
-
 trait HasReplyMarkup
 {
     /**
-     * Returns data with reply_markup attribute
-     *
-     * @throws Exception
+     * Resolves data with reply_markup attribute if possible.
      */
     public function resolveWithReplayMarkup(): array
     {
-        if (!method_exists($this, 'replyMarkup')) {
-            throw new Exception('replyMarkup method is not implemented.');
-        }
+		$replay_markup = static::replyMarkup();
+		
+		$resolved_reply_markup = try_resolve($replay_markup);
+	
+		$data = static::data();
 
-        $reply_markup = static::replyMarkup();
+		if (!$resolved_reply_markup) {
+			return $data;
+		}
 
         return array_merge(
-            static::data(),
-            ['reply_markup' => json_encode($reply_markup())]
+            $data,
+            ['reply_markup' => json_encode($resolved_reply_markup())]
         );
     }
 
-    /**
-     * An array of replay_markup content
-     *
-     * @return \MohammadZarifiyan\Telegram\Interfaces\ReplyMarkup
-     */
-    abstract public function replyMarkup(): \MohammadZarifiyan\Telegram\Interfaces\ReplyMarkup;
+	/**
+	 * Returns Reply Markup class.
+	 *
+	 * @return \MohammadZarifiyan\Telegram\Interfaces\ReplyMarkup|string|null
+	 */
+    abstract public function replyMarkup(): \MohammadZarifiyan\Telegram\Interfaces\ReplyMarkup|string|null;
 }

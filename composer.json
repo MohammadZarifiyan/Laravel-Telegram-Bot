@@ -13,7 +13,10 @@
     "autoload": {
         "psr-4": {
             "MohammadZarifiyan\\Telegram\\": "src/"
-        }
+        },
+        "files": [
+            "src/helpers.php"
+        ]
     },
     "authors": [
         {

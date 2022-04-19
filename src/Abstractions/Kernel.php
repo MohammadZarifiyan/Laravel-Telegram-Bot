@@ -66,7 +66,7 @@ abstract class Kernel
          * Handle update using available handlers.
          */
         if ($gainer->handler) {
-			$resolved_handler = $this->resolveHandler($gainer);
+			$resolved_handler = try_resolve($gainer->handler);
 			
             if ($method = $this->getMethod($resolved_handler, $updated_handler_method)) {
 				$this->callHandlerMethod(
@@ -78,17 +78,6 @@ abstract class Kernel
 			}
         }
     }
-
-	/**
-	 * Resolves handler for specified Telegram gainer.
-	 *
-	 * @param Model $gainer
-	 * @return mixed
-	 */
-	protected function resolveHandler(Model $gainer)
-	{
-		return is_object($gainer->handler) ? $gainer->handler : App::make($gainer->handler);
-	}
 
 	/**
 	 * Returns validated request if exists, otherwise returns initial request.

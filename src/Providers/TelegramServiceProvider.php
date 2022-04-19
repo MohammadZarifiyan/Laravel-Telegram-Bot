@@ -7,7 +7,6 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Routing\Router;
 use Illuminate\Http\Request;
 use MohammadZarifiyan\Telegram\Commands\SetWebhookCommand;
-use MohammadZarifiyan\Telegram\Facades\Telegram;
 use MohammadZarifiyan\Telegram\Middlewares\ChatTypeMiddleware;
 use MohammadZarifiyan\Telegram\Middlewares\UpdateTypeMiddleware;
 
