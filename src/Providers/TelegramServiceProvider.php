@@ -62,15 +62,15 @@ class TelegramServiceProvider extends ServiceProvider
     public function publish()
     {
         $this->publishes([
-            __DIR__.'../config/telegram.php' => function_exists('config_path') ? config_path('telegram.php') : base_path('config/telegram.php')
+            __DIR__.'/../config/telegram.php' => function_exists('config_path') ? config_path('telegram.php') : base_path('config/telegram.php')
         ], 'telegram-config');
 
         $this->publishes([
-            __DIR__.'../database/migrations' => database_path('migrations')
+            __DIR__.'/../database/migrations' => database_path('migrations')
         ], 'telegram-migrations');
 
         $this->publishes([
-            __DIR__.'../Kernel.php' => function_exists('app_path') ? app_path('Telegram/Kernel.php') : base_path('app/Telegram/Kernel.php')
+            __DIR__.'/../Kernel.php' => function_exists('app_path') ? app_path('Telegram/Kernel.php') : base_path('app/Telegram/Kernel.php')
         ], 'telegram-kernel');
     }
 
