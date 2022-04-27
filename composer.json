@@ -6,6 +6,7 @@
     "version": "2.6.1",
     "require": {
         "php": "^8",
+        "illuminate/routing": "*",
         "illuminate/validation": ">=7",
         "illuminate/support": ">=7",
         "illuminate/http": ">=7"

@@ -107,6 +107,7 @@ abstract class Kernel
 	 * @param $handler
 	 * @param string $method
 	 * @param Request $request
+	 * @param Model $gainer
 	 */
 	protected function callHandlerMethod($handler, string $method, Request $request, Model $gainer)
 	{

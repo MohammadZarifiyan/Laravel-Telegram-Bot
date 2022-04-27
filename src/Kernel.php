@@ -9,18 +9,13 @@ use MohammadZarifiyan\Telegram\Facades\Telegram;
 
 class Kernel extends \MohammadZarifiyan\Telegram\Abstractions\Kernel
 {
-    /**
-     * @inheritDoc
-     */
     public function commands(): array
     {
         return [
             //
         ];
     }
-    /**
-     * @inheritDoc
-     */
+
     public function breakers(): array
     {
         return [
@@ -28,9 +23,6 @@ class Kernel extends \MohammadZarifiyan\Telegram\Abstractions\Kernel
         ];
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getGainer(Request $request): Model
     {
         $user = Telegram::getUser();
