@@ -27,9 +27,6 @@ class Telegram implements \MohammadZarifiyan\Telegram\Interfaces\Telegram
         //
     }
 
-	/**
-	 * @inheritDoc
-	 */
 	public function setApiKey(string $token): static
 	{
 		$this->apiKey = $token;
@@ -37,9 +34,6 @@ class Telegram implements \MohammadZarifiyan\Telegram\Interfaces\Telegram
 		return $this;
 	}
 
-	/**
-	 * @inheritDoc
-	 */
 	public function getApiKey(): ?string
 	{
 		return @$this->apiKey;
@@ -54,9 +48,6 @@ class Telegram implements \MohammadZarifiyan\Telegram\Interfaces\Telegram
         return $this->getPreparedRequest($response);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function sendAsyncResponses(array $responses): array
     {
         return Http::pool(fn(Pool $pool) => array_map(
@@ -104,9 +95,6 @@ class Telegram implements \MohammadZarifiyan\Telegram\Interfaces\Telegram
             : $response->data();
     }
 
-	/**
-	 * @throws Exception
-	 */
 	public function getPreparedRequest(Response|string $response, ?Pool $client = null): Promise|ClientResponse|array
     {
 		$base_url = $this->getBaseUrl();
@@ -118,9 +106,6 @@ class Telegram implements \MohammadZarifiyan\Telegram\Interfaces\Telegram
         return $pending_request->post($resolved_response->method(), $this->getResponseBody($resolved_response));
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getUpdateType(): ?string
     {
         return collect($this::UPDATE_TYPES)
@@ -128,9 +113,6 @@ class Telegram implements \MohammadZarifiyan\Telegram\Interfaces\Telegram
             ->first();
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getChatType(): ?string
     {
         $update_type = $this->getUpdateType();
@@ -143,9 +125,6 @@ class Telegram implements \MohammadZarifiyan\Telegram\Interfaces\Telegram
         };
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getUser(): ?object
     {
         $update_type = $this->getUpdateType();
@@ -158,9 +137,6 @@ class Telegram implements \MohammadZarifiyan\Telegram\Interfaces\Telegram
         return $match ? (object) $match : null;
     }
 
-	/**
-	 * @inheritDoc
-	 */
 	public function isCommand(): bool
 	{
 		$types = $this->request->input('message.entities.*.type');
@@ -168,9 +144,6 @@ class Telegram implements \MohammadZarifiyan\Telegram\Interfaces\Telegram
 		return $types && count($types) && in_array('bot_command', $types);
 	}
 
-	/**
-	 * @inheritDoc
-	 */
 	public function commandSignature(): ?string
 	{
 		if ($this->isCommand()) {
@@ -195,5 +168,10 @@ class Telegram implements \MohammadZarifiyan\Telegram\Interfaces\Telegram
 		$this->gainer = $gainer;
 		
 		return $this;
+	}
+	
+	public function generateFileUrl(string $filePath): string
+	{
+		return 'https://api.telegram.org/file/bot'.$this->getApiKey().'/'.$filePath;
 	}
 }

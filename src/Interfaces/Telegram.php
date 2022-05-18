@@ -107,4 +107,12 @@ interface Telegram
 	 * @return string|null
 	 */
 	public function commandSignature(): ?string;
+	
+	/**
+	 * Generates file download URL from file path.
+	 *
+	 * @param string $filePath
+	 * @return string
+	 */
+	public function generateFileUrl(string $filePath): string;
 }

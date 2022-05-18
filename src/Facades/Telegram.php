@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static getGainer
  * @method static isCommand
  * @method static commandSignature
+ * @method static generateFileUrl(string $filePath)
  */
 
 class Telegram extends Facade
