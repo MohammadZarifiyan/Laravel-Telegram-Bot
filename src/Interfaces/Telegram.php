@@ -33,7 +33,7 @@ interface Telegram
 	 * @param string $token
 	 * @return Telegram
 	 */
-    public function setApiKey(string $token): static;
+    public function setApiKey(string $token): self;
 	
 	/**
 	 * Returns current API key.
@@ -92,7 +92,7 @@ interface Telegram
 	 * @param Model $gainer
 	 * @return Telegram
 	 */
-    public function setGainer(Model $gainer): static;
+    public function setGainer(Model $gainer): self;
 
 	/**
 	 * Determines that request is a bot command update or not.

@@ -27,7 +27,7 @@ class Telegram implements \MohammadZarifiyan\Telegram\Interfaces\Telegram
         //
     }
 
-	public function setApiKey(string $token): static
+	public function setApiKey(string $token): self
 	{
 		$this->apiKey = $token;
 
@@ -163,7 +163,7 @@ class Telegram implements \MohammadZarifiyan\Telegram\Interfaces\Telegram
 		return @$this->gainer;
 	}
 	
-	public function setGainer(Model $gainer): static
+	public function setGainer(Model $gainer): self
 	{
 		$this->gainer = $gainer;
 		
