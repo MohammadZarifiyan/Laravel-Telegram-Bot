@@ -2,23 +2,24 @@
 
 namespace MohammadZarifiyan\Telegram\Facades;
 
+use Illuminate\Http\Client\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @method static setApiKey(string $token)
- * @method static sendResponse(string|\MohammadZarifiyan\Telegram\Interfaces\Response $response)
- * @method static sendAsyncResponses(array $responses)
- * @method static getUpdateType
- * @method static getChatType
- * @method static getUser
- * @method static setGainer(Model $gainer)
- * @method static getGainer
- * @method static isCommand
- * @method static commandSignature
- * @method static generateFileUrl(string $filePath)
+ * @method static \MohammadZarifiyan\Telegram\Interfaces\Telegram setApiKey(string $token)
+ * @method static Response sendResponse(string|\MohammadZarifiyan\Telegram\Interfaces\Response $response)
+ * @method static array sendAsyncResponses(array $responses)
+ * @method static null|string getUpdateType
+ * @method static null|string getChatType
+ * @method static null|object getUser
+ * @method static \MohammadZarifiyan\Telegram\Interfaces\Telegram setGainer(Model $gainer)
+ * @method static null|Model getGainer
+ * @method static bool isCommand
+ * @method static null|string commandSignature
+ * @method static string generateFileUrl(string $filePath)
  */
 
 class Telegram extends Facade
