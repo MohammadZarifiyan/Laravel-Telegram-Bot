@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * @method static \MohammadZarifiyan\Telegram\Interfaces\Telegram setApiKey(string $token)
  * @method static Response sendResponse(string|\MohammadZarifiyan\Telegram\Interfaces\Response $response)
- * @method static array sendAsyncResponses(array $responses)
+ * @method static array<Response> sendAsyncResponses(array $responses)
  * @method static null|string getUpdateType
  * @method static null|string getChatType
  * @method static null|object getUser
