@@ -4,6 +4,7 @@
     "type": "library",
     "keywords": ["Telegram", "Laravel"],
     "version": "2.7.0",
+    "license": "MIT",
     "require": {
         "php": "^8",
         "illuminate/routing": "*",
