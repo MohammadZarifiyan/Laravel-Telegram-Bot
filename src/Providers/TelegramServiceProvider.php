@@ -5,10 +5,10 @@ namespace MohammadZarifiyan\Telegram\Providers;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Routing\Router;
-use Illuminate\Http\Request;
 use MohammadZarifiyan\Telegram\Commands\SetWebhookCommand;
 use MohammadZarifiyan\Telegram\Middlewares\ChatTypeMiddleware;
 use MohammadZarifiyan\Telegram\Middlewares\UpdateTypeMiddleware;
+use MohammadZarifiyan\Telegram\TelegramRequest;
 
 class TelegramServiceProvider extends ServiceProvider
 {
@@ -20,16 +20,16 @@ class TelegramServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->singleton(
-            \MohammadZarifiyan\Telegram\Interfaces\Telegram::class,
+            'telegram',
             function () {
 				$service = $this->app->make(config('telegram.service'));
 
-				return $service->setApiKey(config('telegram.api_key'));
+				return $service->setApiKey(config('services.telegram.api_key'));
 			}
         );
 
         $this->app->singleton(
-			\MohammadZarifiyan\Telegram\Abstractions\Kernel::class,
+			'telegram-kernel',
             config('telegram.kernel')
         );
     }
@@ -52,6 +52,12 @@ class TelegramServiceProvider extends ServiceProvider
         }
 
 		$this->makeMiddlewareAliases();
+	
+		$this->app->resolving(TelegramRequest::class, function ($request, $app) {
+			$request = TelegramRequest::createFrom($app['request'], $request);
+		
+			$request->setContainer($app);
+		});
     }
 
     /**
@@ -62,7 +68,7 @@ class TelegramServiceProvider extends ServiceProvider
     public function publish()
     {
         $this->publishes([
-            __DIR__.'/../config/telegram.php' => function_exists('config_path') ? config_path('telegram.php') : base_path('config/telegram.php')
+            __DIR__.'/../../config/telegram.php' => function_exists('config_path') ? config_path('telegram.php') : base_path('config/telegram.php')
         ], 'telegram-config');
 
         $this->publishes([

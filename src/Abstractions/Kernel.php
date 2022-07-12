@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
+use MohammadZarifiyan\Telegram\Exceptions\TelegramOriginException;
 use MohammadZarifiyan\Telegram\Facades\Telegram;
 use MohammadZarifiyan\Telegram\TelegramRequest;
 use ReflectionException;
@@ -22,6 +23,8 @@ abstract class Kernel
      */
     public function handleUpdate(Request $request)
     {
+		$this->validateOrigin($request);
+		
         if (!Telegram::getUpdateType()) {
             throw new Exception('This request doesnt have any valid Telegram update.');
         }
@@ -78,6 +81,34 @@ abstract class Kernel
 			}
         }
     }
+	
+	/**
+	 * Validates specified request to have valid origin.
+	 *
+	 * @param Request $request
+	 * @return bool
+	 * @throws TelegramOriginException
+	 */
+	public final function validateOrigin(Request $request): bool
+	{
+		$secure_token = config('services.telegram.secure_token');
+		
+		if (empty($secure_token)) {
+			return true;
+		}
+		
+		$secret_token = $request->header('X-Telegram-Bot-Api-Secret-Token');
+		
+		if (empty($secret_token)) {
+			throw new TelegramOriginException('X-Telegram-Bot-Api-Secret-Token header is empty.', 401);
+		}
+		
+		if (trim($secret_token) === trim($secure_token)) {
+			return true;
+		}
+		
+		throw new TelegramOriginException('Incoming request is not from authorized origin.', 401);
+	}
 
 	/**
 	 * Returns validated request if exists, otherwise returns initial request.

@@ -10,17 +10,22 @@ use Symfony\Component\HttpFoundation\Response;
 
 class SetWebhookCommand extends Command
 {
-    protected $signature = 'bot:set-webhook';
+    protected $signature = 'bot:set-webhook {--drop-pending-updates=false}';
 
     protected $description = 'Sets Telegram webhook.';
 
     public function handle()
     {
         try {
-            $response = Telegram::sendResponse(SetWebhookResponse::class);
+			$response = new SetWebhookResponse(
+				$this->option('drop-pending-updates'),
+				config('services.telegram.secure_token')
+			);
+			
+            $result = Telegram::sendResponse($response);
 
-            if ($response->status() !== Response::HTTP_OK) {
-                throw new Exception($response->object()->description ?? 'An error has occurred.');
+            if ($result->status() !== Response::HTTP_OK) {
+                throw new Exception($result->object()->description ?? 'An error has occurred.');
             }
 
             $this->info('Webhook set successfully.');

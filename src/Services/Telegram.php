@@ -172,6 +172,6 @@ class Telegram implements \MohammadZarifiyan\Telegram\Interfaces\Telegram
 	
 	public function generateFileUrl(string $filePath): string
 	{
-		return 'https://api.telegram.org/file/bot'.$this->getApiKey().'/'.$filePath;
+		return sprintf('https://api.telegram.org/file/bot%s/%s', $this->getApiKey(), $filePath);
 	}
 }
