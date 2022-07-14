@@ -72,7 +72,7 @@ class TelegramServiceProvider extends ServiceProvider
     public function publish()
     {
         $this->publishes([
-            __DIR__.'/../../config/telegram.php' => function_exists('config_path') ? config_path('telegram.php') : base_path('config/telegram.php')
+            __DIR__.'/../../config/telegram.php' => config_path('telegram.php')
         ], 'telegram-config');
 
         $this->publishes([
@@ -80,7 +80,7 @@ class TelegramServiceProvider extends ServiceProvider
         ], 'telegram-migrations');
 
         $this->publishes([
-            __DIR__.'/../Kernel.php' => function_exists('app_path') ? app_path('Telegram/Kernel.php') : base_path('app/Telegram/Kernel.php')
+            __DIR__.'/../Kernel.php' => app_path('Telegram/Kernel.php')
         ], 'telegram-kernel');
     }
 
