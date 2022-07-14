@@ -7,7 +7,7 @@
     "license": "MIT",
     "require": {
         "php": "^8",
-        "illuminate/routing": "*",
+        "illuminate/routing": ">=v7",
         "illuminate/validation": ">=7",
         "illuminate/support": ">=7",
         "illuminate/http": ">=7"
