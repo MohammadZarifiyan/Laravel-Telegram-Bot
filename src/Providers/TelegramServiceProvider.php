@@ -19,6 +19,10 @@ class TelegramServiceProvider extends ServiceProvider
      */
     public function register()
     {
+		$this->mergeConfigFrom(
+			__DIR__.'/../../config/telegram.php', 'telegram'
+		);
+		
         $this->app->singleton(
             'telegram',
             function () {
