@@ -2,6 +2,7 @@
 
 namespace MohammadZarifiyan\Telegram\Providers;
 
+use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Routing\Router;
@@ -10,7 +11,7 @@ use MohammadZarifiyan\Telegram\Middlewares\ChatTypeMiddleware;
 use MohammadZarifiyan\Telegram\Middlewares\UpdateTypeMiddleware;
 use MohammadZarifiyan\Telegram\TelegramRequest;
 
-class TelegramServiceProvider extends ServiceProvider
+class TelegramServiceProvider extends ServiceProvider implements DeferrableProvider
 {
     /**
      * Register Telegram service.
@@ -25,11 +26,9 @@ class TelegramServiceProvider extends ServiceProvider
 		
         $this->app->singleton(
             'telegram',
-            function () {
-				$service = $this->app->make(config('telegram.service'));
-
-				return $service->setApiKey(config('services.telegram.api_key'));
-			}
+            fn () => $this->app
+				->make(config('telegram.service'))
+				->setApiKey(config('services.telegram.api_key'))
         );
 
         $this->app->singleton(
@@ -37,12 +36,13 @@ class TelegramServiceProvider extends ServiceProvider
             config('telegram.kernel')
         );
     }
-
-    /**
-     * Boots Telegram service.
-     *
-     * @return void
-     */
+	
+	/**
+	 * Boots Telegram service.
+	 *
+	 * @return void
+	 * @throws \Illuminate\Contracts\Container\BindingResolutionException
+	 */
     public function boot()
     {
         $this->publish();
@@ -108,5 +108,10 @@ class TelegramServiceProvider extends ServiceProvider
 
 		$router->aliasMiddleware('update-type', UpdateTypeMiddleware::class);
 		$router->aliasMiddleware('chat-type', ChatTypeMiddleware::class);
+	}
+	
+	public function provides()
+	{
+		return ['telegram', 'telegram.kernel'];
 	}
 }
