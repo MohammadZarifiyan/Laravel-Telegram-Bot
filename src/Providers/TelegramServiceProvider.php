@@ -5,9 +5,7 @@ namespace MohammadZarifiyan\Telegram\Providers;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Routing\Router;
-use MohammadZarifiyan\Telegram\Abstractions\Kernel;
 use MohammadZarifiyan\Telegram\Commands\SetWebhookCommand;
-use MohammadZarifiyan\Telegram\Interfaces\Telegram;
 use MohammadZarifiyan\Telegram\Middlewares\ChatTypeMiddleware;
 use MohammadZarifiyan\Telegram\Middlewares\UpdateTypeMiddleware;
 use MohammadZarifiyan\Telegram\TelegramRequest;
@@ -22,7 +20,7 @@ class TelegramServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->singleton(
-            Telegram::class,
+            'telegram',
             function () {
 				$service = $this->app->make(config('telegram.service'));
 
@@ -31,7 +29,7 @@ class TelegramServiceProvider extends ServiceProvider
         );
 
         $this->app->singleton(
-			Kernel::class,
+			'telegram.kernel',
             config('telegram.kernel')
         );
     }

@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Database\Eloquent\Model;
-use MohammadZarifiyan\Telegram\Abstractions\Kernel;
 
 /**
  * @method static \MohammadZarifiyan\Telegram\Interfaces\Telegram setApiKey(string $token)
@@ -27,11 +26,11 @@ class Telegram extends Facade
 {
     public static function getFacadeAccessor()
     {
-        return \MohammadZarifiyan\Telegram\Interfaces\Telegram::class;
+        return 'telegram';
     }
 
     public static function handleUpdate(Request $request)
     {
-        return App::make(Kernel::class)->handleUpdate($request);
+        return App::make('telegram.kernel')->handleUpdate($request);
     }
 }
