@@ -23,7 +23,7 @@ class Kernel extends \MohammadZarifiyan\Telegram\Abstractions\Kernel
         ];
     }
 
-    public function getGainer(Request $request): Model
+    public function getGainer(Request $request): ?Model
     {
         $user = Telegram::getUser();
 

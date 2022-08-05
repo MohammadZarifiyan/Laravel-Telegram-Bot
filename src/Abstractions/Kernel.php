@@ -29,14 +29,14 @@ abstract class Kernel
             throw new Exception('This request doesnt have any valid Telegram update.');
         }
 
-        $gainer = $this->getGainer($request);
-		
-		Telegram::setGainer($gainer);
+        if ($gainer = $this->getGainer($request)) {
+			Telegram::setGainer($gainer);
+		}
 
         /**
          * Handle update using available commands.
          */
-        if ($command_signature = Telegram::commandSignature()) {
+        if ($gainer && $command_signature = Telegram::commandSignature()) {
             foreach ($this->commands() as $command) {
                 if ($command->signature === $command_signature) {
                     $command->handle($request, $gainer);
@@ -68,7 +68,7 @@ abstract class Kernel
         /**
          * Handle update using available handlers.
          */
-        if ($gainer->handler) {
+        if ($gainer?->handler) {
 			$resolved_handler = try_resolve($gainer->handler);
 			
             if ($method = $this->getMethod($resolved_handler, $updated_handler_method)) {
@@ -171,9 +171,9 @@ abstract class Kernel
 	 * Get or create the gainer that handlers should work with
 	 *
 	 * @param Request $request
-	 * @return Model
+	 * @return Model|null
 	 */
-    abstract public function getGainer(Request $request): Model;
+    abstract public function getGainer(Request $request): ?Model;
 
     /**
      * An array of Telegram command classes
