@@ -38,8 +38,10 @@ abstract class Kernel
          */
         if ($gainer && $command_signature = Telegram::commandSignature()) {
             foreach ($this->commands() as $command) {
-                if ($command->signature === $command_signature) {
-                    $command->handle($request, $gainer);
+				$command_instance = $command instanceof Command ? $command : App::make($command);
+				
+                if ($command_instance->signature === $command_signature) {
+					$command_instance->handle($request, $gainer);
 
                     return;
                 }

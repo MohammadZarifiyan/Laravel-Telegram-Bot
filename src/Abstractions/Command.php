@@ -2,7 +2,7 @@
 
 namespace MohammadZarifiyan\Telegram\Abstractions;
 
-use App\Models\User;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 
 abstract class Command
@@ -17,5 +17,5 @@ abstract class Command
     /**
      * Execute the Telegram command.
      */
-    abstract public function handle(Request $request, User $user);
+    abstract public function handle(Request $request, Model $gainer);
 }
