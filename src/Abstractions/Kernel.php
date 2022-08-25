@@ -89,21 +89,13 @@ abstract class Kernel
 	 * @return bool
 	 * @throws TelegramOriginException
 	 */
-	public final function validateOrigin(Request $request): bool
+	public final function validateOrigin(Request $request)
 	{
 		$secure_token = config('services.telegram.secure_token');
 		
-		if (empty($secure_token)) {
-			return true;
-		}
-		
 		$secret_token = $request->header('X-Telegram-Bot-Api-Secret-Token');
 		
-		if (empty($secret_token)) {
-			throw new TelegramOriginException('X-Telegram-Bot-Api-Secret-Token header is empty.', 401);
-		}
-		
-		if (trim($secret_token) === trim($secure_token)) {
+		if (is_string($secure_token) && is_string($secret_token) && trim($secure_token) === trim($secret_token)) {
 			return true;
 		}
 		
