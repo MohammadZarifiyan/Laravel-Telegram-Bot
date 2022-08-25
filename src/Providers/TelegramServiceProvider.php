@@ -24,17 +24,21 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
 			__DIR__.'/../../config/telegram.php', 'telegram'
 		);
 		
-        $this->app->singleton(
+        $this->app->bind(
             'telegram',
             fn () => $this->app
 				->make(config('telegram.service'))
 				->setApiKey(config('services.telegram.api_key'))
         );
 
-        $this->app->singleton(
+        $this->app->bind(
 			'telegram.kernel',
             config('telegram.kernel')
         );
+	
+		$this->app->bind('update-type', UpdateTypeMiddleware::class);
+		
+		$this->app->bind('chat-type', ChatTypeMiddleware::class);
     }
 	
 	/**
@@ -112,6 +116,6 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
 	
 	public function provides()
 	{
-		return ['telegram', 'telegram.kernel'];
+		return ['telegram', 'telegram.kernel', 'update-type', 'chat-type'];
 	}
 }
