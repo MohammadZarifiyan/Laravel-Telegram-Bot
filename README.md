@@ -41,7 +41,7 @@ php artisan vendor:publish --provider="MohammadZarifiyan\Telegram\Providers\Tele
 
 **Notice: Your application URL must start with `https://` and you have to install a valid SSL/TSL certificate on it.**
 
-8 - Declare a route named `update-route` to handle Telegram updates.
+8 - Declare a route named `telegram-update` to handle Telegram updates.
 
 9 - Set webhook to receive Telegram updates when someone intracts with your bot.
 ```bash
