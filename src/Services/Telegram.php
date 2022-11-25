@@ -10,8 +10,8 @@ use Illuminate\Http\Client\Response as ClientResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Http;
+use MohammadZarifiyan\Telegram\Interfaces\HasReplyMarkup;
 use MohammadZarifiyan\Telegram\Interfaces\Response;
-use MohammadZarifiyan\Telegram\Traits\HasReplyMarkup;
 
 class Telegram implements \MohammadZarifiyan\Telegram\Interfaces\Telegram
 {
@@ -90,9 +90,22 @@ class Telegram implements \MohammadZarifiyan\Telegram\Interfaces\Telegram
      */
     public function getResponseBody(Response $response): array
     {
-        return in_array(HasReplyMarkup::class, class_uses_recursive($response))
-            ? $response->resolveWithReplayMarkup()
-            : $response->data();
+		$data = $response->data();
+		
+		if (!($response instanceof HasReplyMarkup)) {
+			return $data;
+		}
+		
+		$resolved_reply_markup = try_resolve($response->replyMarkup());
+	
+		if (!$resolved_reply_markup) {
+			return $data;
+		}
+		
+		return array_merge(
+			$data,
+			['reply_markup' => json_encode($resolved_reply_markup($this->request, $this->gainer))]
+		);
     }
 
 	public function getPreparedRequest(Response|string $response, ?Pool $client = null): Promise|ClientResponse|array

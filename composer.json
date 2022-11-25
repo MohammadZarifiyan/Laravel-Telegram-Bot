@@ -3,7 +3,7 @@
     "description": "A package that helps to create Telegram bots easily.",
     "type": "library",
     "keywords": ["Telegram", "Laravel"],
-    "version": "2.8.1",
+    "version": "2.9",
     "license": "MIT",
     "require": {
         "php": "^8",
