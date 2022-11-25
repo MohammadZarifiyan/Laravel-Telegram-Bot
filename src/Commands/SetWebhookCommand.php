@@ -18,7 +18,7 @@ class SetWebhookCommand extends Command
     {
         try {
 			$response = new SetWebhookResponse(
-				$this->option('drop-pending-updates'),
+				$this->hasOption('drop-pending-updates') && (is_null($this->option('drop-pending-updates')) || (bool) $this->option('drop-pending-updates') === true),
 				config('services.telegram.secure_token')
 			);
 			

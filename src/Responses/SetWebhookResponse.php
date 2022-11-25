@@ -6,7 +6,7 @@ use MohammadZarifiyan\Telegram\Interfaces\Response;
 
 class SetWebhookResponse implements Response
 {
-	public function __construct(protected string|bool $dropPendingUpdates, protected ?string $secureToken = null)
+	public function __construct(protected bool $dropPendingUpdates, protected ?string $secureToken = null)
 	{
 		//
 	}
