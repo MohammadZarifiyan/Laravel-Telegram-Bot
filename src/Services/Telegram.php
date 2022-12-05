@@ -5,6 +5,7 @@ namespace MohammadZarifiyan\Telegram\Services;
 use Exception;
 use GuzzleHttp\Promise\Promise;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\Pool;
 use Illuminate\Http\Client\Response as ClientResponse;
 use Illuminate\Http\Request;
@@ -116,7 +117,9 @@ class Telegram implements \MohammadZarifiyan\Telegram\Interfaces\Telegram
 
         $resolved_response = $this->getResolvedResponse($response);
 
-        return $pending_request->post($resolved_response->method(), $this->getResponseBody($resolved_response));
+        return $pending_request
+			->retry(5, 100, fn ($exception, $request) => $exception instanceof ConnectionException, false)
+			->post($resolved_response->method(), $this->getResponseBody($resolved_response));
     }
 
     public function getUpdateType(): ?string
