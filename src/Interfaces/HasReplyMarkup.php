@@ -14,5 +14,5 @@ interface HasReplyMarkup
 	 * @param Model|null $gainer
 	 * @return ReplyMarkup|string|null
 	 */
-    public function replyMarkup(Request $request, Model $gainer = null): ReplyMarkup|string|null;
+    public function replyMarkup(Request $request, ?Model $gainer): ReplyMarkup|string|null;
 }

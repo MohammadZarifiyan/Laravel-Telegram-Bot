@@ -193,7 +193,7 @@ abstract class Kernel
 	/**
 	 * Handle update using available breakers.
 	 */
-	private function runBreakers(Request $request, Model $gainer = null): bool
+	private function runBreakers(Request $request, ?Model $gainer): bool
 	{
 		foreach ($this->breakers() as $breaker) {
 			$method = $this->getMethod($breaker, $this->requestHandleMethod());
@@ -234,7 +234,7 @@ abstract class Kernel
 	 * @param Model|null $gainer
 	 * @return bool
 	 */
-	public function passIfCommandNotExists(Request $request, Model $gainer = null): bool
+	public function passIfCommandNotExists(Request $request, ?Model $gainer): bool
 	{
 		return false;
 	}
@@ -242,7 +242,7 @@ abstract class Kernel
 	/**
 	 * @throws TelegramMiddlewareFailedException
 	 */
-	private function runMiddlewares(Request $request, Model $gainer = null): Request
+	private function runMiddlewares(Request $request, ?Model $gainer): Request
 	{
 		foreach ($this->middlewares() as $middleware) {
 			$method = $this->getMethod($middleware, $this->requestHandleMethod());

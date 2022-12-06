@@ -14,7 +14,7 @@ interface Response
 	 * @param Model|null $gainer
 	 * @return string
 	 */
-    public function method(Request $request, Model $gainer = null): string;
+    public function method(Request $request, ?Model $gainer): string;
 	
 	/**
 	 * Data to use for sending response using Telegram API.
@@ -23,5 +23,5 @@ interface Response
 	 * @param Model|null $gainer
 	 * @return array
 	 */
-    public function data(Request $request, Model $gainer = null): array;
+    public function data(Request $request, ?Model $gainer): array;
 }

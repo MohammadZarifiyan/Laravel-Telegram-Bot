@@ -7,5 +7,5 @@ use Illuminate\Database\Eloquent\Model;
 
 interface ReplyMarkup
 {
-    public function __invoke(Request $request, Model $gainer = null): array;
+    public function __invoke(Request $request, ?Model $gainer): array;
 }
