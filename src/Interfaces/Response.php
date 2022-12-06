@@ -2,19 +2,26 @@
 
 namespace MohammadZarifiyan\Telegram\Interfaces;
 
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
+
 interface Response
 {
-    /**
-     * Telegram API method.
-     *
-     * @return string
-     */
-    public function method(): string;
-
-    /**
-     * Data to use for sending response using Telegram API.
-     *
-     * @return array
-     */
-    public function data(): array;
+	/**
+	 * Telegram API method.
+	 *
+	 * @param Request $request
+	 * @param Model|null $gainer
+	 * @return string
+	 */
+    public function method(Request $request, Model $gainer = null): string;
+	
+	/**
+	 * Data to use for sending response using Telegram API.
+	 *
+	 * @param Request $request
+	 * @param Model|null $gainer
+	 * @return array
+	 */
+    public function data(Request $request, Model $gainer = null): array;
 }

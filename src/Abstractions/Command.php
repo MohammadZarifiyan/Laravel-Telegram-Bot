@@ -17,5 +17,5 @@ abstract class Command
     /**
      * Execute the Telegram command.
      */
-    abstract public function handle(Request $request, Model $gainer);
+    abstract public function handle(Request $request, Model $gainer = null);
 }

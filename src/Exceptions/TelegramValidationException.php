@@ -2,11 +2,10 @@
 
 namespace MohammadZarifiyan\Telegram\Exceptions;
 
-use Exception;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
-class TelegramValidationException extends Exception
+class TelegramValidationException extends TelegramException
 {
 	/**
 	 * Create a new exception instance.

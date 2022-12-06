@@ -2,7 +2,6 @@
 
 namespace MohammadZarifiyan\Telegram\Services;
 
-use Exception;
 use GuzzleHttp\Promise\Promise;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Client\ConnectionException;
@@ -11,6 +10,7 @@ use Illuminate\Http\Client\Response as ClientResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Http;
+use MohammadZarifiyan\Telegram\Exceptions\TelegramException;
 use MohammadZarifiyan\Telegram\Interfaces\HasReplyMarkup;
 use MohammadZarifiyan\Telegram\Interfaces\Response;
 
@@ -18,11 +18,8 @@ class Telegram implements \MohammadZarifiyan\Telegram\Interfaces\Telegram
 {
 	protected string $apiKey;
 	
-	protected Model $gainer;
+	protected ?Model $gainer = null;
 
-    /**
-     * @throws Exception
-     */
     public function __construct(public Request $request)
     {
         //
@@ -42,7 +39,6 @@ class Telegram implements \MohammadZarifiyan\Telegram\Interfaces\Telegram
 
     /**
      * @inheritDoc
-     * @throws Exception
      */
     public function sendResponse(Response|string $response): ClientResponse
     {
@@ -61,12 +57,12 @@ class Telegram implements \MohammadZarifiyan\Telegram\Interfaces\Telegram
      * Returns base URL for sending response using Telegram API.
      *
      * @return string
-     * @throws Exception
+     * @throws TelegramException
      */
     private function getBaseUrl(): string
     {
         if (!isset($this->apiKey)) {
-            throw new Exception('Telegram API Key is not set.');
+            throw new TelegramException('Telegram API Key is not set.');
         }
 
         return sprintf('https://api.telegram.org/bot%s', $this->apiKey);
@@ -91,13 +87,13 @@ class Telegram implements \MohammadZarifiyan\Telegram\Interfaces\Telegram
      */
     public function getResponseBody(Response $response): array
     {
-		$data = $response->data();
+		$data = $response->data($this->request, $this->gainer);
 		
 		if (!($response instanceof HasReplyMarkup)) {
 			return $data;
 		}
 		
-		$resolved_reply_markup = try_resolve($response->replyMarkup());
+		$resolved_reply_markup = try_resolve($response->replyMarkup($this->request, $this->gainer));
 	
 		if (!$resolved_reply_markup) {
 			return $data;
@@ -176,7 +172,7 @@ class Telegram implements \MohammadZarifiyan\Telegram\Interfaces\Telegram
 	
 	public function getGainer(): ?Model
 	{
-		return @$this->gainer;
+		return $this->gainer;
 	}
 	
 	public function setGainer(Model $gainer): self

@@ -9,6 +9,11 @@ use MohammadZarifiyan\Telegram\Facades\Telegram;
 
 class Kernel extends \MohammadZarifiyan\Telegram\Abstractions\Kernel
 {
+	public function middlewares(): array
+	{
+		return [];
+	}
+	
     public function commands(): array
     {
         return [

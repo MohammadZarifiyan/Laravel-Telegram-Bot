@@ -2,11 +2,10 @@
 
 namespace MohammadZarifiyan\Telegram\Exceptions;
 
-use Exception;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
-class TelegramAuthorizationException extends Exception
+class TelegramAuthorizationException extends TelegramException
 {
 	/**
 	 * The response from the gate.

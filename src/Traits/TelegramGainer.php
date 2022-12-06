@@ -13,14 +13,27 @@ trait TelegramGainer
      */
     public function initializeTelegramGainer()
     {
+		$telegram_id_column_name = $this->getTelegramIdColumnName();
+		$handler_column_name = $this->getHandlerColumnName();
+		
         static::mergeFillable([
-            'telegram_id',
-            'handler'
+			$telegram_id_column_name,
+			$handler_column_name
         ]);
 
         static::mergeCasts([
-            'telegram_id' => 'integer',
-            'handler' => Serializable::class
+			$telegram_id_column_name => 'integer',
+			$handler_column_name => Serializable::class
         ]);
     }
+	
+	public function getTelegramIdColumnName(): string
+	{
+		return 'telegram_id';
+	}
+	
+	public function getHandlerColumnName(): string
+	{
+		return 'handler';
+	}
 }

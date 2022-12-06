@@ -2,11 +2,13 @@
 
 namespace MohammadZarifiyan\Telegram\Abstractions;
 
-use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
+use MohammadZarifiyan\Telegram\Exceptions\TelegramCommandNotFoundException;
+use MohammadZarifiyan\Telegram\Exceptions\TelegramException;
+use MohammadZarifiyan\Telegram\Exceptions\TelegramMiddlewareFailedException;
 use MohammadZarifiyan\Telegram\Exceptions\TelegramOriginException;
 use MohammadZarifiyan\Telegram\Facades\Telegram;
 use MohammadZarifiyan\Telegram\TelegramRequest;
@@ -19,86 +21,56 @@ abstract class Kernel
      * Handles incoming Telegram update.
      *
      * @param Request $request
-     * @throws Exception
+     * @throws TelegramException
      */
-    public function handleUpdate(Request $request)
-    {
+    public function handleUpdate(Request $request): void
+	{
 		$this->validateOrigin($request);
 		
         if (!Telegram::getUpdateType()) {
-            throw new Exception('This request doesnt have any valid Telegram update.');
+            throw new TelegramException('This request doesnt have any valid Telegram update.');
         }
 
         if ($gainer = $this->getGainer($request)) {
 			Telegram::setGainer($gainer);
 		}
 
-        /**
-         * Handle update using available commands.
-         */
-        if ($gainer && $command_signature = Telegram::commandSignature()) {
-            foreach ($this->commands() as $command) {
-				$command_instance = $command instanceof Command ? $command : App::make($command);
-				
-                if ($command_instance->signature === $command_signature) {
-					$command_instance->handle($request, $gainer);
+		$request = $this->runMiddlewares($request, $gainer);
 
-                    return;
-                }
-            }
-        }
-
-        /**
-         * method that uses to handle update
-         */
-        $updated_handler_method = sprintf(
-            'handle%s',
-            Str::studly(Telegram::getUpdateType())
-        );
-
-        /**
-         * Handle update using available breakers.
-         */
-        foreach ($this->breakers() as $breaker) {
-			$method = $this->getMethod($breaker, $updated_handler_method);
-			
-            if ($method && $breaker->{$method}($request, $gainer)) {
-				return;
-            }
-        }
-
-        /**
-         * Handle update using available handlers.
-         */
-        if ($gainer?->handler) {
-			$resolved_handler = try_resolve($gainer->handler);
-			
-            if ($method = $this->getMethod($resolved_handler, $updated_handler_method)) {
-				$this->callHandlerMethod(
-					$resolved_handler,
-					$method,
-					$request,
-					$gainer
-				);
+		if (Telegram::isCommand()) {
+			if (empty($command = $this->getMatchedCommand()) && !$this->passIfCommandNotExists($request, $gainer)) {
+				throw new TelegramCommandNotFoundException;
 			}
-        }
+			
+			$command->handle($request, $gainer);
+
+			return;
+		}
+		
+		if ($this->runBreakers($request, $gainer)) {
+			return;
+		}
+
+		if ($gainer) {
+			$this->runHandler($request, $gainer);
+		}
     }
 	
 	/**
 	 * Validates specified request to have valid origin.
 	 *
 	 * @param Request $request
-	 * @return bool
+	 * @return void
 	 * @throws TelegramOriginException
 	 */
-	public final function validateOrigin(Request $request)
+	private function validateOrigin(Request $request): void
 	{
 		$secure_token = config('services.telegram.secure_token');
 		
 		$secret_token = $request->header('X-Telegram-Bot-Api-Secret-Token');
 		
 		if (is_string($secure_token) && is_string($secret_token) && trim($secure_token) === trim($secret_token)) {
-			return true;
+			return;
 		}
 		
 		throw new TelegramOriginException('Incoming request is not from authorized origin.', 401);
@@ -113,7 +85,7 @@ abstract class Kernel
 	 * @return Request
 	 * @throws ReflectionException
 	 */
-	protected function getValidatedRequest($handler, string $method, Request $request): Request
+	private function getValidatedRequest($handler, string $method, Request $request): Request
 	{
 		$parameters = (new ReflectionMethod($handler, $method))->getParameters();
 
@@ -134,7 +106,7 @@ abstract class Kernel
 	 * @param Request $request
 	 * @param Model $gainer
 	 */
-	protected function callHandlerMethod($handler, string $method, Request $request, Model $gainer)
+	private function callHandlerMethod($handler, string $method, Request $request, Model $gainer): void
 	{
 		if (method_exists($handler, $method)) {
 			try {
@@ -148,7 +120,7 @@ abstract class Kernel
 		}
 	}
 	
-	public function getMethod(object $object, string $updateHandlerMethod): ?string
+	private function getMethod(object $object, string $updateHandlerMethod): ?string
 	{
 		if (method_exists($object, $updateHandlerMethod)) {
 			return $updateHandlerMethod;
@@ -168,6 +140,14 @@ abstract class Kernel
 	 * @return Model|null
 	 */
     abstract public function getGainer(Request $request): ?Model;
+	
+	/**
+	 * An array of middlewares classes that run before commands.
+	 * if all middlewares returns true then request continues to processing.
+	 *
+	 * @return array
+	 */
+	abstract public function middlewares(): array;
 
     /**
      * An array of Telegram command classes
@@ -183,4 +163,103 @@ abstract class Kernel
      * @return array
      */
     abstract public function breakers(): array;
+	
+	private function getMatchedCommand(): ?Command
+	{
+		$command_signature = Telegram::commandSignature();
+		
+		foreach ($this->commands() as $command) {
+			$command_instance = $command instanceof Command ? $command : try_resolve($command);
+			
+			if ($command_instance?->signature === $command_signature) {
+				return $command_instance;
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * method that uses to handle update
+	 */
+	private function requestHandleMethod(): string
+	{
+		return sprintf(
+			'handle%s',
+			Str::studly(Telegram::getUpdateType())
+		);
+	}
+	
+	/**
+	 * Handle update using available breakers.
+	 */
+	private function runBreakers(Request $request, Model $gainer = null): bool
+	{
+		foreach ($this->breakers() as $breaker) {
+			$method = $this->getMethod($breaker, $this->requestHandleMethod());
+			
+			if ($method && $breaker->{$method}($request, $gainer)) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Handle update using available handlers.
+	 */
+	private function runHandler(Request $request, Model $gainer): void
+	{
+		if (empty($gainer->handler)) {
+			return;
+		}
+		
+		$resolved_handler = try_resolve($gainer->handler);
+		
+		if ($method = $this->getMethod($resolved_handler, $this->requestHandleMethod())) {
+			$this->callHandlerMethod(
+				$resolved_handler,
+				$method,
+				$request,
+				$gainer
+			);
+		}
+	}
+	
+	/**
+	 * Run request through another ways if command not exists.
+	 *
+	 * @param Request $request
+	 * @param Model|null $gainer
+	 * @return bool
+	 */
+	public function passIfCommandNotExists(Request $request, Model $gainer = null): bool
+	{
+		return false;
+	}
+	
+	/**
+	 * @throws TelegramMiddlewareFailedException
+	 */
+	private function runMiddlewares(Request $request, Model $gainer = null): Request
+	{
+		foreach ($this->middlewares() as $middleware) {
+			$method = $this->getMethod($middleware, $this->requestHandleMethod());
+			
+			if (empty($method)) {
+				continue;
+			}
+			
+			$request = $middleware->{$method}($request, $gainer);
+			
+			if (!($request instanceof Request)) {
+				throw new TelegramMiddlewareFailedException(
+					sprintf('Telegram middleware [%] failed.', get_class($middleware))
+				);
+			}
+		}
+		
+		return $request;
+	}
 }
