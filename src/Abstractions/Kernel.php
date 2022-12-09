@@ -255,7 +255,7 @@ abstract class Kernel
 			
 			if (!($request instanceof Request)) {
 				throw new TelegramMiddlewareFailedException(
-					sprintf('Telegram middleware [%] failed.', get_class($middleware))
+					sprintf('Telegram middleware % failed.', get_class($middleware))
 				);
 			}
 		}
