@@ -2,6 +2,8 @@
 
 namespace MohammadZarifiyan\Telegram\Responses;
 
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
 use MohammadZarifiyan\Telegram\Interfaces\Response;
 
 class SetWebhookResponse implements Response
@@ -11,12 +13,12 @@ class SetWebhookResponse implements Response
 		//
 	}
 	
-    public function method(): string
+    public function method(Request $request, ?Model $gainer): string
     {
         return 'setWebhook';
     }
 
-    public function data(): array
+    public function data(Request $request, ?Model $gainer): array
     {
 		$data = [
 			'url' => route(config('services.telegram.update-route')),
