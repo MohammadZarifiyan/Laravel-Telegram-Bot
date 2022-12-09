@@ -25,7 +25,7 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
 		);
 		
         $this->app->bind(
-            'telegram',
+            'telegram.service',
             fn () => $this->app
 				->make(config('telegram.service'))
 				->setApiKey(config('services.telegram.api_key'))

@@ -27,7 +27,7 @@ class Telegram extends Facade
 {
     public static function getFacadeAccessor()
     {
-        return 'telegram';
+        return 'telegram.service';
     }
 
     public static function handleUpdate(Request $request)
