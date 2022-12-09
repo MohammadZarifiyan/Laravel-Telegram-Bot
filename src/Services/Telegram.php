@@ -20,7 +20,7 @@ class Telegram implements \MohammadZarifiyan\Telegram\Interfaces\Telegram
 	
 	protected ?Model $gainer = null;
 
-    public function __construct(public Request $request)
+    public function __construct(protected Request $request)
     {
         //
     }
@@ -35,6 +35,11 @@ class Telegram implements \MohammadZarifiyan\Telegram\Interfaces\Telegram
 	public function getApiKey(): ?string
 	{
 		return @$this->apiKey;
+	}
+	
+	public function getRequest(): Request
+	{
+		return $this->request;
 	}
 
     /**

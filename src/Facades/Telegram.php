@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static null|object getUser
  * @method static \MohammadZarifiyan\Telegram\Interfaces\Telegram setGainer(Model $gainer)
  * @method static null|Model getGainer
+ * @method static Request getRequest
  * @method static bool isCommand
  * @method static null|string commandSignature
  * @method static string generateFileUrl(string $filePath)

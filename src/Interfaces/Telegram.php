@@ -4,6 +4,7 @@ namespace MohammadZarifiyan\Telegram\Interfaces;
 
 use Illuminate\Http\Client\Response as ClientResponse;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
 
 interface Telegram
 {
@@ -28,12 +29,19 @@ interface Telegram
     ];
 
 	/**
-	 * Changes API key for running request lifecycle.
+	 * Sets API key for running request lifecycle.
 	 *
 	 * @param string $token
 	 * @return Telegram
 	 */
     public function setApiKey(string $token): self;
+	
+	/**
+	 * Returns current Telegram instance request.
+	 *
+	 * @return Request
+	 */
+	public function getRequest(): Request;
 	
 	/**
 	 * Returns current API key.
