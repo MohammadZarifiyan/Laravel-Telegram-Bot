@@ -115,7 +115,7 @@ class Telegram implements \MohammadZarifiyan\Telegram\Interfaces\Telegram
 
         return $pending_request
 			->retry(5, 100, fn ($exception, $request) => $exception instanceof ConnectionException, false)
-			->post($resolved_response->method(), $this->getResponseBody($resolved_response));
+			->post($resolved_response->method($this->request, $this->gainer), $this->getResponseBody($resolved_response));
     }
 
     public function getUpdateType(): ?string
