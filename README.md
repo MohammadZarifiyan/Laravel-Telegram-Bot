@@ -47,3 +47,16 @@ php artisan vendor:publish --provider="MohammadZarifiyan\Telegram\Providers\Tele
 ```bash
 php artisan bot:set-webhook
 ```
+
+# How to use?
+
+## Handle Telegram webhook updates
+```php
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+use MohammadZarifiyan\Telegram\Facades\Telegram;
+
+Route::post('telegram-update', function (Request $request) {
+   Telegram::handleUpdate($request);
+})->name('telegram-update'); // Same route name as config('services.telegram.update-route')
+```
