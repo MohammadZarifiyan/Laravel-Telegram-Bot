@@ -4,8 +4,9 @@ namespace MohammadZarifiyan\Telegram\Services;
 
 use Exception;
 use Illuminate\Http\Request;
+use MohammadZarifiyan\Telegram\Interfaces\Command as CommandInterface;
 
-class Command implements \MohammadZarifiyan\Telegram\Interfaces\Command
+class Command implements CommandInterface
 {
 	public string $signature;
 	public ?string $value = null;
