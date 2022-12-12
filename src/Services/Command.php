@@ -8,8 +8,8 @@ use MohammadZarifiyan\Telegram\Interfaces\Command as CommandInterface;
 
 class Command implements CommandInterface
 {
-	public string $signature;
-	public ?string $value = null;
+	private string $signature;
+	private ?string $value = null;
 
 	public function __construct(public Request $request)
 	{
