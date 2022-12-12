@@ -7,7 +7,8 @@ use Illuminate\Http\Request;
 
 class Command implements \MohammadZarifiyan\Telegram\Interfaces\Command
 {
-	public string $signature, $value;
+	public string $signature;
+	public ?string $value = null;
 
 	public function __construct(public Request $request)
 	{
@@ -35,9 +36,12 @@ class Command implements \MohammadZarifiyan\Telegram\Interfaces\Command
 		$command_parts = explode(' ', $this->request->input('message.text'));
 		
 		$this->signature = substr($command_parts[0], 1);
-		$this->value = trim(
+		
+		$trimmed_value = trim(
 			implode(' ', array_slice($command_parts, 1))
 		);
+		
+		$this->value = $trimmed_value ?? null;
 	}
 	
 	public function getSignature(): string
@@ -45,7 +49,7 @@ class Command implements \MohammadZarifiyan\Telegram\Interfaces\Command
 		return $this->signature;
 	}
 	
-	public function getValue(): string
+	public function getValue(): ?string
 	{
 		return $this->value;
 	}

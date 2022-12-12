@@ -14,7 +14,7 @@ interface Command
 	/**
 	 * Returns command value.
 	 *
-	 * @return string
+	 * @return string|null
 	 */
-	public function getValue(): string;
+	public function getValue(): ?string;
 }
