@@ -35,7 +35,9 @@ class Command implements \MohammadZarifiyan\Telegram\Interfaces\Command
 		$command_parts = explode(' ', $this->request->input('message.text'));
 		
 		$this->signature = substr($command_parts[0], 1);
-		$this->value = implode(' ', array_slice($command_parts, 1));
+		$this->value = trim(
+			implode(' ', array_slice($command_parts, 1))
+		);
 	}
 	
 	public function getSignature(): string
