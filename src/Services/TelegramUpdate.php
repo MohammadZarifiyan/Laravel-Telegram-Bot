@@ -13,13 +13,25 @@ class TelegramUpdate extends Request
 	protected ?object $from;
 	
 	/**
+	 * Checks if current Telegram update is caused by a Telegram bot command.
+	 *
+	 * @return bool
+	 */
+	public function isCommand(): bool
+	{
+		return $this->collect('message.entities.*.type')->contains('bot_command');
+	}
+	
+	/**
 	 * Converts Telegram update to command instance.
 	 *
 	 * @return CommandInterface
 	 */
 	public function toCommand(): CommandInterface
 	{
-		return $this->command ??= new Command($this);
+		return $this->command ??= new Command(
+			$this->input('message.text')
+		);
 	}
 	
 	/**
@@ -63,7 +75,7 @@ class TelegramUpdate extends Request
 	public function from(): ?object
 	{
 		if (!isset($this->from)) {
-			$update_type = $this->getUpdateType();
+			$update_type = $this->getType();
 			
 			$from = match($update_type) {
 				'poll' => null,
