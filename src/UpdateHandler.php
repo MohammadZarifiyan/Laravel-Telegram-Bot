@@ -86,6 +86,8 @@ class UpdateHandler
 			
 			if ($result instanceof Update) {
 				yield $this->update = $result;
+				
+				continue;
 			}
 			
 			throw new TelegramMiddlewareFailedException(
