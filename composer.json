@@ -1,6 +1,6 @@
 {
     "name": "mohammad-zarifiyan/telegram",
-    "description": "A package that helps to create scablable Telegram bots easily.",
+    "description": "A Laravel package that helps you to easily create scalable Telegram bots and send notifications through Telegram.",
     "type": "library",
     "keywords": ["Telegram", "Laravel", "PHP"],
     "version": "4.0.0",
