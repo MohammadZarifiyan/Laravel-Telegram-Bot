@@ -11,7 +11,7 @@ trait Gainer
      *
      * @return void
      */
-    public function initializeTelegramGainer(): void
+    public function initializeGainer(): void
     {
 		$telegram_id_column_name = $this->getTelegramIdColumnName();
 		$stage_column_name = $this->getStageColumnName();
