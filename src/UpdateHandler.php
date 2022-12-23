@@ -16,14 +16,9 @@ use ReflectionMethod;
 
 class UpdateHandler
 {
-	public string $handlerMethod;
-	
 	public function __construct(public Update $update)
 	{
-		$this->handlerMethod = sprintf(
-			'handle%s',
-			Str::studly($this->update->type())
-		);
+		//
 	}
 	
 	/**
@@ -34,9 +29,7 @@ class UpdateHandler
 	{
 		$this->validateOrigin();
 		
-		foreach ($this->runMiddlewares() as $update) {
-			yield $this->update = $update;
-		}
+		yield from $this->runMiddlewares();
 		
 		if ($this->update->isCommand()) {
 			if (empty($command = $this->getMatchedCommand()) && !config('telegram.allow-incognito-command')) {
@@ -80,13 +73,7 @@ class UpdateHandler
 	 */
 	public function runMiddlewares(): Generator
 	{
-		$middlewares = config('telegram.middlewares');
-		
-		if (empty($middlewares)) {
-			return new Generator;
-		}
-		
-		foreach ((array) $middlewares as $middleware) {
+		foreach ((array) config('telegram.middlewares') as $middleware) {
 			$middleware = try_resolve($middleware);
 			
 			$method = $this->getMethod($middleware);
@@ -98,7 +85,7 @@ class UpdateHandler
 			$result = $middleware->{$method}($this->update);
 			
 			if ($result instanceof Update) {
-				yield $result;
+				yield $this->update = $result;
 			}
 			
 			throw new TelegramMiddlewareFailedException(
@@ -138,8 +125,10 @@ class UpdateHandler
 	
 	public function getMethod(object $object): ?string
 	{
-		if (method_exists($object, $this->handlerMethod)) {
-			return $this->handlerMethod;
+		$handler_method = $this->getHandlerMethod();
+		
+		if (method_exists($object, $handler_method)) {
+			return $handler_method;
 		}
 		
 		if (method_exists($object, 'handle')) {
@@ -215,5 +204,13 @@ class UpdateHandler
 		}
 		
 		$stage->{$method}($verified_request);
+	}
+	
+	public function getHandlerMethod(): string
+	{
+		return sprintf(
+			'handle%s',
+			Str::studly($this->update->type())
+		);
 	}
 }

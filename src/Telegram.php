@@ -38,9 +38,7 @@ class Telegram implements TelegramInterface
 
 		$update_handler = new UpdateHandler($this->update);
 
-		$update_generator = $update_handler->run();
-
-		foreach ($update_generator as $update) {
+		foreach ($update_handler->run() as $update) {
 			$this->update = $update;
 		}
 	}
