@@ -80,13 +80,15 @@ class UpdateHandler
 	 */
 	public function runMiddlewares(): Generator
 	{
-		$middlewares = (array) config('telegram.middlewares');
+		$middlewares = config('telegram.middlewares');
 		
 		if (empty($middlewares)) {
 			return new Generator;
 		}
 		
-		foreach ($middlewares as $middleware) {
+		foreach ((array) $middlewares as $middleware) {
+			$middleware = try_resolve($middleware);
+			
 			$method = $this->getMethod($middleware);
 			
 			if (empty($method)) {
