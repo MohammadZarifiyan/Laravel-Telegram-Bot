@@ -5,6 +5,7 @@ namespace MohammadZarifiyan\Telegram;
 use Illuminate\Http\Request;
 use MohammadZarifiyan\Telegram\Exceptions\TelegramException;
 use MohammadZarifiyan\Telegram\Interfaces\Command as CommandInterface;
+use MohammadZarifiyan\Telegram\Interfaces\GainerResolver;
 use MohammadZarifiyan\Telegram\Providers\TelegramServiceProvider;
 
 class Update extends Request
@@ -104,10 +105,10 @@ class Update extends Request
 		
 		$resolver = $this->getGainerResolver();
 		
-		if (!is_callable($resolver)) {
-			return null;
+		if ($resolver instanceof GainerResolver) {
+			return $this->gainer = call_user_func($resolver, $this);
 		}
 		
-		return $this->gainer = call_user_func($resolver, $this);
+		return null;
 	}
 }
