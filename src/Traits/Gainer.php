@@ -14,16 +14,14 @@ trait Gainer
     public function initializeGainer(): void
     {
 		$telegram_id_column_name = $this->getTelegramIdColumnName();
-		$stage_column_name = $this->getStageColumnName();
 		
         static::mergeFillable([
 			$telegram_id_column_name,
-			$stage_column_name
+			$this->getStageColumnName()
         ]);
 
         static::mergeCasts([
-			$telegram_id_column_name => 'integer',
-			$stage_column_name => Serializable::class
+			$telegram_id_column_name => 'integer'
         ]);
     }
 	
