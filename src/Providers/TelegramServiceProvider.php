@@ -22,7 +22,7 @@ use MohammadZarifiyan\Telegram\Interfaces\Telegram as TelegramInterface;
 use MohammadZarifiyan\Telegram\Middlewares\ChatTypeMiddleware;
 use MohammadZarifiyan\Telegram\Middlewares\UpdateTypeMiddleware;
 use MohammadZarifiyan\Telegram\PendingRequestStack;
-use MohammadZarifiyan\Telegram\Request;
+use MohammadZarifiyan\Telegram\FormUpdate;
 use MohammadZarifiyan\Telegram\Telegram;
 
 class TelegramServiceProvider extends ServiceProvider implements DeferrableProvider
@@ -180,13 +180,13 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
 	public function addTelegramRequestResolver(): void
 	{
 		$this->app->resolving(
-			Request::class,
+			FormUpdate::class,
 			function ($request, Container $app) {
 				$request = $app->has(TelegramInterface::class)
 					? $app->make(TelegramInterface::class)->getUpdate()
 					: $app['request'];
 				
-				return Request::createFrom($request)->setContainer($app);
+				return FormUpdate::createFrom($request)->setContainer($app);
 			}
 		);
 	}

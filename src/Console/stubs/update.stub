@@ -1,0 +1,30 @@
+<?php
+
+namespace {{ namespace }};
+
+use MohammadZarifiyan\Telegram\FormUpdate;
+
+class {{ class }} extends FormUpdate
+{
+    /**
+     * Determine if the gainer is authorized to make this update.
+     *
+     * @return bool
+     */
+    public function authorize()
+    {
+        return false;
+    }
+
+    /**
+     * Get the validation rules that apply to the update.
+     *
+     * @return array<string, mixed>
+     */
+    public function rules()
+    {
+        return [
+            //
+        ];
+    }
+}

@@ -127,7 +127,7 @@ class UpdateHandler
 			return $this->update;
 		}
 		
-		if (is_subclass_of($request_type->getName(), Request::class)) {
+		if (is_subclass_of($request_type->getName(), FormUpdate::class)) {
 			return App::make($request_type->getName());
 		}
 		

@@ -12,7 +12,7 @@ use Illuminate\Validation\ValidatesWhenResolvedTrait;
 use MohammadZarifiyan\Telegram\Exceptions\TelegramAuthorizationException;
 use MohammadZarifiyan\Telegram\Exceptions\TelegramValidationException;
 
-class Request extends Update implements ValidatesWhenResolved
+class FormUpdate extends Update implements ValidatesWhenResolved
 {
 	use ValidatesWhenResolvedTrait;
 	
