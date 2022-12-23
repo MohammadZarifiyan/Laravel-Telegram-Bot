@@ -3,15 +3,22 @@
 namespace MohammadZarifiyan\Telegram;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use MohammadZarifiyan\Telegram\Interfaces\Command as CommandInterface;
 use MohammadZarifiyan\Telegram\Interfaces\GainerResolver;
-use MohammadZarifiyan\Telegram\Providers\TelegramServiceProvider;
+use MohammadZarifiyan\Telegram\Interfaces\RequestParser;
 
 class Update extends Request
 {
 	protected ?string $updateType, $chatType;
 	protected CommandInterface $command;
 	protected mixed $gainer;
+	protected RequestParser $requestParser;
+	
+	protected function getRequestParser(): RequestParser
+	{
+		return $this->requestParser ??= App::makeWith(RequestParser::class, ['request' => $this]);
+	}
 	
 	/**
 	 * Checks if current Telegram update is caused by a Telegram bot command.
@@ -42,13 +49,11 @@ class Update extends Request
 	 */
 	public function type(): ?string
 	{
-		if (isset($this->updateType)) {
-			return $this->updateType;
+		if (!isset($this->updateType)) {
+			$this->updateType = $this->getRequestParser()->getUpdateType();
 		}
 		
-		return $this->updateType = collect(TelegramServiceProvider::UPDATE_TYPES)
-			->intersect($this->keys())
-			->first();
+		return $this->updateType;
 	}
 	
 	/**
@@ -58,18 +63,11 @@ class Update extends Request
 	 */
 	public function chatType(): ?string
 	{
-		if (isset($this->chatType)) {
-			return $this->chatType;
+		if (!isset($this->chatType)) {
+			$this->chatType = $this->getRequestParser()->getChatType();
 		}
 		
-		$update_type = $this->type();
-		
-		return $this->chatType = match($update_type) {
-			'message', 'edited_message', 'my_chat_member', 'chat_member', 'chat_join_request' => $this->input($update_type.'.chat.type'),
-			'channel_post', 'edited_channel_post' => 'channel',
-			'inline_query', 'chosen_inline_result', 'callback_query', 'shipping_query', 'pre_checkout_query', 'poll_answer' => 'private',
-			default => null
-		};
+		return $this->chatType;
 	}
 	
 	/**
@@ -99,7 +97,7 @@ class Update extends Request
 		$resolver = $this->getGainerResolver();
 		
 		if ($resolver instanceof GainerResolver) {
-			return $this->gainer = call_user_func($resolver, $this);
+			return $this->gainer = $resolver($this);
 		}
 		
 		return null;

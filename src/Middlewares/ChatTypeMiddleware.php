@@ -4,8 +4,8 @@ namespace MohammadZarifiyan\Telegram\Middlewares;
 
 use Closure;
 use Illuminate\Http\Request;
-use MohammadZarifiyan\Telegram\Update;
-use Throwable;
+use Illuminate\Support\Facades\App;
+use MohammadZarifiyan\Telegram\Interfaces\RequestParser;
 
 class ChatTypeMiddleware
 {
@@ -19,15 +19,10 @@ class ChatTypeMiddleware
 	 */
     public function handle(Request $request, Closure $next, string ...$chatTypes)
     {
-        try {
-			$update = Update::createFrom($request);
-			
-			if (in_array($update->chatType(), $chatTypes)) {
-				return $next($request);
-			}
-		}
-		catch (Throwable) {
-			//
+		$parser = App::makeWith(RequestParser::class, compact('request'));
+
+		if (in_array($parser->getChatType(), $chatTypes)) {
+			return $next($request);
 		}
 
         return false;

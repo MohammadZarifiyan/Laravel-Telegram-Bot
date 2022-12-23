@@ -4,6 +4,8 @@ namespace MohammadZarifiyan\Telegram\Middlewares;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
+use MohammadZarifiyan\Telegram\Interfaces\RequestParser;
 
 class UpdateTypeMiddleware
 {
@@ -17,7 +19,9 @@ class UpdateTypeMiddleware
      */
     public function handle(Request $request, Closure $next, string ...$updateTypes)
     {
-        if ($request->hasAny($updateTypes)) {
+		$parser = App::makeWith(RequestParser::class, compact('request'));
+		
+        if (in_array($parser->getUpdateType(), $updateTypes)) {
             return $next($request);
         }
 

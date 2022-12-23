@@ -18,11 +18,13 @@ use MohammadZarifiyan\Telegram\Console\Commands\MakeReplyMarkup;
 use MohammadZarifiyan\Telegram\Console\Commands\MakeStage;
 use MohammadZarifiyan\Telegram\Console\Commands\SetWebhook;
 use MohammadZarifiyan\Telegram\Interfaces\PendingRequestStack as PendingRequestStackInterface;
+use MohammadZarifiyan\Telegram\Interfaces\RequestParser as RequestParserInterface;
 use MohammadZarifiyan\Telegram\Interfaces\Telegram as TelegramInterface;
 use MohammadZarifiyan\Telegram\Middlewares\ChatTypeMiddleware;
 use MohammadZarifiyan\Telegram\Middlewares\UpdateTypeMiddleware;
 use MohammadZarifiyan\Telegram\PendingRequestStack;
 use MohammadZarifiyan\Telegram\FormUpdate;
+use MohammadZarifiyan\Telegram\RequestParser;
 use MohammadZarifiyan\Telegram\Telegram;
 
 class TelegramServiceProvider extends ServiceProvider implements DeferrableProvider
@@ -69,6 +71,8 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
 		$this->app->bind('chat-type', ChatTypeMiddleware::class);
 		
 		$this->app->bind(PendingRequestStackInterface::class, PendingRequestStack::class);
+		
+		$this->app->bind(RequestParserInterface::class, RequestParser::class);
     }
 	
 	/**
