@@ -190,11 +190,7 @@ class UpdateHandler
 			$gainer->{$gainer->getStageColumnName()}
 		);
 		
-		if (empty($stage) || empty($method = $this->getMethod($stage))) {
-			return;
-		}
-		
-		if (!method_exists($stage, $method)) {
+		if (empty($stage) || empty($method = $this->getMethod($stage)) || !method_exists($stage, $method)) {
 			return;
 		}
 		
