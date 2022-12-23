@@ -24,6 +24,7 @@ class UpdateHandler
 	/**
 	 * @throws TelegramException
 	 * @throws TelegramOriginException
+	 * @throws ReflectionException
 	 */
 	public function run(): Generator
 	{
@@ -101,10 +102,10 @@ class UpdateHandler
 	 *
 	 * @param $stage
 	 * @param string $method
-	 * @return Update
+	 * @return ?Update
 	 * @throws ReflectionException
 	 */
-	public function getValidatedRequest($stage, string $method): Update
+	public function getValidatedRequest($stage, string $method): ?Update
 	{
 		$reflection = new ReflectionMethod($stage, $method);
 		
@@ -115,7 +116,7 @@ class UpdateHandler
 		$request_type = $parameters[0]->getType();
 		
 		if (empty($request_type)) {
-			return $this->update;
+			return null;
 		}
 		
 		if (is_subclass_of($request_type->getName(), FormUpdate::class)) {
@@ -177,6 +178,8 @@ class UpdateHandler
 	
 	/**
 	 * Handle update using available handlers.
+	 *
+	 * @throws ReflectionException
 	 */
 	public function handleStage(): void
 	{
@@ -194,14 +197,9 @@ class UpdateHandler
 			return;
 		}
 		
-		try {
-			$verified_request = $this->getValidatedRequest($stage, $method);
-		}
-		catch (ReflectionException) {
-			return;
-		}
-		
-		$stage->{$method}($verified_request);
+		$stage->{$method}(
+			$this->getValidatedRequest($stage, $method)
+		);
 	}
 	
 	public function getHandlerMethod(): string
