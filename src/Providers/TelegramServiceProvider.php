@@ -2,21 +2,35 @@
 
 namespace MohammadZarifiyan\Telegram\Providers;
 
+use Illuminate\Contracts\Container\Container;
 use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\ServiceProvider;
+use Illuminate\Notifications\ChannelManager;
 use Illuminate\Routing\Router;
-use MohammadZarifiyan\Telegram\Commands\SetWebhookCommand;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\ServiceProvider;
+use MohammadZarifiyan\Telegram\Channel;
+use MohammadZarifiyan\Telegram\Console\Commands\MakeBreaker;
+use MohammadZarifiyan\Telegram\Console\Commands\MakeCommandHandler;
+use MohammadZarifiyan\Telegram\Console\Commands\MakeMiddleware;
+use MohammadZarifiyan\Telegram\Console\Commands\MakePayload;
+use MohammadZarifiyan\Telegram\Console\Commands\MakeReplyMarkup;
+use MohammadZarifiyan\Telegram\Console\Commands\MakeStage;
+use MohammadZarifiyan\Telegram\Console\Commands\SetWebhook;
+use MohammadZarifiyan\Telegram\Interfaces\PendingRequestStack as PendingRequestStackInterface;
+use MohammadZarifiyan\Telegram\Interfaces\Telegram as TelegramInterface;
 use MohammadZarifiyan\Telegram\Middlewares\ChatTypeMiddleware;
 use MohammadZarifiyan\Telegram\Middlewares\UpdateTypeMiddleware;
-use MohammadZarifiyan\Telegram\TelegramRequest;
+use MohammadZarifiyan\Telegram\PendingRequestStack;
+use MohammadZarifiyan\Telegram\Request;
+use MohammadZarifiyan\Telegram\Telegram;
 
 class TelegramServiceProvider extends ServiceProvider implements DeferrableProvider
 {
 	/**
 	 * Telegram update types.
 	 */
-	const UPDATE_TYPES = [
+	public const UPDATE_TYPES = [
 		'message',
 		'edited_message',
 		'channel_post',
@@ -38,27 +52,22 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
      *
      * @return void
      */
-    public function register()
+    public function register(): void
     {
-		$this->mergeConfigFrom(
-			__DIR__.'/../../config/telegram.php', 'telegram'
-		);
+		$this->mergeConfigFrom(__DIR__.'/../../config/telegram.php', 'telegram');
 		
-        $this->app->bind(
-            'telegram.service',
-            fn () => $this->app
-				->make(config('telegram.service'))
-				->setApiKey(config('services.telegram.api_key'))
-        );
-
-        $this->app->bind(
-			'telegram.kernel',
-            config('telegram.kernel')
+        $this->app->singleton(
+			TelegramInterface::class,
+            fn () => new Telegram(
+				config('telegram.api-key')
+			)
         );
 	
 		$this->app->bind('update-type', UpdateTypeMiddleware::class);
 		
 		$this->app->bind('chat-type', ChatTypeMiddleware::class);
+		
+		$this->app->bind(PendingRequestStackInterface::class, PendingRequestStack::class);
     }
 	
 	/**
@@ -67,25 +76,19 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
 	 * @return void
 	 * @throws \Illuminate\Contracts\Container\BindingResolutionException
 	 */
-    public function boot()
+    public function boot(): void
     {
         $this->publish();
 
         $this->declareMacros();
 
-        if ($this->app->runningInConsole()) {
-            $this->commands([
-                SetWebhookCommand::class
-            ]);
-        }
+		$this->aliasMiddlewares();
 
-		$this->makeMiddlewareAliases();
+		$this->addConsoleCommands();
 	
-		$this->app->resolving(TelegramRequest::class, function ($request, $app) {
-			$request = TelegramRequest::createFrom($app['request'], $request);
+		$this->addNotificationChannel();
 		
-			$request->setContainer($app);
-		});
+		$this->addTelegramRequestResolver();
     }
 
     /**
@@ -93,19 +96,17 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
      *
      * @return void
      */
-    public function publish()
+    public function publish(): void
     {
-        $this->publishes([
-            __DIR__.'/../../config/telegram.php' => config_path('telegram.php')
-        ], 'telegram-config');
+        $this->publishes(
+			[__DIR__.'/../../config/telegram.php' => config_path('telegram.php')],
+			'telegram-config'
+		);
 
-        $this->publishes([
-            __DIR__.'/../database/migrations' => database_path('migrations')
-        ], 'telegram-migrations');
-
-        $this->publishes([
-            __DIR__.'/../Kernel.php' => app_path('Telegram/Kernel.php')
-        ], 'telegram-kernel');
+        $this->publishes(
+			[__DIR__.'/../database/migrations' => database_path('migrations')],
+			'telegram-migrations'
+		);
     }
 
     /**
@@ -113,11 +114,11 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
      *
      * @return void
      */
-    public function declareMacros()
+    public function declareMacros(): void
     {
         Blueprint::macro('telegram', function () {
             static::bigInteger('telegram_id')->nullable();
-            static::text('handler')->nullable()->comment('Full classname of current responsible handler');
+            static::longText('stage')->nullable();
         });
     }
 
@@ -125,8 +126,9 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
 	 * Makes middleware aliases for entire app.
 	 *
 	 * @throws \Illuminate\Contracts\Container\BindingResolutionException
+	 * @return void
 	 */
-	public function makeMiddlewareAliases()
+	public function aliasMiddlewares(): void
 	{
 		$router = $this->app->make(Router::class);
 
@@ -134,8 +136,71 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
 		$router->aliasMiddleware('chat-type', ChatTypeMiddleware::class);
 	}
 	
-	public function provides()
+	/**
+	 * Adds console commands to the application.
+	 *
+	 * @return void
+	 */
+	public function addConsoleCommands(): void
 	{
-		return ['telegram', 'telegram.kernel', 'update-type', 'chat-type'];
+		if ($this->app->runningInConsole()) {
+			$this->commands([
+				SetWebhook::class,
+				MakeBreaker::class,
+				MakeCommandHandler::class,
+				MakeMiddleware::class,
+				MakePayload::class,
+				MakeReplyMarkup::class,
+				MakeStage::class,
+			]);
+		}
+	}
+	
+	/**
+	 * Adds Telegram notification channel to the application.
+	 *
+	 * @return void
+	 * @throws \Illuminate\Contracts\Container\BindingResolutionException
+	 */
+	public function addNotificationChannel(): void
+	{
+		Notification::resolved(function (ChannelManager $service) {
+			$service->extend(
+				'telegram',
+				fn () => $this->app->make(Channel::class)
+			);
+		});
+	}
+	
+	/**
+	 * Adds Telegram Request resolver to the application.
+	 *
+	 * @return void
+	 */
+	public function addTelegramRequestResolver(): void
+	{
+		$this->app->resolving(
+			Request::class,
+			function ($request, Container $app) {
+				$request = $app->has(TelegramInterface::class)
+					? $app->make(TelegramInterface::class)->getUpdate()
+					: $app['request'];
+				
+				return Request::createFrom($request)->setContainer($app);
+			}
+		);
+	}
+	
+	/**
+	 * @return string[]
+	 */
+	public function provides(): array
+	{
+		return [
+			TelegramInterface::class,
+			'update-type',
+			'chat-type',
+			PendingRequestStackInterface::class
+		];
 	}
 }

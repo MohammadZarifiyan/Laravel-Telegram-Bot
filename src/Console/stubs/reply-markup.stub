@@ -1,0 +1,18 @@
+<?php
+
+namespace {{ namespace }};
+
+use MohammadZarifiyan\Telegram\Interfaces\ReplyMarkup;
+
+class {{ class }} implements ReplyMarkup
+{
+	/**
+	 * Returns reply markup data.
+	 *
+	 * @return array
+	 */
+	public function __invoke(): array
+	{
+		// TODO: Implement __invoke() method.
+	}
+}

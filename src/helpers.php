@@ -1,14 +1,14 @@
 <?php
 
-use Illuminate\Support\Facades\App;
+namespace MohammadZarifiyan\Telegram;
 
 if (!function_exists('try_resolve')) {
-	function try_resolve($class, $parameters = [])
+	function try_resolve($class)
 	{
-		if (!$class) {
+		if (empty($class)) {
 			return null;
 		}
 		
-		return is_object($class) ? $class : App::make($class, $parameters);
+		return is_object($class) ? $class : new $class;
 	}
 }

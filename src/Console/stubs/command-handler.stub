@@ -1,0 +1,29 @@
+<?php
+
+namespace {{ namespace }};
+
+use MohammadZarifiyan\Telegram\Interfaces\CommandHandler;
+use MohammadZarifiyan\Telegram\Update;
+
+class {{ class }} implements CommandHandler
+{
+	/**
+	 * The signature(s) of the Telegram bot command.
+	 *
+	 * @return string|array
+	 */
+	public function getSignature(): string|array
+	{
+		// TODO: Implement getSignature() method.
+	}
+
+    /**
+     * Handles the Telegram command.
+	 *
+	 * @param Update $update
+     */
+	public function handle(Update $update)
+	{
+		// TODO: Implement handle() method.
+	}
+}

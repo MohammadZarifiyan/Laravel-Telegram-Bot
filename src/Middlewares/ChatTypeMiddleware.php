@@ -3,24 +3,29 @@
 namespace MohammadZarifiyan\Telegram\Middlewares;
 
 use Closure;
-use Illuminate\Http\Request;
-use MohammadZarifiyan\Telegram\Facades\Telegram;
+use MohammadZarifiyan\Telegram\Update;
+use Throwable;
 
 class ChatTypeMiddleware
 {
-    /**
-     * Check Telegram update coming from valid type of chat.
-     *
-     * @param Request $request
-     * @param Closure $next
-     * @param string ...$chatTypes
-     * @return mixed
-     */
-    public function handle(Request $request, Closure $next, string ...$chatTypes)
+	/**
+	 * Check Telegram update coming from valid type of chat.
+	 *
+	 * @param Update $request
+	 * @param Closure $next
+	 * @param string ...$chatTypes
+	 * @return mixed
+	 */
+    public function handle(Update $request, Closure $next, string ...$chatTypes)
     {
-        if (in_array(Telegram::getChatType(), $chatTypes)) {
-            return $next($request);
-        }
+        try {
+			if (in_array($request->chatType(), $chatTypes)) {
+				return $next($request);
+			}
+		}
+		catch (Throwable) {
+			//
+		}
 
         return false;
     }

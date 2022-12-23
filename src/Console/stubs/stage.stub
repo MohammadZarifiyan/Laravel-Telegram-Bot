@@ -1,0 +1,162 @@
+<?php
+
+namespace {{ namespace }};
+
+use MohammadZarifiyan\Telegram\Interfaces\Update;
+
+class {{ class }}
+{
+	/**
+	 * Handle message update type.
+	 *
+	 * @param Update $update
+	 * @return void
+	 */
+	public function handleMessage(Update $update): void
+	{
+		// TODO: Implement handleMessage() method.
+	}
+
+	/**
+	 * Handle edited_message update type.
+	 *
+	 * @param Update $update
+	 * @return void
+	 */
+	public function handleEditedMessage(Update $update): void
+	{
+		// TODO: Implement handleEditedMessage() method.
+	}
+
+	/**
+	 * Handle channel_post update type.
+	 *
+	 * @param Update $update
+	 * @return void
+	 */
+	public function handleChannelPost(Update $update): void
+	{
+		// TODO: Implement handleChannelPost() method.
+	}
+
+	/**
+	 * Handle edited_channel_post update type.
+	 *
+	 * @param Update $update
+	 * @return void
+	 */
+	public function handleEditedChannelPost(Update $update): void
+	{
+		// TODO: Implement handleEditedChannelPost() method.
+	}
+
+	/**
+	 * Handle inline_query update type.
+	 *
+	 * @param Update $update
+	 * @return void
+	 */
+	public function handleInlineQuery(Update $update): void
+	{
+		// TODO: Implement handleInlineQuery() method.
+	}
+
+	/**
+	 * Handle chosen_inline_result update type.
+	 *
+	 * @param Update $update
+	 * @return void
+	 */
+	public function handleChosenInlineResult(Update $update): void
+	{
+		// TODO: Implement handleChosenInlineResult() method.
+	}
+
+	/**
+	 * Handle callback_query update type.
+	 *
+	 * @param Update $update
+	 * @return void
+	 */
+	public function handleCallbackQuery(Update $update): void
+	{
+		// TODO: Implement handleCallbackQuery() method.
+	}
+
+	/**
+	 * Handle shipping_query update type.
+	 *
+	 * @param Update $update
+	 * @return void
+	 */
+	public function handleShippingQuery(Update $update): void
+	{
+		// TODO: Implement handleShippingQuery() method.
+	}
+
+	/**
+	 * Handle pre_checkout_query update type.
+	 *
+	 * @param Update $update
+	 * @return void
+	 */
+	public function handlePreCheckoutQuery(Update $update): void
+	{
+		// TODO: Implement handlePreCheckoutQuery() method.
+	}
+
+	/**
+	 * Handle poll update type.
+	 *
+	 * @param Update $update
+	 * @return void
+	 */
+	public function handlePoll(Update $update): void
+	{
+		// TODO: Implement handlePoll() method.
+	}
+
+	/**
+	 * Handle poll_answer update type.
+	 *
+	 * @param Update $update
+	 * @return void
+	 */
+	public function handlePollAnswer(Update $update): void
+	{
+		// TODO: Implement handlePollAnswer() method.
+	}
+
+	/**
+	 * Handle my_chat_member update type.
+	 *
+	 * @param Update $update
+	 * @return void
+	 */
+	public function handleMyChatMember(Update $update): void
+	{
+		// TODO: Implement handleMyChatMember() method.
+	}
+
+	/**
+	 * Handle chat_member update type.
+	 *
+	 * @param Update $update
+	 * @return void
+	 */
+	public function handleChatMember(Update $update): void
+	{
+		// TODO: Implement handleChatMember() method.
+	}
+
+	/**
+	 * Handle chat_join_request update type.
+	 *
+	 * @param Update $update
+	 * @return void
+	 */
+	public function handleChatJoinRequest(Update $update): void
+	{
+		// TODO: Implement handleChatJoinRequest() method.
+	}
+}

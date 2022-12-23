@@ -24,9 +24,11 @@ class TelegramAuthorizationException extends TelegramException
 	 */
 	public function __construct($message = null, $code = null, Throwable $previous = null)
 	{
-		parent::__construct($message ?? 'This action is unauthorized.', 0, $previous);
-		
-		$this->code = $code ?: 0;
+		parent::__construct(
+			$message ?? 'This action is unauthorized.',
+			$code ?: Response::HTTP_OK,
+			$previous
+		);
 	}
 	
 	/**
@@ -60,10 +62,5 @@ class TelegramAuthorizationException extends TelegramException
 	public function toResponse()
 	{
 		return Response::deny($this->message, $this->code);
-	}
-	
-	public function render()
-	{
-		return response(status: Response::HTTP_OK);
 	}
 }

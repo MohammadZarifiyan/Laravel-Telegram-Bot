@@ -3,16 +3,16 @@
 namespace MohammadZarifiyan\Telegram;
 
 use Illuminate\Auth\Access\Response;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Contracts\Validation\Factory as ValidationFactory;
 use Illuminate\Contracts\Validation\ValidatesWhenResolved;
 use Illuminate\Contracts\Validation\Validator;
-use Illuminate\Http\Request;
 use Illuminate\Validation\ValidatesWhenResolvedTrait;
 use MohammadZarifiyan\Telegram\Exceptions\TelegramAuthorizationException;
 use MohammadZarifiyan\Telegram\Exceptions\TelegramValidationException;
 
-class TelegramRequest extends Request implements ValidatesWhenResolved
+class Request extends Update implements ValidatesWhenResolved
 {
 	use ValidatesWhenResolvedTrait;
 	
@@ -48,6 +48,7 @@ class TelegramRequest extends Request implements ValidatesWhenResolved
 	 * Get the validator instance for the request.
 	 *
 	 * @return \Illuminate\Contracts\Validation\Validator
+	 * @throws BindingResolutionException
 	 */
 	protected function getValidatorInstance()
 	{
@@ -91,7 +92,7 @@ class TelegramRequest extends Request implements ValidatesWhenResolved
 	 *
 	 * @return array
 	 */
-	public function validationData()
+	public function validationData(): array
 	{
 		return $this->all();
 	}

@@ -1,16 +1,17 @@
 <?php
 
-namespace MohammadZarifiyan\Telegram\Services;
+namespace MohammadZarifiyan\Telegram;
 
 use Illuminate\Http\Request;
+use MohammadZarifiyan\Telegram\Exceptions\TelegramException;
 use MohammadZarifiyan\Telegram\Interfaces\Command as CommandInterface;
 use MohammadZarifiyan\Telegram\Providers\TelegramServiceProvider;
 
-class TelegramUpdate extends Request
+class Update extends Request
 {
 	protected string $updateType, $chatType;
 	protected CommandInterface $command;
-	protected ?object $from;
+	protected mixed $gainer;
 	
 	/**
 	 * Checks if current Telegram update is caused by a Telegram bot command.
@@ -38,23 +39,33 @@ class TelegramUpdate extends Request
 	 * Returns type of the Telegram update.
 	 *
 	 * @return string
+	 * @throws TelegramException
 	 */
-	public function getType(): string
+	public function type(): string
 	{
-		return $this->updateType ??= collect(TelegramServiceProvider::UPDATE_TYPES)
-			->intersect($this->keys())
-			->first();
+		if (!isset($this->updateType)) {
+			$this->updateType = collect(TelegramServiceProvider::UPDATE_TYPES)
+				->intersect($this->keys())
+				->first();
+			
+			if (empty($this->updateType)) {
+				throw new TelegramException('This request do not contain any valid Telegram update.');
+			}
+		}
+		
+		return $this->updateType;
 	}
 	
 	/**
 	 * Returns chat type of the Telegram update.
 	 *
 	 * @return string
+	 * @throws TelegramException
 	 */
-	public function getChatType(): string
+	public function chatType(): string
 	{
 		if (!isset($this->chatType)) {
-			$update_type = $this->getType();
+			$update_type = $this->type();
 			
 			$this->chatType = match($update_type) {
 				'message', 'edited_message', 'my_chat_member', 'chat_member', 'chat_join_request' => $this->input($update_type.'.chat.type'),
@@ -68,23 +79,35 @@ class TelegramUpdate extends Request
 	}
 	
 	/**
-	 * Returns user that caused the Telegram update.
+	 * Get gainer resolver.
 	 *
-	 * @return object|null
+	 * @return callable|null
 	 */
-	public function from(): ?object
+	public function getGainerResolver(): callable|null
 	{
-		if (!isset($this->from)) {
-			$update_type = $this->getType();
-			
-			$from = match($update_type) {
-				'poll' => null,
-				default => $this->input($update_type.'.from')
-			};
-			
-			$this->from = empty($from) ? null : (object) $from;
+		return try_resolve(
+			config('telegram.gainer-resolver')
+		);
+	}
+	
+	/**
+	 * Returns gainer if already was set,
+	 * otherwise sets gainer by gainer resolver.
+	 *
+	 * @return mixed
+	 */
+	public function gainer(): mixed
+	{
+		if (isset($this->gainer)) {
+			return $this->gainer;
 		}
 		
-		return $this->from;
+		$resolver = $this->getGainerResolver();
+		
+		if (!is_callable($resolver)) {
+			return null;
+		}
+		
+		return $this->gainer = call_user_func($resolver, $this);
 	}
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace MohammadZarifiyan\Telegram\Services;
+namespace MohammadZarifiyan\Telegram;
 
 use MohammadZarifiyan\Telegram\Interfaces\Command as CommandInterface;
 
@@ -9,14 +9,14 @@ class Command implements CommandInterface
 	private string $signature;
 	private ?string $value = null;
 
-	public function __construct(public string $text)
+	public function __construct(string $text)
 	{
-		$this->initialize();
+		$this->initialize($text);
 	}
 	
-	private function initialize(): void
+	private function initialize(string $text): void
 	{
-		$command_parts = explode(' ', $this->text);
+		$command_parts = explode(' ', $text);
 		
 		$this->signature = substr($command_parts[0], 1);
 		

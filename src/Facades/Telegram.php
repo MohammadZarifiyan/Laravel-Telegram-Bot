@@ -2,36 +2,27 @@
 
 namespace MohammadZarifiyan\Telegram\Facades;
 
+use Closure;
 use Illuminate\Http\Client\Response;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Facade;
-use Illuminate\Database\Eloquent\Model;
+use MohammadZarifiyan\Telegram\Interfaces\Payload;
+use MohammadZarifiyan\Telegram\Interfaces\Telegram as TelegramInterface;
+use MohammadZarifiyan\Telegram\Update;
 
 /**
- * @method static \MohammadZarifiyan\Telegram\Interfaces\Telegram setApiKey(string $token)
- * @method static Response sendResponse(string|\MohammadZarifiyan\Telegram\Interfaces\Response $response)
- * @method static array<Response> sendAsyncResponses(array $responses)
- * @method static null|string getUpdateType
- * @method static null|string getChatType
- * @method static null|object getUser
- * @method static \MohammadZarifiyan\Telegram\Interfaces\Telegram setGainer(Model $gainer)
- * @method static null|Model getGainer
- * @method static Request getRequest
- * @method static bool isCommand
- * @method static null|string commandSignature
+ * @method static TelegramInterface fresh(string $apiKey)
+ * @method static void handleRequest(Request $request)
+ * @method static Update|null getUpdate()
+ * @method static Response execute(Payload|string $payload, array $merge = [])
+ * @method static array<Response> async(Closure $closure)
  * @method static string generateFileUrl(string $filePath)
  */
 
 class Telegram extends Facade
 {
-    public static function getFacadeAccessor()
+    public static function getFacadeAccessor(): string
     {
-        return 'telegram.service';
-    }
-
-    public static function handleUpdate(Request $request)
-    {
-        return App::make('telegram.kernel')->handleUpdate($request);
+        return TelegramInterface::class;
     }
 }
