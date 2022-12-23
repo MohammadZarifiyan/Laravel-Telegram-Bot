@@ -3,14 +3,13 @@
 namespace MohammadZarifiyan\Telegram;
 
 use Illuminate\Http\Request;
-use MohammadZarifiyan\Telegram\Exceptions\TelegramException;
 use MohammadZarifiyan\Telegram\Interfaces\Command as CommandInterface;
 use MohammadZarifiyan\Telegram\Interfaces\GainerResolver;
 use MohammadZarifiyan\Telegram\Providers\TelegramServiceProvider;
 
 class Update extends Request
 {
-	protected string $updateType, $chatType;
+	protected ?string $updateType, $chatType;
 	protected CommandInterface $command;
 	protected mixed $gainer;
 	
@@ -39,44 +38,38 @@ class Update extends Request
 	/**
 	 * Returns type of the Telegram update.
 	 *
-	 * @return string
-	 * @throws TelegramException
+	 * @return string|null
 	 */
-	public function type(): string
+	public function type(): ?string
 	{
-		if (!isset($this->updateType)) {
-			$this->updateType = collect(TelegramServiceProvider::UPDATE_TYPES)
-				->intersect($this->keys())
-				->first();
-			
-			if (empty($this->updateType)) {
-				throw new TelegramException('This request do not contain any valid Telegram update.');
-			}
+		if (isset($this->updateType)) {
+			return $this->updateType;
 		}
 		
-		return $this->updateType;
+		return $this->updateType = collect(TelegramServiceProvider::UPDATE_TYPES)
+			->intersect($this->keys())
+			->first();
 	}
 	
 	/**
 	 * Returns chat type of the Telegram update.
 	 *
-	 * @return string
-	 * @throws TelegramException
+	 * @return string|null
 	 */
-	public function chatType(): string
+	public function chatType(): ?string
 	{
-		if (!isset($this->chatType)) {
-			$update_type = $this->type();
-			
-			$this->chatType = match($update_type) {
-				'message', 'edited_message', 'my_chat_member', 'chat_member', 'chat_join_request' => $this->input($update_type.'.chat.type'),
-				'channel_post', 'edited_channel_post' => 'channel',
-				'inline_query', 'chosen_inline_result', 'callback_query', 'shipping_query', 'pre_checkout_query', 'poll_answer' => 'private',
-				default => null
-			};
+		if (isset($this->chatType)) {
+			return $this->chatType;
 		}
 		
-		return $this->chatType;
+		$update_type = $this->type();
+		
+		return $this->chatType = match($update_type) {
+			'message', 'edited_message', 'my_chat_member', 'chat_member', 'chat_join_request' => $this->input($update_type.'.chat.type'),
+			'channel_post', 'edited_channel_post' => 'channel',
+			'inline_query', 'chosen_inline_result', 'callback_query', 'shipping_query', 'pre_checkout_query', 'poll_answer' => 'private',
+			default => null
+		};
 	}
 	
 	/**

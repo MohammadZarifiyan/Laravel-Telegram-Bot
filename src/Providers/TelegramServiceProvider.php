@@ -58,8 +58,9 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
 		
         $this->app->singleton(
 			TelegramInterface::class,
-            fn () => new Telegram(
-				config('telegram.api-key')
+            fn (Container $app) => new Telegram(
+				config('telegram.api-key'),
+				$app
 			)
         );
 	
