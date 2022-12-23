@@ -3,7 +3,6 @@
 namespace MohammadZarifiyan\Telegram\Interfaces;
 
 use Closure;
-use Illuminate\Contracts\Container\Container;
 use Illuminate\Http\Client\Response;
 use Illuminate\Http\Request;
 use MohammadZarifiyan\Telegram\Update;
@@ -14,18 +13,16 @@ interface Telegram
 	 * Constructs Telegram instance.
 	 *
 	 * @param string $apiKey
-	 * @param Container $container
 	 */
-	public function __construct(string $apiKey, Container $container);
+	public function __construct(string $apiKey);
 	
 	/**
 	 * Creates new Telegram instance.
 	 *
 	 * @param string $apiKey
-	 * @param Container|null $container
 	 * @return $this
 	 */
-	public function fresh(string $apiKey, Container $container = null): static;
+	public function fresh(string $apiKey): static;
 
 	/**
 	 * Handles request.

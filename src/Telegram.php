@@ -3,7 +3,6 @@
 namespace MohammadZarifiyan\Telegram;
 
 use Closure;
-use Illuminate\Contracts\Container\Container;
 use Illuminate\Http\Client\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
@@ -17,14 +16,14 @@ class Telegram implements TelegramInterface
 {
 	protected ?Update $update;
 	
-	public function __construct(protected string $apiKey, protected Container $container)
+	public function __construct(protected string $apiKey)
 	{
 		//
 	}
 
-	public function fresh(string $apiKey, Container $container = null): static
+	public function fresh(string $apiKey): static
 	{
-		return new static($apiKey, $container ?? $this->container);
+		return new static($apiKey);
 	}
 
 	/**
@@ -34,7 +33,7 @@ class Telegram implements TelegramInterface
 	public function handleRequest(Request $request): void
 	{
 		if (!($request instanceof Update)) {
-			$this->update = Update::createFrom($request)->setContainer($this->container);
+			$this->update = Update::createFrom($request);
 		}
 
 		$update_handler = new UpdateHandler($this->update);
