@@ -15,6 +15,7 @@ class Executor
 			config('telegram.throw-http-execution')
 		)
 			->acceptJson()
+			->contentType('multipart/form-data')
 			->retry(5, 100, fn ($exception, $request) => $exception instanceof ConnectionException)
 			->post($pendingRequest->getUrl(), $pendingRequest->getBody());
 	}
@@ -24,6 +25,7 @@ class Executor
 		return Http::pool(
 			fn (Pool $pool) => array_map(
 				fn (PendingRequest $pendingRequest) => $pool->acceptJson()
+					->contentType('multipart/form-data')
 					->retry(5, 100, fn ($exception, $request) => $exception instanceof ConnectionException)
 					->post($pendingRequest->getUrl(), $pendingRequest->getBody()),
 				$pendingRequests
