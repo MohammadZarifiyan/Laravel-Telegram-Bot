@@ -12,7 +12,7 @@ class Executor
 	public function run(PendingRequest $pendingRequest): Response
 	{
 		return Http::throwIf(
-			config('telegram.throw-http-execution')
+			config('telegram.throw-http-exception')
 		)
 			->acceptJson()
 			->contentType('multipart/form-data')

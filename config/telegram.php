@@ -35,12 +35,12 @@ return [
 	'allow-incognito-command' => false,
 	
 	/**
-	 * Throw execution if executing payload failed.
+	 * Throw exception if executing payload failed.
 	 *
 	 * Default is "false" to prevent retrieving Telegram update
 	 * when handling Telegram updates through Telegram webhook.
 	 */
-	'throw-http-execution' => false,
+	'throw-http-exception' => false,
 	
 	/**
 	 * Gainer resolver used to resolve gainer from Telegram updates.
