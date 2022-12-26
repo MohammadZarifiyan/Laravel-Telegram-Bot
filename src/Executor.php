@@ -21,12 +21,9 @@ class Executor
 	
 	public function runAsync(array $pendingRequests): array
 	{
-		$throw = config('telegram.throw-http-execution');
-		
 		return Http::pool(
 			fn (Pool $pool) => array_map(
-				fn (PendingRequest $pendingRequest) => $pool->throwIf($throw)
-					->acceptJson()
+				fn (PendingRequest $pendingRequest) => $pool->acceptJson()
 					->retry(5, 100, fn ($exception, $request) => $exception instanceof ConnectionException)
 					->post($pendingRequest->getUrl(), $pendingRequest->getBody()),
 				$pendingRequests
