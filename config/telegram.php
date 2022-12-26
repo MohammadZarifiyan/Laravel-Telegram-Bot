@@ -37,7 +37,7 @@ return [
 	/**
 	 * Throw exception if executing payload failed.
 	 *
-	 * Default is "false" to prevent retrieving Telegram update
+	 * Default is "false" to prevent retrieving Telegram update again and again
 	 * when handling Telegram updates through Telegram webhook.
 	 */
 	'throw-http-exception' => false,
