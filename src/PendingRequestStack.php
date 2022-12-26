@@ -9,9 +9,16 @@ class PendingRequestStack implements PendingRequestInterface
 {
 	protected array $pendingRequests;
 	
+	public function __construct(protected string $endpoint, protected string $apiKey)
+	{
+		//
+	}
+	
 	public function add(Payload|string $payload, array $merge = []): static
 	{
 		$this->pendingRequests[] = new PendingRequest(
+			$this->endpoint,
+			$this->apiKey,
 			try_resolve($payload),
 			$merge
 		);

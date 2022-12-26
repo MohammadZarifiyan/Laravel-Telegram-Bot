@@ -8,9 +8,10 @@ use MohammadZarifiyan\Telegram\Interfaces\Payload;
 class PendingRequest
 {
 	public function __construct(
+		protected string $apiKey,
+		protected string $endpoint,
 		public Payload $payload,
 		public array $merge = [],
-		protected ?string $apiKey = null
 	) {
 		//
 	}
@@ -22,7 +23,7 @@ class PendingRequest
 	 */
 	public function getUrl(): string
 	{
-		return sprintf('https://api.telegram.org/bot%s/%s', $this->apiKey, $this->payload->method());
+		return sprintf('%s/bot%s/%s', $this->endpoint, $this->apiKey, $this->payload->method());
 	}
 	
 	/**

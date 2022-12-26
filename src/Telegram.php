@@ -16,19 +16,19 @@ class Telegram implements TelegramInterface
 {
 	protected ?Update $update;
 	
-	public function __construct(protected string $apiKey)
+	public function __construct(protected string $apiKey, protected string $endpoint)
 	{
 		//
 	}
 
-	public function fresh(string $apiKey): static
+	public function fresh(string $apiKey, string $endpoint = null): static
 	{
-		return new static($apiKey);
+		return new static($apiKey, $endpoint ?? config('telegram.endpoint'));
 	}
 
 	/**
 	 * @throws TelegramException
-	 * @throws TelegramOriginException
+	 * @throws TelegramOriginException|\ReflectionException
 	 */
 	public function handleRequest(Request $request): void
 	{
@@ -54,14 +54,19 @@ class Telegram implements TelegramInterface
 
 		$executor = new Executor;
 
-		return $executor->run(
-			new PendingRequest($payload, $merge, $this->apiKey)
+		$pending_request = new PendingRequest(
+			$this->endpoint,
+			$this->apiKey,
+			$payload,
+			$merge
 		);
+		
+		return $executor->run($pending_request);
     }
 
 	public function async(Closure $closure): array
     {
-		$stack = App::make(PendingRequestStack::class);
+		$stack = App::makeWith(PendingRequestStack::class, ['endpoint' => $this->endpoint, 'apikey' => $this->apiKey]);
 
 		$closure($stack);
 
@@ -74,6 +79,6 @@ class Telegram implements TelegramInterface
 	
 	public function generateFileUrl(string $filePath): string
 	{
-		return sprintf('https://api.telegram.org/file/bot%s/%s', $this->apiKey, $filePath);
+		return sprintf('%s/file/bot%s/%s', $this->endpoint, $this->apiKey, $filePath);
 	}
 }

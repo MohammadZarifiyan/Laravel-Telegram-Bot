@@ -7,6 +7,14 @@ use Illuminate\Contracts\Support\Arrayable;
 interface PendingRequestStack extends Arrayable
 {
 	/**
+	 * Constructs new instance.
+	 *
+	 * @param string $endpoint
+	 * @param string $apiKey
+	 */
+	public function __construct(string $endpoint, string $apiKey);
+	
+	/**
 	 * Converts payload to pending request and adds it to current instance stack.
 	 *
 	 * @param Payload|string $payload

@@ -2,6 +2,11 @@
 
 return [
 	/**
+	 * Telegram API endpoint.
+	 */
+	'endpoint' => 'https://api.telegram.org',
+	
+	/**
 	 * Telegram API Key used for executing payloads.
 	 *
 	 * It can be blank if you are not executing any payload

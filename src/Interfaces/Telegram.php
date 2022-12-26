@@ -13,16 +13,18 @@ interface Telegram
 	 * Constructs Telegram instance.
 	 *
 	 * @param string $apiKey
+	 * @param string $endpoint
 	 */
-	public function __construct(string $apiKey);
+	public function __construct(string $apiKey, string $endpoint);
 	
 	/**
 	 * Creates new Telegram instance.
 	 *
 	 * @param string $apiKey
+	 * @param string $endpoint
 	 * @return $this
 	 */
-	public function fresh(string $apiKey): static;
+	public function fresh(string $apiKey, string $endpoint): static;
 
 	/**
 	 * Handles request.
