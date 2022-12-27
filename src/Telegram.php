@@ -64,7 +64,7 @@ class Telegram implements TelegramInterface
 		return $executor->run($pending_request);
     }
 
-	public function async(Closure $closure): array
+	public function executeAsync(Closure $closure): array
     {
 		$stack = App::makeWith(PendingRequestStack::class, ['endpoint' => $this->endpoint, 'apikey' => $this->apiKey]);
 

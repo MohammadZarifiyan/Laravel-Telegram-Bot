@@ -15,7 +15,7 @@ use MohammadZarifiyan\Telegram\Update;
  * @method static void handleRequest(Request $request)
  * @method static Update|null getUpdate()
  * @method static Response execute(Payload|string $payload, array $merge = [])
- * @method static array<Response> async(Closure $closure)
+ * @method static array<Response> executeAsync(Closure $closure)
  * @method static string generateFileUrl(string $filePath)
  */
 

@@ -56,7 +56,7 @@ interface Telegram
 	 * @param Closure $closure
 	 * @return array<Response>
 	 */
-    public function async(Closure $closure): array;
+    public function executeAsync(Closure $closure): array;
 	
 	/**
 	 * Generates file download URL from file path.

@@ -21,5 +21,5 @@ interface PendingRequestStack extends Arrayable
 	 * @param array $merge
 	 * @return $this
 	 */
-	public function execute(Payload|string $payload, array $merge = []): static;
+	public function add(Payload|string $payload, array $merge = []): static;
 }
