@@ -16,6 +16,7 @@ use MohammadZarifiyan\Telegram\Console\Commands\MakeMiddleware;
 use MohammadZarifiyan\Telegram\Console\Commands\MakePayload;
 use MohammadZarifiyan\Telegram\Console\Commands\MakeReplyMarkup;
 use MohammadZarifiyan\Telegram\Console\Commands\MakeStage;
+use MohammadZarifiyan\Telegram\Console\Commands\MakeUpdate;
 use MohammadZarifiyan\Telegram\Console\Commands\SetWebhook;
 use MohammadZarifiyan\Telegram\Interfaces\PendingRequestStack as PendingRequestStackInterface;
 use MohammadZarifiyan\Telegram\Interfaces\RequestParser as RequestParserInterface;
@@ -157,6 +158,7 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
 				MakePayload::class,
 				MakeReplyMarkup::class,
 				MakeStage::class,
+				MakeUpdate::class
 			]);
 		}
 	}
