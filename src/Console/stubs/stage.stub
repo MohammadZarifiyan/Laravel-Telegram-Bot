@@ -2,7 +2,7 @@
 
 namespace {{ namespace }};
 
-use MohammadZarifiyan\Telegram\Interfaces\Update;
+use MohammadZarifiyan\Telegram\Update;
 
 class {{ class }}
 {
