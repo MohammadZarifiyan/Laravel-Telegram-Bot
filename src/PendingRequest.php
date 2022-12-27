@@ -8,8 +8,8 @@ use MohammadZarifiyan\Telegram\Interfaces\Payload;
 class PendingRequest
 {
 	public function __construct(
-		protected string $apiKey,
 		protected string $endpoint,
+		protected string $apiKey,
 		public Payload $payload,
 		public array $merge = [],
 	) {
