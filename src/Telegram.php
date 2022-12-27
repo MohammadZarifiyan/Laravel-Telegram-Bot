@@ -11,6 +11,7 @@ use MohammadZarifiyan\Telegram\Exceptions\TelegramOriginException;
 use MohammadZarifiyan\Telegram\Interfaces\Payload;
 use MohammadZarifiyan\Telegram\Interfaces\PendingRequestStack;
 use MohammadZarifiyan\Telegram\Interfaces\Telegram as TelegramInterface;
+use MohammadZarifiyan\Telegram\Interfaces\PendingRequest;
 
 class Telegram implements TelegramInterface
 {
@@ -50,16 +51,14 @@ class Telegram implements TelegramInterface
 
 	public function execute(Payload|string $payload, array $merge = []): Response
     {
-		$payload = try_resolve($payload);
-
 		$executor = new Executor;
 
-		$pending_request = new PendingRequest(
-			$this->endpoint,
-			$this->apiKey,
-			$payload,
-			$merge
-		);
+		$pending_request = App::makeWith(PendingRequest::class, [
+			'endpoint' => $this->endpoint,
+			'apiKey' => $this->apiKey,
+			'payload' => try_resolve($payload),
+			'merge' => $merge
+		]);
 		
 		return $executor->run($pending_request);
     }

@@ -2,7 +2,9 @@
 
 namespace MohammadZarifiyan\Telegram;
 
+use Illuminate\Support\Facades\App;
 use MohammadZarifiyan\Telegram\Interfaces\Payload;
+use MohammadZarifiyan\Telegram\Interfaces\PendingRequest;
 use MohammadZarifiyan\Telegram\Interfaces\PendingRequestStack as PendingRequestInterface;
 
 class PendingRequestStack implements PendingRequestInterface
@@ -16,12 +18,12 @@ class PendingRequestStack implements PendingRequestInterface
 	
 	public function add(Payload|string $payload, array $merge = []): static
 	{
-		$this->pendingRequests[] = new PendingRequest(
-			$this->endpoint,
-			$this->apiKey,
-			try_resolve($payload),
-			$merge
-		);
+		$this->pendingRequests[] = App::makeWith(PendingRequest::class, [
+			'endpoint' => $this->endpoint,
+			'apiKey' => $this->apiKey,
+			'payload' => try_resolve($payload),
+			'merge' => $merge
+		]);
 		
 		return $this;
 	}

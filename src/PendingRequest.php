@@ -2,10 +2,12 @@
 
 namespace MohammadZarifiyan\Telegram;
 
+use CURLFile;
 use MohammadZarifiyan\Telegram\Interfaces\HasReplyMarkup;
 use MohammadZarifiyan\Telegram\Interfaces\Payload;
+use MohammadZarifiyan\Telegram\Interfaces\PendingRequest as PendingRequestInterface;
 
-class PendingRequest
+class PendingRequest implements PendingRequestInterface
 {
 	public function __construct(
 		protected string $endpoint,
@@ -16,21 +18,11 @@ class PendingRequest
 		//
 	}
 	
-	/**
-	 * Returns URL for pending request.
-	 *
-	 * @return string
-	 */
 	public function getUrl(): string
 	{
 		return sprintf('%s/bot%s/%s', $this->endpoint, $this->apiKey, $this->payload->method());
 	}
 	
-	/**
-	 * Get request body.
-	 *
-	 * @return array
-	 */
 	public function getBody(): array
 	{
 		return array_merge(
@@ -62,5 +54,16 @@ class PendingRequest
 		return [
 			'reply_markup' => json_encode($resolved_reply_markup())
 		];
+	}
+	
+	public function getContentType(): string
+	{
+		foreach ($this->getBody() as $key => $value) {
+			if ($value instanceof CURLFile) {
+				return 'multipart/form-data';
+			}
+		}
+		
+		return 'application/json';
 	}
 }
