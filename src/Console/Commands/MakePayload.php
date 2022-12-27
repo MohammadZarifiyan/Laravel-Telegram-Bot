@@ -52,7 +52,7 @@ class MakePayload extends GeneratorCommand
 	 */
 	protected function getStub()
 	{
-		$relativePath = $this->hasOption('reply-markup') ? '/../stubs/payload.reply-markup.stub' : '/../stubs/payload.stub';
+		$relativePath = $this->option('reply-markup') ? '/../stubs/payload.reply-markup.stub' : '/../stubs/payload.stub';
 		
 		return file_exists($customPath = $this->laravel->basePath(trim($relativePath, '/')))
 			? $customPath
