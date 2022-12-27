@@ -14,7 +14,7 @@ class PendingRequestStack implements PendingRequestInterface
 		//
 	}
 	
-	public function add(Payload|string $payload, array $merge = []): static
+	public function execute(Payload|string $payload, array $merge = []): static
 	{
 		$this->pendingRequests[] = new PendingRequest(
 			$this->endpoint,
