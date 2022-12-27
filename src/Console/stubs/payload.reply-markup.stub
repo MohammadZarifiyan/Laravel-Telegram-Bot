@@ -4,6 +4,7 @@ namespace {{ namespace }};
 
 use MohammadZarifiyan\Telegram\Interfaces\HasReplyMarkup;
 use MohammadZarifiyan\Telegram\Interfaces\Payload;
+use MohammadZarifiyan\Telegram\Interfaces\ReplyMarkup;
 
 class {{ class }} implements Payload, HasReplyMarkup
 {
