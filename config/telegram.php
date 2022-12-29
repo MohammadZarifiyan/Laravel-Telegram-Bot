@@ -56,9 +56,9 @@ return [
 	'middlewares' => [],
 	
 	/**
-	 * List of command that should be handled by your application.
+	 * List of command handlers that should be used to handle Telegram bot commands.
 	 */
-	'commands' => [],
+	'command_handlers' => [],
 	
 	/**
 	 * An array of breakers classes that run before stage handler.

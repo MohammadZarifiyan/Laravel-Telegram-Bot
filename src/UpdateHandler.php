@@ -147,7 +147,7 @@ class UpdateHandler
 			->toCommand()
 			->getSignature();
 		
-		foreach ((array) config('telegram.commands') as $command_handler) {
+		foreach ((array) config('telegram.command_handlers') as $command_handler) {
 			$command_handler = try_resolve($command_handler);
 			
 			if (in_array($signature, (array) $command_handler->getSignature())) {
