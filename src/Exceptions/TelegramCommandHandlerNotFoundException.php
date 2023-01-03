@@ -4,7 +4,7 @@ namespace MohammadZarifiyan\Telegram\Exceptions;
 
 use Symfony\Component\HttpFoundation\Response;
 
-class TelegramCommandNotFoundException extends TelegramException
+class TelegramCommandHandlerNotFoundException extends TelegramException
 {
 	public function render()
 	{

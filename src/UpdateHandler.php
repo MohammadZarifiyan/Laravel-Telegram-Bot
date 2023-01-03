@@ -5,7 +5,7 @@ namespace MohammadZarifiyan\Telegram;
 use Generator;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
-use MohammadZarifiyan\Telegram\Exceptions\TelegramCommandNotFoundException;
+use MohammadZarifiyan\Telegram\Exceptions\TelegramCommandHandlerNotFoundException;
 use MohammadZarifiyan\Telegram\Exceptions\TelegramException;
 use MohammadZarifiyan\Telegram\Exceptions\TelegramMiddlewareFailedException;
 use MohammadZarifiyan\Telegram\Exceptions\TelegramOriginException;
@@ -34,7 +34,7 @@ class UpdateHandler
 		
 		if ($this->update->isCommand()) {
 			if (empty($command = $this->getMatchedCommand()) && !config('telegram.allow-incognito-command')) {
-				throw new TelegramCommandNotFoundException;
+				throw new TelegramCommandHandlerNotFoundException;
 			}
 			
 			$command->handle($this->update);

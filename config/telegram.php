@@ -30,7 +30,7 @@ return [
 	 * Allow handling incognito command.
 	 *
 	 * If set to "false" and command was not exists in Telegram commands list,
-	 * application would throw TelegramCommandNotFoundException.
+	 * application would throw TelegramCommandHandlerNotFoundException.
 	 */
 	'allow-incognito-command' => false,
 	
