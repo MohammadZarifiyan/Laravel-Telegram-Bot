@@ -34,7 +34,9 @@ class UpdateHandler
 		
 		if ($this->update->isCommand()) {
 			if (empty($command = $this->getMatchedCommand()) && !config('telegram.allow-incognito-command')) {
-				throw new TelegramCommandHandlerNotFoundException;
+				throw new TelegramCommandHandlerNotFoundException(
+					$this->update->toCommand()
+				);
 			}
 			
 			$command->handle($this->update);
