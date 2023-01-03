@@ -17,7 +17,12 @@ class Executor
 		)
 			->acceptJson()
 			->contentType($pendingRequest->getContentType())
-			->retry(5, 100, fn ($exception, $request) => $exception instanceof ConnectionException)
+			->retry(
+				5,
+				100,
+				fn ($exception, $request) => $exception instanceof ConnectionException,
+				config('telegram.throw-http-exception')
+			)
 			->post($pendingRequest->getUrl(), $pendingRequest->getBody());
 	}
 	
@@ -27,7 +32,7 @@ class Executor
 			fn (Pool $pool) => array_map(
 				fn (PendingRequest $pendingRequest) => $pool->acceptJson()
 					->contentType($pendingRequest->getContentType())
-					->retry(5, 100, fn ($exception, $request) => $exception instanceof ConnectionException)
+					->retry(5, 100, fn ($exception, $request) => $exception instanceof ConnectionException, false)
 					->post($pendingRequest->getUrl(), $pendingRequest->getBody()),
 				$pendingRequests
 			)
