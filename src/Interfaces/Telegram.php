@@ -25,6 +25,14 @@ interface Telegram
 	 * @return $this
 	 */
 	public function fresh(string $apiKey, string $endpoint): static;
+	
+	/**
+	 * Changes Api key.
+	 *
+	 * @param string $apiKey
+	 * @return $this
+	 */
+	public function setApiKey(string $apiKey): static;
 
 	/**
 	 * Handles request.

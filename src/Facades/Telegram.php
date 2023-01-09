@@ -13,6 +13,7 @@ use MohammadZarifiyan\Telegram\Update;
 /**
  * @method static TelegramInterface fresh(string $apiKey)
  * @method static void handleRequest(Request $request)
+ * @method static TelegramInterface setApiKey(string $apiKey)
  * @method static Update|null getUpdate()
  * @method static Response execute(Payload|string $payload, array $merge = [])
  * @method static array<Response> executeAsync(Closure $closure)

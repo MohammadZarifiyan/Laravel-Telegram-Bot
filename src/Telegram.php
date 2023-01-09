@@ -26,6 +26,13 @@ class Telegram implements TelegramInterface
 	{
 		return new static($apiKey, $endpoint ?? config('telegram.endpoint'));
 	}
+	
+	public function setApiKey(string $apiKey): static
+	{
+		$this->apiKey = $apiKey;
+		
+		return $this;
+	}
 
 	/**
 	 * @throws TelegramException
