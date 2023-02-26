@@ -12,7 +12,7 @@ class {{ class }} implements CommandHandler
 	 *
 	 * @return string|array
 	 */
-	public function getSignature(): string|array
+	public function getSignature(Update $update): string|array
 	{
 		// TODO: Implement getSignature() method.
 	}
