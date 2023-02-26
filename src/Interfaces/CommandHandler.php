@@ -9,9 +9,10 @@ interface CommandHandler
 	/**
 	 * The signature(s) of the Telegram bot command.
 	 *
+	 * @param Update $update
 	 * @return string|array
 	 */
-	public function getSignature(): string|array;
+	public function getSignature(Update $update): string|array;
 
     /**
      * Handles the Telegram command.
