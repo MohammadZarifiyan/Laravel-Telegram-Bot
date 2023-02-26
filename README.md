@@ -1,4 +1,4 @@
-# Laravel-Telegram-Bot
+# Laravel Telegram Bot
 A Laravel package that helps you to easily create scalable Telegram bots and send notifications through Telegram.
 
 ## Documentation
