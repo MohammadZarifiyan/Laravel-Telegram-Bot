@@ -37,9 +37,29 @@ class Update extends Request
 	 */
 	public function toCommand(): CommandInterface
 	{
-		return $this->command ??= new Command(
-			$this->input('message.text')
+		if (isset($this->command)) {
+			return $this->command;
+		}
+		
+		$command_parts = explode(' ', $this->input('message.text'));
+		$signature = substr($command_parts[0], 1);
+		$trimmed_value = trim(
+			implode(' ', array_slice($command_parts, 1))
 		);
+		return $this->command = new Command($signature, $trimmed_value ?? null, $this);
+	}
+	
+	/**
+	 * Updates command.
+	 *
+	 * @param CommandInterface $command
+	 * @return static
+	 */
+	public function setCommand(CommandInterface $command): static
+	{
+		$this->command = $command;
+		
+		return $this;
 	}
 	
 	/**

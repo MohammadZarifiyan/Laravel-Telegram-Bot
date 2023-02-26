@@ -7,7 +7,7 @@ use MohammadZarifiyan\Telegram\Update;
 interface CommandHandler
 {
 	/**
-	 * The signature(s) of the Telegram bot command.
+	 * The signature(s) of the Telegram bot command that can be handled by current CommandHandler.
 	 *
 	 * @param Update $update
 	 * @return string|array

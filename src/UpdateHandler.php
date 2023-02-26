@@ -9,6 +9,8 @@ use MohammadZarifiyan\Telegram\Exceptions\TelegramCommandHandlerNotFoundExceptio
 use MohammadZarifiyan\Telegram\Exceptions\TelegramException;
 use MohammadZarifiyan\Telegram\Exceptions\TelegramMiddlewareFailedException;
 use MohammadZarifiyan\Telegram\Exceptions\TelegramOriginException;
+use MohammadZarifiyan\Telegram\Interfaces\CanGetCommand;
+use MohammadZarifiyan\Telegram\Interfaces\Command;
 use MohammadZarifiyan\Telegram\Interfaces\CommandHandler;
 use MohammadZarifiyan\Telegram\Interfaces\Gainer;
 use ReflectionException;
@@ -145,14 +147,27 @@ class UpdateHandler
 	
 	public function getMatchedCommand(): ?CommandHandler
 	{
-		$signature = $this->update
-			->toCommand()
-			->getSignature();
+		$default_command = $this->update->toCommand();
 		
 		foreach ((array) config('telegram.command_handlers') as $command_handler) {
+			/**
+			 * @var CommandHandler|null $command_handler
+			 */
 			$command_handler = try_resolve($command_handler);
 			
-			if (in_array($signature, (array) $command_handler->getSignature())) {
+			$command = $default_command;
+			
+			if ($command_handler instanceof CanGetCommand) {
+				$possible_command = $command_handler->getCommand($this->update);
+				
+				if ($possible_command instanceof Command) {
+					$command = $possible_command;
+				}
+			}
+			
+			if (in_array($command->getSignature(), (array) $command_handler->getSignature($this->update))) {
+				$this->update->setCommand($command);
+				
 				return $command_handler;
 			}
 		}
