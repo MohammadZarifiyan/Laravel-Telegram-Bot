@@ -9,6 +9,7 @@ use MohammadZarifiyan\Telegram\Interfaces\Payload;
 class SetWebhookPayload implements Payload
 {
 	public function __construct(
+		protected string $url,
 		protected bool $dropPendingUpdates,
 		protected ?string $secureToken = null,
 		protected int $maxConnections = 40
@@ -24,9 +25,7 @@ class SetWebhookPayload implements Payload
     public function data(): array
     {
 		$data = [
-			'url' => Url::route(
-				Config::get('telegram.update-route')
-			),
+			'url' => $this->url,
 			'drop_pending_updates' => $this->dropPendingUpdates,
 			'max_connections' => $this->maxConnections
 		];

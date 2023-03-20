@@ -3,13 +3,15 @@
 namespace MohammadZarifiyan\Telegram\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\URL;
 use MohammadZarifiyan\Telegram\Exceptions\TelegramException;
 use MohammadZarifiyan\Telegram\Facades\Telegram;
 use MohammadZarifiyan\Telegram\Payloads\SetWebhookPayload;
 
 class SetWebhook extends Command
 {
-    protected $signature = 'bot:set-webhook {--drop-pending-updates} {--api-key} {--max-connections=40}';
+    protected $signature = 'bot:set-webhook {--drop-pending-updates} {--api-key} {--url} {--max-connections=40}';
 
     protected $description = 'Sets Telegram webhook.';
 
@@ -17,6 +19,7 @@ class SetWebhook extends Command
     {
         try {
 			$payload = new SetWebhookPayload(
+				$this->getUrl(),
 				$this->hasOption('drop-pending-updates'),
 				config('telegram.secure-token'),
 				(int) $this->option('max-connections')
@@ -48,6 +51,17 @@ class SetWebhook extends Command
 			return 1;
         }
     }
+	
+	public function getUrl(): string
+	{
+		if ($url = $this->option('url')) {
+			return $url;
+		}
+		
+		$route_name = Config::get('telegram.update-route');
+		
+		return Url::route($route_name);
+	}
 	
 	public function getApiKey(): string
 	{
