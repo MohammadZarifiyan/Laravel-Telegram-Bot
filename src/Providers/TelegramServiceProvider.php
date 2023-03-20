@@ -60,7 +60,7 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
     {
 		$this->mergeConfigFrom(__DIR__.'/../../config/telegram.php', 'telegram');
 		
-        $this->app->singleton('telegram', function (Container $app) {
+        $this->app->singleton('telegram', function () {
 			$api_key = config('telegram.api-key');
 			$endpoint = config('telegram.endpoint');
 			
