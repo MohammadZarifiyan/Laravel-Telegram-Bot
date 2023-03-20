@@ -21,7 +21,6 @@ use MohammadZarifiyan\Telegram\Console\Commands\SetWebhook;
 use MohammadZarifiyan\Telegram\Interfaces\PendingRequest as PendingRequestInterface;
 use MohammadZarifiyan\Telegram\Interfaces\PendingRequestStack as PendingRequestStackInterface;
 use MohammadZarifiyan\Telegram\Interfaces\RequestParser as RequestParserInterface;
-use MohammadZarifiyan\Telegram\Interfaces\Telegram as TelegramInterface;
 use MohammadZarifiyan\Telegram\Middlewares\ChatTypeMiddleware;
 use MohammadZarifiyan\Telegram\Middlewares\UpdateTypeMiddleware;
 use MohammadZarifiyan\Telegram\PendingRequest;
@@ -61,13 +60,12 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
     {
 		$this->mergeConfigFrom(__DIR__.'/../../config/telegram.php', 'telegram');
 		
-        $this->app->singleton(
-			TelegramInterface::class,
-            fn (Container $app) => new Telegram(
-				config('telegram.api-key'),
-				config('telegram.endpoint')
-			)
-        );
+        $this->app->singleton('telegram', function (Container $app) {
+			$api_key = config('telegram.api-key');
+			$endpoint = config('telegram.endpoint');
+			
+			return new Telegram($api_key, $endpoint);
+		});
 	
 		$this->app->bind('update-type', UpdateTypeMiddleware::class);
 		
@@ -193,8 +191,8 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
 		$this->app->resolving(
 			FormUpdate::class,
 			function ($update, Container $app) {
-				$from = $app->has(TelegramInterface::class)
-					? $app->get(TelegramInterface::class)->getUpdate()
+				$from = $app->has('telegram')
+					? $app->get('telegram')->getUpdate()
 					: $app['request'];
 				
 				FormUpdate::createFrom($from, $update)->setContainer($app);
@@ -208,7 +206,7 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
 	public function provides(): array
 	{
 		return [
-			TelegramInterface::class,
+			'telegram',
 			'update-type',
 			'chat-type',
 			PendingRequestStackInterface::class,

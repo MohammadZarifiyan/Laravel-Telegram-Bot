@@ -6,15 +6,17 @@ use Closure;
 use Illuminate\Http\Client\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Traits\Macroable;
 use MohammadZarifiyan\Telegram\Exceptions\TelegramException;
 use MohammadZarifiyan\Telegram\Exceptions\TelegramOriginException;
 use MohammadZarifiyan\Telegram\Interfaces\Payload;
 use MohammadZarifiyan\Telegram\Interfaces\PendingRequestStack;
-use MohammadZarifiyan\Telegram\Interfaces\Telegram as TelegramInterface;
 use MohammadZarifiyan\Telegram\Interfaces\PendingRequest;
 
-class Telegram implements TelegramInterface
+class Telegram
 {
+	use Macroable;
+	
 	protected ?Update $update;
 	
 	public function __construct(protected string $apiKey, protected string $endpoint)
