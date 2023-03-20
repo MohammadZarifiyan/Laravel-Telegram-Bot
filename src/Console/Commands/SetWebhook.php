@@ -9,7 +9,7 @@ use MohammadZarifiyan\Telegram\Payloads\SetWebhookPayload;
 
 class SetWebhook extends Command
 {
-    protected $signature = 'bot:set-webhook {--drop-pending-updates} {--max-connections=40}';
+    protected $signature = 'bot:set-webhook {--drop-pending-updates} {--api-key} {--max-connections=40}';
 
     protected $description = 'Sets Telegram webhook.';
 
@@ -22,7 +22,7 @@ class SetWebhook extends Command
 				(int) $this->option('max-connections')
 			);
 			
-            $response = Telegram::execute($payload);
+            $response = Telegram::fresh($this->getApiKey())->execute($payload);
 
 			$result = $response->object();
 
@@ -48,4 +48,9 @@ class SetWebhook extends Command
 			return 1;
         }
     }
+	
+	public function getApiKey(): string
+	{
+		return $this->option('api-key') ?: config('telegram.api-key');
+	}
 }
