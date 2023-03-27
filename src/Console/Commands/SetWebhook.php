@@ -11,7 +11,7 @@ use MohammadZarifiyan\Telegram\Payloads\SetWebhookPayload;
 
 class SetWebhook extends Command
 {
-    protected $signature = 'bot:set-webhook {--drop-pending-updates} {--api-key=*} {--url=*} {--max-connections=40}';
+    protected $signature = 'bot:set-webhook {--drop-pending-updates} {--api-key=} {--url=} {--max-connections=40}';
 
     protected $description = 'Sets Telegram webhook.';
 
