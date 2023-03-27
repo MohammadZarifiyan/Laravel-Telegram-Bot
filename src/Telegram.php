@@ -74,7 +74,10 @@ class Telegram
 
 	public function executeAsync(Closure $closure): array
     {
-		$stack = App::makeWith(PendingRequestStack::class, ['endpoint' => $this->endpoint, 'apikey' => $this->apiKey]);
+		/**
+		 * @var PendingRequestStack $stack
+		 */
+		$stack = App::makeWith(PendingRequestStack::class, ['endpoint' => $this->endpoint, 'apiKey' => $this->apiKey]);
 
 		$closure($stack);
 
