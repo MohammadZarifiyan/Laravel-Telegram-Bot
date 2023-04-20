@@ -96,7 +96,7 @@ class UpdateHandler
 			}
 			
 			throw new TelegramMiddlewareFailedException(
-				sprintf('Telegram middleware % failed.', get_class($middleware))
+				sprintf('Telegram middleware %s failed.', get_class($middleware))
 			);
 		}
 	}
