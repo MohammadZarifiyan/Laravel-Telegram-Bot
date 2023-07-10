@@ -29,9 +29,9 @@ interface PendingRequest
 	public function getBody(): array;
 	
 	/**
-	 * Get request content type
+	 * Get request attachments
 	 *
-	 * @return string
+	 * @return array
 	 */
-	public function getContentType(): string;
+	public function getAttachments(): array;
 }

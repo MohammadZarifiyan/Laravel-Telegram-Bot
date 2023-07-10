@@ -16,7 +16,7 @@ class Executor
 			config('telegram.throw-http-exception')
 		)
 			->acceptJson()
-			->contentType($pendingRequest->getContentType())
+            ->attach($pendingRequest->getAttachments())
 			->retry(
 				5,
 				100,
@@ -31,7 +31,7 @@ class Executor
 		return Http::pool(
 			fn (Pool $pool) => array_map(
 				fn (PendingRequest $pendingRequest) => $pool->acceptJson()
-					->contentType($pendingRequest->getContentType())
+                    ->attach($pendingRequest->getAttachments())
 					->retry(5, 100, fn ($exception, $request) => $exception instanceof ConnectionException, false)
 					->post($pendingRequest->getUrl(), $pendingRequest->getBody()),
 				$pendingRequests
