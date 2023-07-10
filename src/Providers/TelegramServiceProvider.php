@@ -27,7 +27,7 @@ use MohammadZarifiyan\Telegram\PendingRequest;
 use MohammadZarifiyan\Telegram\PendingRequestStack;
 use MohammadZarifiyan\Telegram\FormUpdate;
 use MohammadZarifiyan\Telegram\RequestParser;
-use MohammadZarifiyan\Telegram\Telegram;
+use MohammadZarifiyan\Telegram\Service;
 
 class TelegramServiceProvider extends ServiceProvider implements DeferrableProvider
 {
@@ -64,7 +64,7 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
 			$api_key = config('telegram.api-key');
 			$endpoint = config('telegram.endpoint');
 			
-			return new Telegram($api_key, $endpoint);
+			return new Service($api_key, $endpoint);
 		});
 	
 		$this->app->bind('update-type', UpdateTypeMiddleware::class);
