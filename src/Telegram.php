@@ -13,7 +13,7 @@ use MohammadZarifiyan\Telegram\Interfaces\Payload;
 use MohammadZarifiyan\Telegram\Interfaces\PendingRequestStack;
 use MohammadZarifiyan\Telegram\Interfaces\PendingRequest;
 
-class Service
+class Telegram
 {
 	use Macroable;
 	
