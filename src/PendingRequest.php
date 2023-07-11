@@ -44,8 +44,8 @@ class PendingRequest implements PendingRequestInterface
         );
 
         return array_map(
-            fn (Attachment $attachment) => [
-                $attachment->name,
+            fn (Attachment $attachment, string $name) => [
+                $name,
                 $attachment->content,
                 $attachment->filename,
                 $attachment->headers
