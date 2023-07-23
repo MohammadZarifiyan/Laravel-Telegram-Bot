@@ -24,9 +24,9 @@ class Telegram
 		//
 	}
 
-	public function fresh(string $apiKey, string $endpoint = null): static
+	public function fresh(string $apiKey = null, string $endpoint = null): static
 	{
-		return new static($apiKey, $endpoint ?? config('telegram.endpoint'));
+		return new static($apiKey ?? config('telegram.api-key'), $endpoint ?? config('telegram.endpoint'));
 	}
 	
 	public function setApiKey(string $apiKey): static

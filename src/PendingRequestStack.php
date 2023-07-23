@@ -16,11 +16,11 @@ class PendingRequestStack implements PendingRequestInterface
 		//
 	}
 	
-	public function add(Payload|string $payload, array $merge = []): static
+	public function add(Payload|string $payload, array $merge = [], string $apiKey = null, string $endpoint = null): static
 	{
 		$this->pendingRequests[] = App::makeWith(PendingRequest::class, [
-			'endpoint' => $this->endpoint,
-			'apiKey' => $this->apiKey,
+			'endpoint' => $endpoint ?? $this->endpoint,
+			'apiKey' => $apiKey ?? $this->apiKey,
 			'payload' => try_resolve($payload),
 			'merge' => $merge
 		]);

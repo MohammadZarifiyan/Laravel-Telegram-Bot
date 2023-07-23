@@ -10,7 +10,7 @@ use MohammadZarifiyan\Telegram\Interfaces\Payload;
 use MohammadZarifiyan\Telegram\Update;
 
 /**
- * @method static \MohammadZarifiyan\Telegram\Telegram fresh(string $apiKey)
+ * @method static \MohammadZarifiyan\Telegram\Telegram fresh(string $apiKey = null, string $endpoint = null)
  * @method static void handleRequest(Request $request)
  * @method static \MohammadZarifiyan\Telegram\Telegram setApiKey(string $apiKey)
  * @method static Update|null getUpdate()
@@ -21,6 +21,8 @@ use MohammadZarifiyan\Telegram\Update;
  * @method static mixin($mixin, $replace = true)
  * @method static hasMacro($name)
  * @method static flushMacros()
+ *
+ * @see \MohammadZarifiyan\Telegram\Telegram
  */
 
 class Telegram extends Facade
