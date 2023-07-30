@@ -50,7 +50,8 @@ class PendingRequest implements PendingRequestInterface
                 $attachment->filename,
                 $attachment->headers
             ],
-            $attachments
+            $attachments,
+            array_keys($attachments)
         );
     }
 
