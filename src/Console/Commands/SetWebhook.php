@@ -11,7 +11,7 @@ use MohammadZarifiyan\Telegram\Payloads\SetWebhookPayload;
 
 class SetWebhook extends Command
 {
-    protected $signature = 'bot:set-webhook {--drop-pending-updates} {--api-key=} {--url=} {--max-connections=40}';
+    protected $signature = 'bot:set-webhook {--drop-pending-updates} {--api-key=} {--url=} {--max-connections=40} {--secure-token=}';
 
     protected $description = 'Sets Telegram webhook.';
 
@@ -21,7 +21,7 @@ class SetWebhook extends Command
 			$payload = new SetWebhookPayload(
 				$this->getUrl(),
 				$this->hasOption('drop-pending-updates'),
-				config('telegram.secure-token'),
+				$this->hasOption('secure-token') ? $this->option('secure-token') : config('telegram.secure-token'),
 				(int) $this->option('max-connections')
 			);
 			
