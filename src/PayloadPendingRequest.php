@@ -2,24 +2,24 @@
 
 namespace MohammadZarifiyan\Telegram;
 
+use MohammadZarifiyan\Telegram\Abstractions\PendingRequest;
 use MohammadZarifiyan\Telegram\Interfaces\HasReplyMarkup;
 use MohammadZarifiyan\Telegram\Interfaces\Payload;
-use MohammadZarifiyan\Telegram\Interfaces\PendingRequest as PendingRequestInterface;
 
-class PendingRequest implements PendingRequestInterface
+class PayloadPendingRequest extends PendingRequest
 {
-    private array $content;
+    public array $content;
 
 	public function __construct(
 		protected string $endpoint,
 		protected string $apiKey,
 		public Payload $payload,
-		public array $merge = [],
+		array $merge = [],
 	) {
-		$this->content = array_merge(
+        $this->content = array_merge(
             $this->payload->data(),
             $this->getReplyMarkup(),
-            $this->merge
+            $merge
         );
 	}
 	
@@ -27,32 +27,10 @@ class PendingRequest implements PendingRequestInterface
 	{
 		return sprintf('%s/bot%s/%s', $this->endpoint, $this->apiKey, $this->payload->method());
 	}
-	
-	public function getBody(): array
-	{
-        return array_filter(
-            $this->content,
-            fn ($value) => $value instanceof Attachment === false
-        );
-	}
 
-    public function getAttachments(): array
+    public function getContent(): array
     {
-        $attachments = array_filter(
-            $this->content,
-            fn ($value) => $value instanceof Attachment
-        );
-
-        return array_map(
-            fn (Attachment $attachment, string $name) => [
-                $name,
-                $attachment->content,
-                $attachment->filename,
-                $attachment->headers
-            ],
-            $attachments,
-            array_keys($attachments)
-        );
+        return $this->content;
     }
 
     /**

@@ -2,34 +2,46 @@
 
 namespace MohammadZarifiyan\Telegram;
 
-use Illuminate\Support\Facades\App;
 use MohammadZarifiyan\Telegram\Interfaces\Payload;
-use MohammadZarifiyan\Telegram\Interfaces\PendingRequest;
 use MohammadZarifiyan\Telegram\Interfaces\PendingRequestStack as PendingRequestInterface;
+use MohammadZarifiyan\Telegram\Interfaces\ReplyMarkup;
 
 class PendingRequestStack implements PendingRequestInterface
 {
-	protected array $pendingRequests;
-	
-	public function __construct(protected string $endpoint, protected string $apiKey)
-	{
-		//
-	}
-	
-	public function add(Payload|string $payload, array $merge = [], string $apiKey = null, string $endpoint = null): static
-	{
-		$this->pendingRequests[] = App::makeWith(PendingRequest::class, [
-			'endpoint' => $endpoint ?? $this->endpoint,
-			'apiKey' => $apiKey ?? $this->apiKey,
-			'payload' => try_resolve($payload),
-			'merge' => $merge
-		]);
-		
-		return $this;
-	}
-	
-	public function toArray(): array
-	{
-		return $this->pendingRequests;
-	}
+    protected array $pendingRequests;
+
+    public function __construct(protected string $endpoint, protected string $apiKey)
+    {
+        //
+    }
+
+    public function addPayload(Payload|string $payload, array $merge = [], string $apiKey = null, string $endpoint = null): static
+    {
+        $this->pendingRequests[] = new PayloadPendingRequest(
+            $endpoint ?? $this->endpoint,
+            $apiKey ?? $this->apiKey,
+            try_resolve($payload),
+            $merge
+        );
+
+        return $this;
+    }
+
+    public function addRaw(string $method, array $data = [], ReplyMarkup|string|null $replyMarkup = null, string $apiKey = null, string $endpoint = null): static
+    {
+        $this->pendingRequests[] = new RawPendingRequest(
+            $endpoint ?? $this->endpoint,
+            $apiKey ?? $this->apiKey,
+            $method,
+            $data,
+            $replyMarkup
+        );
+
+        return $this;
+    }
+
+    public function toArray(): array
+    {
+        return $this->pendingRequests;
+    }
 }

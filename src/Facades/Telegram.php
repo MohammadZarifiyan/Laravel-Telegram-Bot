@@ -7,6 +7,7 @@ use Illuminate\Http\Client\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Facade;
 use MohammadZarifiyan\Telegram\Interfaces\Payload;
+use MohammadZarifiyan\Telegram\Interfaces\ReplyMarkup;
 use MohammadZarifiyan\Telegram\Update;
 
 /**
@@ -15,7 +16,8 @@ use MohammadZarifiyan\Telegram\Update;
  * @method static \MohammadZarifiyan\Telegram\Telegram setApiKey(string $apiKey)
  * @method static Update|null getUpdate()
  * @method static Response execute(Payload|string $payload, array $merge = [])
- * @method static array<Response> executeAsync(Closure $closure)
+ * @method static Response perform(string $method, array $data = [], ReplyMarkup|string|null $replyMarkup = null)
+ * @method static array<Response> async(Closure $closure)
  * @method static string generateFileUrl(string $filePath)
  * @method static macro($name, $macro)
  * @method static mixin($mixin, $replace = true)

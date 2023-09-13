@@ -6,7 +6,7 @@ use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\Pool;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
-use MohammadZarifiyan\Telegram\Interfaces\PendingRequest;
+use MohammadZarifiyan\Telegram\Abstractions\PendingRequest;
 
 class Executor
 {

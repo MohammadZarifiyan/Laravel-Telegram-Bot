@@ -7,11 +7,11 @@ use Illuminate\Http\Client\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Traits\Macroable;
+use MohammadZarifiyan\Telegram\Interfaces\ReplyMarkup;
 use MohammadZarifiyan\Telegram\Exceptions\TelegramException;
 use MohammadZarifiyan\Telegram\Exceptions\TelegramOriginException;
 use MohammadZarifiyan\Telegram\Interfaces\Payload;
 use MohammadZarifiyan\Telegram\Interfaces\PendingRequestStack;
-use MohammadZarifiyan\Telegram\Interfaces\PendingRequest;
 
 class Telegram
 {
@@ -60,24 +60,40 @@ class Telegram
 
 	public function execute(Payload|string $payload, array $merge = []): Response
     {
-		$executor = new Executor;
+		$pending_request = new PayloadPendingRequest(
+            $this->endpoint,
+            $this->apiKey,
+            try_resolve($payload),
+            $merge
+        );
 
-		$pending_request = App::makeWith(PendingRequest::class, [
-			'endpoint' => $this->endpoint,
-			'apiKey' => $this->apiKey,
-			'payload' => try_resolve($payload),
-			'merge' => $merge
-		]);
-		
+        $executor = new Executor;
 		return $executor->run($pending_request);
     }
 
-	public function executeAsync(Closure $closure): array
+    public function perform(string $method, array $data = [], ReplyMarkup|string|null $replyMarkup = null): Response
+    {
+        $pending_request = new RawPendingRequest(
+            $this->endpoint,
+            $this->apiKey,
+            $method,
+            $data,
+            $replyMarkup
+        );
+
+        $executor = new Executor;
+        return $executor->run($pending_request);
+    }
+
+	public function async(Closure $closure): array
     {
 		/**
 		 * @var PendingRequestStack $stack
 		 */
-		$stack = App::makeWith(PendingRequestStack::class, ['endpoint' => $this->endpoint, 'apiKey' => $this->apiKey]);
+		$stack = App::makeWith(PendingRequestStack::class, [
+            'endpoint' => $this->endpoint,
+            'apiKey' => $this->apiKey
+        ]);
 
 		$closure($stack);
 
