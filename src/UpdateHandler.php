@@ -61,11 +61,11 @@ class UpdateHandler
 	 */
 	public function validateOrigin(): void
 	{
-		$secure_token = config('telegram.secure-token');
-		
-		$secret_token = $this->update->header('X-Telegram-Bot-Api-Secret-Token');
-		
-		if (is_string($secure_token) && is_string($secret_token) && trim($secure_token) === trim($secret_token)) {
+        if (empty($secure_token = config('telegram.secure-token'))) {
+            return;
+        }
+
+		if (trim($secure_token) === trim((string) $this->update->header('X-Telegram-Bot-Api-Secret-Token'))) {
 			return;
 		}
 		
