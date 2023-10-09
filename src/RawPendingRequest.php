@@ -3,7 +3,6 @@
 namespace MohammadZarifiyan\Telegram;
 
 use MohammadZarifiyan\Telegram\Abstractions\PendingRequest;
-use MohammadZarifiyan\Telegram\Interfaces\HasReplyMarkup;
 use MohammadZarifiyan\Telegram\Interfaces\ReplyMarkup;
 
 class RawPendingRequest extends PendingRequest
@@ -40,13 +39,7 @@ class RawPendingRequest extends PendingRequest
      */
     public function getReplyMarkup(): array
     {
-        if (!($this->replyMarkup instanceof HasReplyMarkup)) {
-            return [];
-        }
-
-        $resolved_reply_markup = try_resolve(
-            $this->payload->replyMarkup()
-        );
+        $resolved_reply_markup = try_resolve($this->replyMarkup);
 
         if (empty($resolved_reply_markup)) {
             return [];
