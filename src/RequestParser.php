@@ -26,9 +26,9 @@ class RequestParser implements Interfaces\RequestParser
 		$update_type = $this->getUpdateType();
 		
 		return match($update_type) {
-			'message', 'edited_message', 'my_chat_member', 'chat_member', 'chat_join_request' => $this->request->input($update_type.'.chat.type'),
-			'channel_post', 'edited_channel_post' => 'channel',
-			'inline_query', 'chosen_inline_result', 'callback_query', 'shipping_query', 'pre_checkout_query', 'poll_answer' => 'private',
+			'message', 'edited_message', 'channel_post', 'edited_channel_post', 'chat_member_updated', 'chat_join_request' => $this->request->input($update_type.'.chat.type'),
+            'inline_query' => $this->request->input($update_type.'.chat_type'),
+            'callback_query' => $this->request->input($update_type.'.message.chat.type'),
 			default => null
 		};
 	}
