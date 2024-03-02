@@ -4,7 +4,7 @@ return [
 	/**
 	 * Telegram API endpoint.
 	 */
-	'endpoint' => 'https://api.telegram.org',
+	'endpoint' => env('TELEGRAM_ENDPOINT', 'https://api.telegram.org'),
 	
 	/**
 	 * Telegram API Key used for executing payloads.
