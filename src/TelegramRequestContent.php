@@ -14,6 +14,11 @@ class TelegramRequestContent
         //
     }
 
+    public static function fresh(string $method, array $data = [], ?ReplyMarkup $replyMarkup = null): static
+    {
+        return new static($method, $data, $replyMarkup);
+    }
+
     public function setMethod(string $method): static
     {
         $this->method = $method;
