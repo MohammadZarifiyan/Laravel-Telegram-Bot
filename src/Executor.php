@@ -6,39 +6,46 @@ use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\Pool;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
-use MohammadZarifiyan\Telegram\Abstractions\PendingRequest;
+use MohammadZarifiyan\Telegram\Interfaces\PendingRequest as PendingRequestInterface;
 
 class Executor
 {
-	public function run(PendingRequest $pendingRequest): Response
+	public function run(PendingRequestInterface $pendingRequest): Response
 	{
+        $request_manipulator = config('telegram.pending-request-manipulator');
+        $final_pending_request = empty($request_manipulator) ? $pendingRequest : new $request_manipulator($pendingRequest);
+
 		return Http::throwIf(
 			config('telegram.throw-http-exception')
 		)
 			->acceptJson()
-            ->attach($pendingRequest->getAttachments())
+            ->attach($final_pending_request->getAttachments())
 			->retry(
 				5,
 				100,
 				fn ($exception, $request) => $exception instanceof ConnectionException,
 				config('telegram.throw-http-exception')
 			)
-			->post($pendingRequest->getUrl(), $pendingRequest->getBody());
+			->post($final_pending_request->getUrl(), $final_pending_request->getBody());
 	}
 	
 	public function runAsync(array $pendingRequests): array
 	{
-		return Http::pool(function (Pool $pool) use ($pendingRequests) {
+        $request_manipulator = config('telegram.pending-request-manipulator');
+
+		return Http::pool(function (Pool $pool) use ($pendingRequests, $request_manipulator) {
             foreach ($pendingRequests as $pendingRequest) {
+                $final_pending_request = empty($request_manipulator) ? $pendingRequest : new $request_manipulator($pendingRequest);
+
                 $pool->acceptJson()
-                    ->attach($pendingRequest->getAttachments())
+                    ->attach($final_pending_request->getAttachments())
                     ->retry(
                         5,
                         100,
                         fn ($exception, $request) => $exception instanceof ConnectionException,
                         false
                     )
-                    ->post($pendingRequest->getUrl(), $pendingRequest->getBody());
+                    ->post($final_pending_request->getUrl(), $final_pending_request->getBody());
             }
         });
 	}

@@ -3,21 +3,10 @@
 namespace MohammadZarifiyan\Telegram\Abstractions;
 
 use MohammadZarifiyan\Telegram\Attachment;
+use MohammadZarifiyan\Telegram\Interfaces\PendingRequest as PendingRequestInterface;
 
-abstract class PendingRequest
+abstract class PendingRequest implements PendingRequestInterface
 {
-	/**
-	 * Returns URL for pending request.
-	 *
-	 * @return string
-	 */
-	abstract public function getUrl(): string;
-	
-	/**
-	 * Get request body.
-	 *
-	 * @return array
-	 */
     public function getBody(): array
     {
         return array_filter(
@@ -25,12 +14,7 @@ abstract class PendingRequest
             fn ($value) => $value instanceof Attachment === false
         );
     }
-	
-	/**
-	 * Get request attachments
-	 *
-	 * @return array
-	 */
+
     public function getAttachments(): array
     {
         $attachments = array_filter(

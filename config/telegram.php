@@ -18,6 +18,11 @@ return [
 	 * Route name of Telegram update controller.
 	 */
 	'update-route' => 'telegram-update',
+
+    /**
+     * An instance of App\Interfaces\PendingRequest that accepts App\Interfaces\PendingRequest as its constructor parameter.
+     */
+    'pending-request-manipulator' => null,
 	
 	/**
 	 * Telegram secure token used to authorize HTTP requests.
