@@ -7,14 +7,14 @@ use MohammadZarifiyan\Telegram\Interfaces\ReplyMarkup;
 class TelegramRequestContent
 {
     public function __construct(
-        public string $method,
+        public ?string $method = null,
         public array $data = [],
         public ?ReplyMarkup $replyMarkup = null
     ) {
         //
     }
 
-    public static function fresh(string $method, array $data = [], ?ReplyMarkup $replyMarkup = null): static
+    public static function fresh(string $method = null, array $data = [], ?ReplyMarkup $replyMarkup = null): static
     {
         return new static($method, $data, $replyMarkup);
     }
@@ -26,7 +26,7 @@ class TelegramRequestContent
         return $this;
     }
 
-    public function setData(array $data): static
+    public function setData(array $data = []): static
     {
         $this->data = $data;
 
