@@ -28,14 +28,18 @@ class Executor
 	
 	public function runAsync(array $pendingRequests): array
 	{
-		return Http::pool(
-			fn (Pool $pool) => array_map(
-				fn (PendingRequest $pendingRequest) => $pool->acceptJson()
+		return Http::pool(function (Pool $pool) use ($pendingRequests) {
+            foreach ($pendingRequests as $pendingRequest) {
+                $pool->acceptJson()
                     ->attach($pendingRequest->getAttachments())
-					->retry(5, 100, fn ($exception, $request) => $exception instanceof ConnectionException, false)
-					->post($pendingRequest->getUrl(), $pendingRequest->getBody()),
-				$pendingRequests
-			)
-		);
+                    ->retry(
+                        5,
+                        100,
+                        fn ($exception, $request) => $exception instanceof ConnectionException,
+                        false
+                    )
+                    ->post($pendingRequest->getUrl(), $pendingRequest->getBody());
+            }
+        });
 	}
 }
