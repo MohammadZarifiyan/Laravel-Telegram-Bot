@@ -46,7 +46,7 @@ class Update extends Request
 		$trimmed_value = trim(
 			implode(' ', array_slice($command_parts, 1))
 		);
-		return $this->command = new Command($signature, $trimmed_value ?? null, $this);
+		return $this->command = new Command($signature, $trimmed_value);
 	}
 	
 	/**
