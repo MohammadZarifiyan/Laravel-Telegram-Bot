@@ -2,17 +2,18 @@
 
 return [
 	/**
-	 * Telegram API endpoint.
+	 * Telegram API endpoint repository.
+     *
+     * It must be an instance of \MohammadZarifiyan\Telegram\Interfaces\EndpointRepository
 	 */
-	'endpoint' => env('TELEGRAM_ENDPOINT', 'https://api.telegram.org'),
+	'endpoint-repository' => \MohammadZarifiyan\Telegram\Repositories\EndpointRepository::class,
 	
 	/**
-	 * Telegram API Key used for executing payloads.
-	 *
-	 * It can be blank if you are not executing any payload
-	 * or sending any Telegram notification in your entire application.
+	 * Telegram API Key repository.
+     *
+     * It must be an instance of \MohammadZarifiyan\Telegram\Interfaces\ApiKeyRepository
 	 */
-	'api-key' => env('TELEGRAM_API_KEY'),
+	'api-key-repository' => \MohammadZarifiyan\Telegram\Repositories\ApiKeyRepository::class,
 	
 	/**
 	 * Route name of Telegram update controller.
@@ -25,11 +26,11 @@ return [
     'pending-request-manipulator' => null,
 	
 	/**
-	 * Telegram secure token used to authorize HTTP requests.
-	 *
-	 * It highly recommended to define secure token.
+	 * Telegram secure token repository.
+     *
+     * It must be an instance of \MohammadZarifiyan\Telegram\Interfaces\EndpointRepository
 	 */
-	'secure-token' => env('TELEGRAM_SECURE_TOKEN'),
+	'secure-token-repository' => \MohammadZarifiyan\Telegram\Repositories\SecureTokenRepository::class,
 	
 	/**
 	 * Allow handling incognito command.

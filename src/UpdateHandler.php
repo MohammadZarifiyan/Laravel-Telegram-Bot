@@ -13,6 +13,7 @@ use MohammadZarifiyan\Telegram\Interfaces\CanGetCommand;
 use MohammadZarifiyan\Telegram\Interfaces\Command;
 use MohammadZarifiyan\Telegram\Interfaces\CommandHandler;
 use MohammadZarifiyan\Telegram\Interfaces\Gainer;
+use MohammadZarifiyan\Telegram\Interfaces\SecureTokenRepository;
 use ReflectionException;
 use ReflectionMethod;
 
@@ -61,7 +62,12 @@ class UpdateHandler
 	 */
 	public function validateOrigin(): void
 	{
-        if (empty($secure_token = config('telegram.secure-token'))) {
+        /**
+         * @var SecureTokenRepository $secure_token_repository
+         */
+        $secure_token_repository = App::make(SecureTokenRepository::class);
+
+        if (empty($secure_token = $secure_token_repository->get())) {
             return;
         }
 

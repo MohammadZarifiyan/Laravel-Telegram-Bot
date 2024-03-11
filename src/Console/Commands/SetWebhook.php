@@ -3,10 +3,13 @@
 namespace MohammadZarifiyan\Telegram\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\URL;
 use MohammadZarifiyan\Telegram\Exceptions\TelegramException;
 use MohammadZarifiyan\Telegram\Facades\Telegram;
+use MohammadZarifiyan\Telegram\Interfaces\ApiKeyRepository;
+use MohammadZarifiyan\Telegram\Interfaces\SecureTokenRepository;
 use MohammadZarifiyan\Telegram\Payloads\SetWebhookPayload;
 
 class SetWebhook extends Command
@@ -21,7 +24,7 @@ class SetWebhook extends Command
 			$payload = new SetWebhookPayload(
 				$this->getUrl(),
 				$this->hasOption('drop-pending-updates'),
-				$this->hasOption('secure-token') ? $this->option('secure-token') : config('telegram.secure-token'),
+                $this->getSecureToken(),
 				(int) $this->option('max-connections')
 			);
 			
@@ -65,6 +68,27 @@ class SetWebhook extends Command
 	
 	public function getApiKey(): string
 	{
-		return $this->option('api-key') ?: config('telegram.api-key');
+        if (!empty($api_key = $this->option('api-key'))) {
+            return $api_key;
+        }
+
+        /**
+         * @var ApiKeyRepository $api_key_repository
+         */
+        $api_key_repository = App::make(ApiKeyRepository::class);
+        return $api_key_repository->get();
 	}
+
+    public function getSecureToken(): mixed
+    {
+        if ($this->hasOption('secure-token')) {
+            return $this->option('secure-token');
+        }
+
+        /**
+         * @var SecureTokenRepository $secure_token_repository
+         */
+        $secure_token_repository = App::make(SecureTokenRepository::class);
+        return $secure_token_repository->get();
+    }
 }
