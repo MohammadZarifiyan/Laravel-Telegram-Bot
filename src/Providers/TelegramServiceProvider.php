@@ -64,26 +64,26 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
 		$this->mergeConfigFrom(__DIR__.'/../../config/telegram.php', 'telegram');
 
         $this->app->bind(TelegramInterface::class, function (Application $application, array $parameters = []) {
-            if (isset($parameters['apiKey'])) {
-                $api_key = $parameters['apiKey'];
-            }
-            else {
+            if (empty($parameters['apiKey'])) {
                 /**
                  * @var ApiKeyRepositoryInterface $api_key_repository
                  */
                 $api_key_repository = $application->make(ApiKeyRepositoryInterface::class);
                 $api_key = $api_key_repository->get();
             }
-
-            if (isset($parameters['endpoint'])) {
-                $endpoint = $parameters['endpoint'];
-            }
             else {
+                $api_key = $parameters['apiKey'];
+            }
+
+            if (empty($parameters['endpoint'])) {
                 /**
                  * @var EndpointRepositoryInterface $endpoint_repository
                  */
                 $endpoint_repository = $application->make(EndpointRepositoryInterface::class);
                 $endpoint = $endpoint_repository->get();
+            }
+            else {
+                $endpoint = $parameters['endpoint'];
             }
 
             return new Telegram($api_key, $endpoint);
