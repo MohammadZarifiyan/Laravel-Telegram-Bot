@@ -8,6 +8,6 @@ class ApiKeyRepository implements ApiKeyRepositoryInterface
 {
     public function get(): ?string
     {
-        return env('TELEGRAM_API_KEY');
+        return config('services.telegram.api-key');
     }
 }

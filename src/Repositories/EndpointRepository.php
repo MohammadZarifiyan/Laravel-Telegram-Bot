@@ -8,6 +8,6 @@ class EndpointRepository implements EndpointRepositoryInterface
 {
     public function get(): ?string
     {
-        return env('TELEGRAM_ENDPOINT', 'https://api.telegram.org');
+        return config('services.telegram.endpoint', 'https://api.telegram.org');
     }
 }

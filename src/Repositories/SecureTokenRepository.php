@@ -8,6 +8,6 @@ class SecureTokenRepository implements SecureTokenRepositoryInterface
 {
     public function get(): ?string
     {
-        return env('TELEGRAM_SECURE_TOKEN');
+        return config('services.telegram.secure-token');
     }
 }
