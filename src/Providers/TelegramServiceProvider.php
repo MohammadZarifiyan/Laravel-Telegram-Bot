@@ -19,6 +19,7 @@ use MohammadZarifiyan\Telegram\Console\Commands\MakeReplyMarkup;
 use MohammadZarifiyan\Telegram\Console\Commands\MakeStage;
 use MohammadZarifiyan\Telegram\Console\Commands\MakeUpdate;
 use MohammadZarifiyan\Telegram\Console\Commands\SetWebhook;
+use MohammadZarifiyan\Telegram\Interfaces\Telegram as TelegramInterface;
 use MohammadZarifiyan\Telegram\Interfaces\ApiKeyRepository as ApiKeyRepositoryInterface;
 use MohammadZarifiyan\Telegram\Interfaces\EndpointRepository as EndpointRepositoryInterface;
 use MohammadZarifiyan\Telegram\Interfaces\SecureTokenRepository as SecureTokenRepositoryInterface;
@@ -61,17 +62,32 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
     public function register(): void
     {
 		$this->mergeConfigFrom(__DIR__.'/../../config/telegram.php', 'telegram');
-		
-        $this->app->singleton('telegram', function (Application $application) {
-            /**
-             * @var ApiKeyRepositoryInterface $api_key_repository
-             * @var EndpointRepositoryInterface $endpoint_repository
-             */
-            $api_key_repository = $application->make(ApiKeyRepositoryInterface::class);
-            $endpoint_repository = $application->make(EndpointRepositoryInterface::class);
 
-			return new Telegram($api_key_repository->get(), $endpoint_repository->get());
-		});
+        $this->app->bind(TelegramInterface::class, function (Application $application, array $parameters = []) {
+            if (isset($parameters['apiKey'])) {
+                $api_key = $parameters['apiKey'];
+            }
+            else {
+                /**
+                 * @var ApiKeyRepositoryInterface $api_key_repository
+                 */
+                $api_key_repository = $application->make(ApiKeyRepositoryInterface::class);
+                $api_key = $api_key_repository->get();
+            }
+
+            if (isset($parameters['endpoint'])) {
+                $endpoint = $parameters['endpoint'];
+            }
+            else {
+                /**
+                 * @var EndpointRepositoryInterface $endpoint_repository
+                 */
+                $endpoint_repository = $application->make(EndpointRepositoryInterface::class);
+                $endpoint = $endpoint_repository->get();
+            }
+
+            return new Telegram($api_key, $endpoint);
+        });
 	
 		$this->app->bind('update-type', UpdateTypeMiddleware::class);
 		
@@ -216,7 +232,7 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
 	public function provides(): array
 	{
 		return [
-			'telegram',
+            TelegramInterface::class,
 			'update-type',
 			'chat-type',
             RequestParserInterface::class,

@@ -5,13 +5,14 @@ namespace MohammadZarifiyan\Telegram\Facades;
 use Closure;
 use Illuminate\Http\Client\Response;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Facade;
 use MohammadZarifiyan\Telegram\Interfaces\Payload;
 use MohammadZarifiyan\Telegram\Interfaces\ReplyMarkup;
+use MohammadZarifiyan\Telegram\Interfaces\Telegram as TelegramInterface;
 use MohammadZarifiyan\Telegram\Update;
 
 /**
- * @method static \MohammadZarifiyan\Telegram\Telegram fresh(string $apiKey = null, string $endpoint = null)
  * @method static void handleRequest(Request $request)
  * @method static \MohammadZarifiyan\Telegram\Telegram setApiKey(string $apiKey)
  * @method static \MohammadZarifiyan\Telegram\Telegram setEndpoint(string $endpoint)
@@ -32,6 +33,11 @@ class Telegram extends Facade
 {
     public static function getFacadeAccessor(): string
     {
-        return 'telegram';
+        return TelegramInterface::class;
+    }
+
+    public static function fresh(string $apiKey = null, string $endpoint = null): TelegramInterface
+    {
+        return App::makeWith(TelegramInterface::class, compact('apiKey', 'endpoint'));
     }
 }

@@ -7,15 +7,14 @@ use Illuminate\Http\Client\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Traits\Macroable;
-use MohammadZarifiyan\Telegram\Interfaces\ApiKeyRepository;
-use MohammadZarifiyan\Telegram\Interfaces\EndpointRepository;
+use MohammadZarifiyan\Telegram\Interfaces\Telegram as TelegramInterface;
 use MohammadZarifiyan\Telegram\Interfaces\ReplyMarkup;
 use MohammadZarifiyan\Telegram\Exceptions\TelegramException;
 use MohammadZarifiyan\Telegram\Exceptions\TelegramOriginException;
 use MohammadZarifiyan\Telegram\Interfaces\Payload;
 use MohammadZarifiyan\Telegram\Interfaces\PendingRequestStack;
 
-class Telegram
+class Telegram implements TelegramInterface
 {
 	use Macroable;
 	
@@ -24,27 +23,6 @@ class Telegram
 	public function __construct(protected string $apiKey, protected string $endpoint)
 	{
 		//
-	}
-
-	public function fresh(string $apiKey = null, string $endpoint = null): static
-	{
-        if (empty($apiKey)) {
-            /**
-             * @var ApiKeyRepository $api_key_repository
-             */
-            $api_key_repository = App::make(ApiKeyRepository::class);
-            $apiKey = $api_key_repository->get();
-        }
-
-        if (empty($endpoint)) {
-            /**
-             * @var EndpointRepository $endpoint_repository
-             */
-            $endpoint_repository = App::make(EndpointRepository::class);
-            $endpoint = $endpoint_repository->get();
-        }
-
-		return new static($apiKey, $endpoint);
 	}
 	
 	public function setApiKey(string $apiKey): static
