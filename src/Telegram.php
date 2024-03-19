@@ -54,6 +54,13 @@ class Telegram
 		return $this;
 	}
 
+	public function setEndpoint(string $endpoint): static
+	{
+		$this->endpoint = $endpoint;
+
+		return $this;
+	}
+
 	/**
 	 * @throws TelegramException
 	 * @throws TelegramOriginException|\ReflectionException

@@ -14,6 +14,7 @@ use MohammadZarifiyan\Telegram\Update;
  * @method static \MohammadZarifiyan\Telegram\Telegram fresh(string $apiKey = null, string $endpoint = null)
  * @method static void handleRequest(Request $request)
  * @method static \MohammadZarifiyan\Telegram\Telegram setApiKey(string $apiKey)
+ * @method static \MohammadZarifiyan\Telegram\Telegram setEndpoint(string $endpoint)
  * @method static Update|null getUpdate()
  * @method static Response execute(Payload|string $payload, array $merge = [])
  * @method static Response perform(string $method, array $data = [], ReplyMarkup|string|null $replyMarkup = null)
