@@ -219,6 +219,7 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
 			'telegram',
 			'update-type',
 			'chat-type',
+            RequestParserInterface::class,
 			PendingRequestStackInterface::class,
             EndpointRepositoryInterface::class,
             ApiKeyRepositoryInterface::class,
