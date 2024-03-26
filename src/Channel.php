@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Notifications\Notification;
 use MohammadZarifiyan\Telegram\Facades\Telegram;
 use MohammadZarifiyan\Telegram\Interfaces\Payload;
+use MohammadZarifiyan\Telegram\Interfaces\TelegramRequestContent;
 
 class Channel
 {

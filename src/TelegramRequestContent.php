@@ -3,8 +3,9 @@
 namespace MohammadZarifiyan\Telegram;
 
 use MohammadZarifiyan\Telegram\Interfaces\ReplyMarkup;
+use MohammadZarifiyan\Telegram\Interfaces\TelegramRequestContent as TelegramRequestContentInterface;
 
-class TelegramRequestContent
+class TelegramRequestContent implements TelegramRequestContentInterface
 {
     public function __construct(
         public ?string $method = null,
