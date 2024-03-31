@@ -27,7 +27,7 @@ class OptimizeBreakers extends Command
                 if ($method->getName() === 'handle') {
                     $cache['all'][] = $breaker;
                 }
-                else if (str_starts_with('handle', $method->getName())) {
+                else if (str_starts_with($method->getName(), 'handle')) {
                     $update_type = str_replace('handle', '', $method->getName());
                     $update_type = Str::snake($update_type);
 
