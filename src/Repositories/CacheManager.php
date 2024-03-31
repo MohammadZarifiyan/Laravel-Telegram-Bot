@@ -32,7 +32,7 @@ class CacheManager implements CacheManagerInterface
             $this->updateGitIgnore();
         }
 
-        return File::exists($this->directory . '/' . $filename);
+        return File::put($this->directory . '/' . $filename, $content);
     }
 
     public function delete(string $filename): bool
