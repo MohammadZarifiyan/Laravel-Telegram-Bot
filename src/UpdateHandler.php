@@ -9,6 +9,7 @@ use MohammadZarifiyan\Telegram\Exceptions\TelegramCommandHandlerNotFoundExceptio
 use MohammadZarifiyan\Telegram\Exceptions\TelegramException;
 use MohammadZarifiyan\Telegram\Exceptions\TelegramMiddlewareFailedException;
 use MohammadZarifiyan\Telegram\Exceptions\TelegramOriginException;
+use MohammadZarifiyan\Telegram\Interfaces\CacheManager;
 use MohammadZarifiyan\Telegram\Interfaces\CanGetCommand;
 use MohammadZarifiyan\Telegram\Interfaces\Command;
 use MohammadZarifiyan\Telegram\Interfaces\CommandHandler;
@@ -84,27 +85,72 @@ class UpdateHandler
 	 */
 	public function runMiddlewares(): Generator
 	{
-		foreach ((array) config('telegram.middlewares') as $middleware) {
-			$middleware = try_resolve($middleware);
-			
-			$method = $this->getMethod($middleware);
-			
-			if (empty($method)) {
-				continue;
-			}
-			
-			$result = $middleware->{$method}($this->update);
-			
-			if ($result instanceof Update) {
-				yield $this->update = $result;
-				
-				continue;
-			}
-			
-			throw new TelegramMiddlewareFailedException(
-				sprintf('Telegram middleware %s failed.', get_class($middleware))
-			);
-		}
+        /**
+         * @var CacheManager $cache_manager
+         */
+        $cache_manager = App::make(CacheManager::class);
+
+        if ($cache_manager->exists('middlewares.json')) {
+            $grouped_middlewares = json_decode($cache_manager->get('middlewares.json'), true);
+            $update_type = $this->update->type();
+
+            if (array_key_exists($update_type, $grouped_middlewares)) {
+                $handler_method = $this->getHandlerMethod();
+
+                foreach ($grouped_middlewares[$update_type] as $middleware) {
+                    $middleware = try_resolve($middleware);
+                    $result = $middleware->{$handler_method}($this->update);
+
+                    if ($result instanceof Update) {
+                        yield $this->update = $result;
+
+                        continue;
+                    }
+
+                    throw new TelegramMiddlewareFailedException(
+                        sprintf('Telegram middleware %s failed.', get_class($middleware))
+                    );
+                }
+            }
+
+            foreach ($grouped_middlewares['all'] ?? [] as $middleware) {
+                $middleware = try_resolve($middleware);
+                $result = $middleware->handle($this->update);
+
+                if ($result instanceof Update) {
+                    yield $this->update = $result;
+
+                    continue;
+                }
+
+                throw new TelegramMiddlewareFailedException(
+                    sprintf('Telegram middleware %s failed.', get_class($middleware))
+                );
+            }
+        }
+        else {
+            foreach ((array) config('telegram.middlewares') as $middleware) {
+                $middleware = try_resolve($middleware);
+
+                $method = $this->getMethod($middleware);
+
+                if (empty($method)) {
+                    continue;
+                }
+
+                $result = $middleware->{$method}($this->update);
+
+                if ($result instanceof Update) {
+                    yield $this->update = $result;
+
+                    continue;
+                }
+
+                throw new TelegramMiddlewareFailedException(
+                    sprintf('Telegram middleware %s failed.', get_class($middleware))
+                );
+            }
+        }
 	}
 	
 	/**
@@ -186,15 +232,46 @@ class UpdateHandler
 	 */
 	public function runBreakers(): bool
 	{
-		foreach ((array) config('telegram.breakers') as $breaker) {
-			$breaker = try_resolve($breaker);
-			
-			$method = $this->getMethod($breaker);
-			
-			if ($method && $breaker->{$method}($this->update)) {
-				return true;
-			}
-		}
+        /**
+         * @var CacheManager $cache_manager
+         */
+        $cache_manager = App::make(CacheManager::class);
+
+        if ($cache_manager->exists('breakers.json')) {
+            $grouped_breakers = json_decode($cache_manager->get('breakers.json'), true);
+            $update_type = $this->update->type();
+
+            if (array_key_exists($update_type, $grouped_breakers)) {
+                $handler_method = $this->getHandlerMethod();
+
+                foreach ($grouped_breakers[$update_type] as $breaker) {
+                    $breaker = try_resolve($breaker);
+
+                    if ($breaker->{$handler_method}($this->update)) {
+                        return true;
+                    }
+                }
+            }
+
+            foreach ($grouped_breakers['all'] ?? [] as $breaker) {
+                $breaker = try_resolve($breaker);
+
+                if ($breaker->handle($this->update)) {
+                    return true;
+                }
+            }
+        }
+        else {
+            foreach ((array) config('telegram.breakers') as $breaker) {
+                $breaker = try_resolve($breaker);
+
+                $method = $this->getMethod($breaker);
+
+                if ($method && $breaker->{$method}($this->update)) {
+                    return true;
+                }
+            }
+        }
 		
 		return false;
 	}
