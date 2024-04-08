@@ -27,7 +27,7 @@ class Update extends Request
 	 */
 	public function isCommand(): bool
 	{
-		return $this->collect('message.entities.*.type')->contains('bot_command');
+		return $this->collect('message.entities.*.type')->contains('bot_command') && $this->string('message.text')->startsWith('/');
 	}
 	
 	/**
