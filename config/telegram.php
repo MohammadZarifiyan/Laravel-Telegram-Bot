@@ -41,7 +41,7 @@ return [
 	'allow-incognito-command' => false,
 	
 	/**
-	 * Throw exception if executing payload failed.
+	 * Throw exception if performing HTTP request failed.
 	 *
 	 * Default is "false" to prevent retrieving Telegram update again and again
 	 * when handling Telegram updates through Telegram webhook.

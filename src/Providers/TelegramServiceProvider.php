@@ -16,7 +16,6 @@ use MohammadZarifiyan\Telegram\Console\Commands\ClearMiddlewaresCache;
 use MohammadZarifiyan\Telegram\Console\Commands\MakeBreaker;
 use MohammadZarifiyan\Telegram\Console\Commands\MakeCommandHandler;
 use MohammadZarifiyan\Telegram\Console\Commands\MakeMiddleware;
-use MohammadZarifiyan\Telegram\Console\Commands\MakePayload;
 use MohammadZarifiyan\Telegram\Console\Commands\MakeReplyMarkup;
 use MohammadZarifiyan\Telegram\Console\Commands\MakeStage;
 use MohammadZarifiyan\Telegram\Console\Commands\MakeUpdate;
@@ -144,11 +143,6 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
 			[__DIR__.'/../../config/telegram.php' => config_path('telegram.php')],
 			'telegram-config'
 		);
-
-        $this->publishes(
-			[__DIR__.'/../database/migrations' => database_path('migrations')],
-			'telegram-migrations'
-		);
     }
 
     /**
@@ -191,7 +185,6 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
 				MakeBreaker::class,
 				MakeCommandHandler::class,
 				MakeMiddleware::class,
-				MakePayload::class,
 				MakeReplyMarkup::class,
 				MakeStage::class,
 				MakeUpdate::class,

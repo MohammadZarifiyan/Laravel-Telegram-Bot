@@ -2,7 +2,6 @@
 
 namespace MohammadZarifiyan\Telegram;
 
-use MohammadZarifiyan\Telegram\Interfaces\Payload;
 use MohammadZarifiyan\Telegram\Interfaces\PendingRequestStack as PendingRequestInterface;
 use MohammadZarifiyan\Telegram\Interfaces\ReplyMarkup;
 
@@ -15,21 +14,9 @@ class PendingRequestStack implements PendingRequestInterface
         //
     }
 
-    public function addPayload(Payload|string $payload, array $merge = [], string $apiKey = null, string $endpoint = null): static
+    public function add(string $method, array $data = [], ReplyMarkup|string|null $replyMarkup = null, string $apiKey = null, string $endpoint = null): static
     {
-        $this->pendingRequests[] = new PayloadPendingRequest(
-            $endpoint ?? $this->endpoint,
-            $apiKey ?? $this->apiKey,
-            try_resolve($payload),
-            $merge
-        );
-
-        return $this;
-    }
-
-    public function addRaw(string $method, array $data = [], ReplyMarkup|string|null $replyMarkup = null, string $apiKey = null, string $endpoint = null): static
-    {
-        $this->pendingRequests[] = new RawPendingRequest(
+        $this->pendingRequests[] = new PendingRequest(
             $endpoint ?? $this->endpoint,
             $apiKey ?? $this->apiKey,
             $method,

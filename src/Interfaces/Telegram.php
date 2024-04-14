@@ -17,8 +17,6 @@ interface Telegram
 
     public function getUpdate(): ?Update;
 
-    public function execute(Payload|string $payload, array $merge = []): Response;
-
     public function perform(string $method, array $data = [], ReplyMarkup|string|null $replyMarkup = null): Response;
 
     public function async(Closure $closure): array;

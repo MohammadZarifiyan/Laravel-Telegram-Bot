@@ -5,7 +5,6 @@ namespace MohammadZarifiyan\Telegram;
 use Exception;
 use Illuminate\Notifications\Notification;
 use MohammadZarifiyan\Telegram\Facades\Telegram;
-use MohammadZarifiyan\Telegram\Interfaces\Payload;
 use MohammadZarifiyan\Telegram\Interfaces\TelegramRequestContent;
 
 class Channel
@@ -15,10 +14,7 @@ class Channel
 		$recipient = $notifiable->routeNotificationFor('telegram', $notification);
 		$content = $notification->toTelegram($notifiable);
 
-        if (is_string($content) || $content instanceof Payload) {
-            Telegram::execute($content, ['chat_id' => $recipient]);
-        }
-        else if ($content instanceof TelegramRequestContent) {
+        if ($content instanceof TelegramRequestContent) {
             Telegram::perform(
                 $content->method,
                 array_merge($content->data, ['chat_id' => $recipient]),
@@ -26,7 +22,7 @@ class Channel
             );
         }
         else {
-            throw new Exception('toTelegram method must return a Payload or TelegramRequestContent');
+            throw new Exception('toTelegram method must return a TelegramRequestContent');
         }
 	}
 }

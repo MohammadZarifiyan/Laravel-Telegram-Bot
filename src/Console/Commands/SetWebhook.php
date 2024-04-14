@@ -10,7 +10,6 @@ use MohammadZarifiyan\Telegram\Exceptions\TelegramException;
 use MohammadZarifiyan\Telegram\Facades\Telegram;
 use MohammadZarifiyan\Telegram\Interfaces\ApiKeyRepository;
 use MohammadZarifiyan\Telegram\Interfaces\SecureTokenRepository;
-use MohammadZarifiyan\Telegram\Payloads\SetWebhookPayload;
 
 class SetWebhook extends Command
 {
@@ -21,14 +20,17 @@ class SetWebhook extends Command
     public function handle()
     {
         try {
-			$payload = new SetWebhookPayload(
-				$this->getUrl(),
-				$this->hasOption('drop-pending-updates'),
-                $this->getSecureToken(),
-				(int) $this->option('max-connections')
-			);
-			
-            $response = Telegram::fresh($this->getApiKey())->execute($payload);
+            $data = [
+                'url' => $this->getUrl(),
+                'drop_pending_updates' => $this->hasOption('drop-pending-updates'),
+                'max_connections' => $this->option('max-connections') ? (int)$this->option('max-connections') : 40
+            ];
+
+            if ($secure_token = $this->getSecureToken()) {
+                $data['secure_token'] = $secure_token;
+            }
+
+            $response = Telegram::fresh($this->getApiKey())->perform('setWebhook', $data);
 
 			$result = $response->object();
 
