@@ -11,18 +11,13 @@ use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\ServiceProvider;
 use MohammadZarifiyan\Telegram\Channel;
-use MohammadZarifiyan\Telegram\Console\Commands\ClearBreakersCache;
-use MohammadZarifiyan\Telegram\Console\Commands\ClearMiddlewaresCache;
 use MohammadZarifiyan\Telegram\Console\Commands\MakeBreaker;
 use MohammadZarifiyan\Telegram\Console\Commands\MakeCommandHandler;
 use MohammadZarifiyan\Telegram\Console\Commands\MakeMiddleware;
 use MohammadZarifiyan\Telegram\Console\Commands\MakeReplyMarkup;
 use MohammadZarifiyan\Telegram\Console\Commands\MakeStage;
 use MohammadZarifiyan\Telegram\Console\Commands\MakeUpdate;
-use MohammadZarifiyan\Telegram\Console\Commands\OptimizeBreakers;
-use MohammadZarifiyan\Telegram\Console\Commands\OptimizeMiddlewares;
 use MohammadZarifiyan\Telegram\Console\Commands\SetWebhook;
-use MohammadZarifiyan\Telegram\Interfaces\CacheManager as CacheManagerInterface;
 use MohammadZarifiyan\Telegram\Interfaces\Telegram as TelegramInterface;
 use MohammadZarifiyan\Telegram\Interfaces\ApiKeyRepository as ApiKeyRepositoryInterface;
 use MohammadZarifiyan\Telegram\Interfaces\EndpointRepository as EndpointRepositoryInterface;
@@ -33,7 +28,6 @@ use MohammadZarifiyan\Telegram\Middlewares\ChatTypeMiddleware;
 use MohammadZarifiyan\Telegram\Middlewares\UpdateTypeMiddleware;
 use MohammadZarifiyan\Telegram\PendingRequestStack;
 use MohammadZarifiyan\Telegram\FormUpdate;
-use MohammadZarifiyan\Telegram\Repositories\CacheManager;
 use MohammadZarifiyan\Telegram\RequestParser;
 use MohammadZarifiyan\Telegram\Telegram;
 
@@ -107,8 +101,6 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
         $this->app->bind(ApiKeyRepositoryInterface::class, config('telegram.api-key-repository'));
 
         $this->app->bind(SecureTokenRepositoryInterface::class, config('telegram.secure-token-repository'));
-
-        $this->app->bind(CacheManagerInterface::class, CacheManager::class);
 
 		$this->addTelegramRequestResolver();
     }
@@ -188,10 +180,6 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
 				MakeReplyMarkup::class,
 				MakeStage::class,
 				MakeUpdate::class,
-				OptimizeMiddlewares::class,
-                ClearMiddlewaresCache::class,
-                OptimizeBreakers::class,
-                ClearBreakersCache::class,
 			]);
 		}
 	}
@@ -245,7 +233,6 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
             EndpointRepositoryInterface::class,
             ApiKeyRepositoryInterface::class,
             SecureTokenRepositoryInterface::class,
-            CacheManagerInterface::class,
 		];
 	}
 }
