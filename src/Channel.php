@@ -15,11 +15,13 @@ class Channel
 		$content = $notification->toTelegram($notifiable);
 
         if ($content instanceof TelegramRequestContent) {
-            Telegram::perform(
+            $response = Telegram::perform(
                 $content->method,
                 array_merge($content->data, ['chat_id' => $recipient]),
                 $content->replyMarkup
             );
+
+            $response->throw();
         }
         else {
             throw new Exception('toTelegram method must return a TelegramRequestContent');
