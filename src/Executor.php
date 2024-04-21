@@ -14,12 +14,14 @@ class Executor
 	{
         $request_manipulator = config('telegram.pending-request-manipulator');
         $final_pending_request = empty($request_manipulator) ? $pendingRequest : new $request_manipulator($pendingRequest);
+        $verify_endpoint = config('telegram.verify-endpoint');
 
 		return Http::throwIf(
 			config('telegram.throw-http-exception')
 		)
 			->acceptJson()
             ->attach($final_pending_request->getAttachments())
+            ->when(!$verify_endpoint, fn ($pendingRequest) => $pendingRequest->withoutVerifying())
 			->retry(
 				5,
 				100,
@@ -32,13 +34,15 @@ class Executor
 	public function runAsync(array $pendingRequests): array
 	{
         $request_manipulator = config('telegram.pending-request-manipulator');
+        $verify_endpoint = config('telegram.verify-endpoint');
 
-		return Http::pool(function (Pool $pool) use ($pendingRequests, $request_manipulator) {
+		return Http::pool(function (Pool $pool) use ($pendingRequests, $request_manipulator, $verify_endpoint) {
             foreach ($pendingRequests as $pendingRequest) {
                 $final_pending_request = empty($request_manipulator) ? $pendingRequest : new $request_manipulator($pendingRequest);
 
                 $pool->acceptJson()
                     ->attach($final_pending_request->getAttachments())
+                    ->when(!$verify_endpoint, fn ($pendingRequest) => $pendingRequest->withoutVerifying())
                     ->retry(
                         5,
                         100,

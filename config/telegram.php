@@ -1,6 +1,13 @@
 <?php
 
 return [
+    /**
+     * status of TLS Certificate endpoint verification
+     *
+     * It is recommended to set this to true
+     */
+    'verify-endpoint' => (bool) env('TELEGRAM_VERIFY_ENDPOINT', true),
+
 	/**
 	 * Telegram API endpoint repository.
      *
