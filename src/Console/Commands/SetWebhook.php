@@ -22,8 +22,8 @@ class SetWebhook extends Command
         try {
             $data = [
                 'url' => $this->getUrl(),
-                'drop_pending_updates' => $this->hasOption('drop-pending-updates'),
-                'max_connections' => $this->option('max-connections') ? (int)$this->option('max-connections') : 40
+                'drop_pending_updates' => $this->option('drop-pending-updates'),
+                'max_connections' => $this->option('max-connections') ? (int) $this->option('max-connections') : 40
             ];
 
             if ($secure_token = $this->getSecureToken()) {
@@ -59,9 +59,11 @@ class SetWebhook extends Command
 	
 	public function getUrl(): string
 	{
-		if ($url = $this->option('url')) {
-			return $url;
-		}
+        $url = $this->option('url');
+
+        if (is_string($url) && strlen($url)) {
+            return $url;
+        }
 		
 		$route_name = Config::get('telegram.update-route');
 		
@@ -70,7 +72,9 @@ class SetWebhook extends Command
 	
 	public function getApiKey(): string
 	{
-        if (!empty($api_key = $this->option('api-key'))) {
+        $api_key = $this->option('api-key');
+
+        if (is_string($api_key) && strlen($api_key)) {
             return $api_key;
         }
 
@@ -83,8 +87,10 @@ class SetWebhook extends Command
 
     public function getSecureToken(): mixed
     {
-        if ($this->hasOption('secure-token')) {
-            return $this->option('secure-token');
+        $secure_token = $this->option('secure-token');
+
+        if (is_string($secure_token) && strlen($secure_token)) {
+            return $secure_token;
         }
 
         /**
