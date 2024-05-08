@@ -65,7 +65,7 @@ class Telegram implements TelegramInterface
     {
         $parts = explode(':', $this->apiKey);
 
-        if (count($parts) && is_numeric($parts[0])) {
+        if (count($parts) === 2 && is_numeric($parts[0])) {
             return (int) $parts[0];
         }
 
