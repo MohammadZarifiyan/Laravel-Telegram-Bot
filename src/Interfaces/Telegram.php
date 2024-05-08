@@ -17,6 +17,8 @@ interface Telegram
 
     public function getUpdate(): ?Update;
 
+    public function getBotId(): int;
+
     public function perform(string $method, array $data = [], ReplyMarkup|string|null $replyMarkup = null): Response;
 
     public function async(Closure $closure): array;

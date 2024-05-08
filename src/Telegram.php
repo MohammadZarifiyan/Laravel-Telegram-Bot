@@ -3,6 +3,7 @@
 namespace MohammadZarifiyan\Telegram;
 
 use Closure;
+use Exception;
 use Illuminate\Http\Client\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
@@ -59,6 +60,17 @@ class Telegram implements TelegramInterface
 	{
 		return @$this->update;
 	}
+
+    public function getBotId(): int
+    {
+        $parts = explode(':', $this->apiKey);
+
+        if (count($parts) && is_numeric($parts[0])) {
+            return (int) $parts[0];
+        }
+
+        throw new Exception('API Key is not valid');
+    }
 
     public function perform(string $method, array $data = [], ReplyMarkup|string|null $replyMarkup = null): Response
     {

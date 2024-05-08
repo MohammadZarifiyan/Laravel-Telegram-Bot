@@ -16,6 +16,7 @@ use MohammadZarifiyan\Telegram\Update;
  * @method static \MohammadZarifiyan\Telegram\Telegram setApiKey(string $apiKey)
  * @method static \MohammadZarifiyan\Telegram\Telegram setEndpoint(string $endpoint)
  * @method static Update|null getUpdate()
+ * @method static int getBotId()
  * @method static Response perform(string $method, array $data = [], ReplyMarkup|string|null $replyMarkup = null)
  * @method static array<Response> async(Closure $closure)
  * @method static string generateFileUrl(string $filePath)
