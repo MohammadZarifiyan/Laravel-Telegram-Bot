@@ -31,7 +31,7 @@ class Executor
 			->post($final_pending_request->getUrl(), $final_pending_request->getBody());
 	}
 	
-	public function runAsync(array $pendingRequests): array
+	public function runConcurrent(array $pendingRequests): array
 	{
         $request_manipulator = config('telegram.pending-request-manipulator');
         $verify_endpoint = config('telegram.verify-endpoint');

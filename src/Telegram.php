@@ -86,7 +86,7 @@ class Telegram implements TelegramInterface
         return $executor->run($pending_request);
     }
 
-	public function async(Closure $closure): array
+	public function concurrent(Closure $closure): array
     {
 		/**
 		 * @var PendingRequestStack $stack
@@ -100,7 +100,7 @@ class Telegram implements TelegramInterface
 
 		$executor = new Executor;
 
-		return $executor->runAsync(
+		return $executor->runConcurrent(
 			$stack->toArray()
 		);
     }

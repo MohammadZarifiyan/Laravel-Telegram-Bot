@@ -21,7 +21,7 @@ interface Telegram
 
     public function perform(string $method, array $data = [], ReplyMarkup|string|null $replyMarkup = null): Response;
 
-    public function async(Closure $closure): array;
+    public function concurrent(Closure $closure): array;
 
     public function generateFileUrl(string $filePath): string;
 }
