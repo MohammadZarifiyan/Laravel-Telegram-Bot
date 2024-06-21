@@ -7,7 +7,6 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Notifications\ChannelManager;
-use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\ServiceProvider;
 use MohammadZarifiyan\Telegram\Channel;
@@ -24,8 +23,6 @@ use MohammadZarifiyan\Telegram\Interfaces\EndpointRepository as EndpointReposito
 use MohammadZarifiyan\Telegram\Interfaces\SecureTokenRepository as SecureTokenRepositoryInterface;
 use MohammadZarifiyan\Telegram\Interfaces\PendingRequestStack as PendingRequestStackInterface;
 use MohammadZarifiyan\Telegram\Interfaces\RequestParser as RequestParserInterface;
-use MohammadZarifiyan\Telegram\Middlewares\ChatTypeMiddleware;
-use MohammadZarifiyan\Telegram\Middlewares\UpdateTypeMiddleware;
 use MohammadZarifiyan\Telegram\PendingRequestStack;
 use MohammadZarifiyan\Telegram\FormUpdate;
 use MohammadZarifiyan\Telegram\RequestParser;
@@ -88,10 +85,6 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
             return new Telegram($api_key, $endpoint);
         });
 	
-		$this->app->bind('update-type', UpdateTypeMiddleware::class);
-		
-		$this->app->bind('chat-type', ChatTypeMiddleware::class);
-		
 		$this->app->bind(PendingRequestStackInterface::class, PendingRequestStack::class);
 		
 		$this->app->bind(RequestParserInterface::class, RequestParser::class);
@@ -116,8 +109,6 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
         $this->publish();
 
         $this->declareMacros();
-
-		$this->aliasMiddlewares();
 
 		$this->addConsoleCommands();
 	
@@ -149,20 +140,6 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
             static::longText('stage')->nullable();
         });
     }
-
-	/**
-	 * Makes middleware aliases for entire app.
-	 *
-	 * @throws \Illuminate\Contracts\Container\BindingResolutionException
-	 * @return void
-	 */
-	public function aliasMiddlewares(): void
-	{
-		$router = $this->app->make(Router::class);
-
-		$router->aliasMiddleware('update-type', UpdateTypeMiddleware::class);
-		$router->aliasMiddleware('chat-type', ChatTypeMiddleware::class);
-	}
 	
 	/**
 	 * Adds console commands to the application.
@@ -226,8 +203,6 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
 	{
 		return [
             TelegramInterface::class,
-			'update-type',
-			'chat-type',
             RequestParserInterface::class,
 			PendingRequestStackInterface::class,
             EndpointRepositoryInterface::class,
