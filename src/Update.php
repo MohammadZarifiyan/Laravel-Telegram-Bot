@@ -2,6 +2,7 @@
 
 namespace MohammadZarifiyan\Telegram;
 
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use MohammadZarifiyan\Telegram\Interfaces\Command as CommandInterface;
@@ -14,6 +15,7 @@ class Update extends Request
 	protected CommandInterface $command;
 	protected mixed $gainer;
 	protected RequestParser $requestParser;
+    private bool $initializedGainerResolver = false;
 	
 	protected function getRequestParser(): RequestParser
 	{
@@ -117,7 +119,14 @@ class Update extends Request
 		$resolver = $this->getGainerResolver();
 		
 		if ($resolver instanceof GainerResolver) {
-			return $this->gainer = $resolver($this);
+            if ($this->initializedGainerResolver) {
+                throw new Exception('You should not run gainer() inside the GainerResolver.');
+            }
+
+            $this->initializedGainerResolver = true;
+            $this->gainer = $resolver($this);
+
+            return $this->gainer;
 		}
 		
 		return null;
