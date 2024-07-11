@@ -1,23 +1,22 @@
 # Introduction
-This package helps you to easily use Telegram bot API in your Laravel project and use Laravel features to build great Telegram bot.
+This package helps you to easily use the Telegram Bot API in your Laravel project and utilize its features to build a great Telegram bot.
 
-Please read [Telegram API documentation](https://core.telegram.org/bots/api) to get dipper understanding about how to work with this package.
+Please read [The Telegram API documentation](https://core.telegram.org/bots/api) to gain dipper understanding about how to work with this package.
 
 # Installation
-To install package in your project run following command in your project root folder.
+To install the package in your project, run the following command in your project root folder:
 ```shell
 composer require mohammad-zarifiyan/laravel-telegram-bot:^6.1
 ```
 
 # Basic configuration
-If you would like to publish configuration file run the following command. (Optional)
+If you would like to publish the configuration file, run the following command (optional):
 ```shell
 php artisan vendor:publish --provider="MohammadZarifiyan\Telegram\Providers\TelegramServiceProvider" --tag="telegram-config"
 ```
 
 ## Configure API Key
-To use Telegram bots, you must have an API Key. Get your API Key via [@BotFather](https://t.me/BotFather). Then you need to set your bot's API Key.
-By default, you should add the following code to the `config/services.php` file.
+To use Telegram bots, you must have an API key. Obtain your API key via [@BotFather](https://t.me/BotFather) Then, you need to set your bot's API key. By default, you should add the following code to the `config/services.php` file:
 ```php
 <?php
 
