@@ -9,6 +9,4 @@ interface RequestParser
 	public function __construct(Request $request);
 	
 	public function getUpdateType(): ?string;
-	
-	public function getChatType(): ?string;
 }

@@ -11,7 +11,7 @@ use MohammadZarifiyan\Telegram\Interfaces\RequestParser;
 
 class Update extends Request
 {
-	protected ?string $updateType, $chatType;
+	protected ?string $updateType;
 	protected CommandInterface $command;
 	protected mixed $gainer;
 	protected RequestParser $requestParser;
@@ -76,20 +76,6 @@ class Update extends Request
 		}
 		
 		return $this->updateType;
-	}
-	
-	/**
-	 * Returns chat type of the Telegram update.
-	 *
-	 * @return string|null
-	 */
-	public function chatType(): ?string
-	{
-		if (!isset($this->chatType)) {
-			$this->chatType = $this->getRequestParser()->getChatType();
-		}
-		
-		return $this->chatType;
 	}
 	
 	/**
