@@ -3,7 +3,7 @@
 namespace MohammadZarifiyan\Telegram;
 
 use Illuminate\Http\Request;
-use MohammadZarifiyan\Telegram\Providers\TelegramServiceProvider;
+use Illuminate\Support\Collection;
 
 class RequestParser implements Interfaces\RequestParser
 {
@@ -16,8 +16,12 @@ class RequestParser implements Interfaces\RequestParser
 	
 	public function getUpdateType(): ?string
 	{
-		return $this->updateType ??= collect(TelegramServiceProvider::UPDATE_TYPES)
-			->intersect($this->request->keys())
-			->first();
-	}
+        if (!isset($this->updateType)) {
+            $update_keys = new Collection($this->request->keys());
+
+            $this->updateType = $update_keys->except('update_id')->first();
+        }
+
+        return $this->updateType;
+    }
 }
