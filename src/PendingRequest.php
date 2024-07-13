@@ -9,17 +9,17 @@ use MohammadZarifiyan\Telegram\Interfaces\ReplyMarkup;
 class PendingRequest implements PendingRequestInterface
 {
     public array $body;
-    public array $attachments;
+    public array $attachments = [];
 
-	public function __construct(
-		protected string $endpoint,
-		protected string $apiKey,
+    public function __construct(
+        protected string $endpoint,
+        protected string $apiKey,
         public string $method,
         public array $data = [],
         public ReplyMarkup|string|null $replyMarkup = null
-	) {
+    ) {
         $this->setContents();
-	}
+    }
 
     private function setContents(): void
     {
@@ -28,20 +28,24 @@ class PendingRequest implements PendingRequestInterface
             $this->getReplyMarkup(),
         );
 
-        $contents = array_filter($contents, function ($value, $key) {
-            if ($value instanceof Attachment) {
-                $this->attachments[] = [
-                    $key,
-                    $value->content,
-                    $value->filename,
-                    $value->headers
-                ];
+        $contents = array_filter(
+            $contents,
+            function ($value, $key) {
+                if ($value instanceof Attachment) {
+                    $this->attachments[] = [
+                        $key,
+                        $value->content,
+                        $value->filename,
+                        $value->headers
+                    ];
 
-                return false;
-            }
+                    return false;
+                }
 
-            return true;
-        });
+                return true;
+            },
+            ARRAY_FILTER_USE_BOTH
+        );
 
         $this->body = array_map_recursive($contents, function ($value, $key, int $depth) {
             if ($depth > 0 && $value instanceof Attachment) {
@@ -66,10 +70,10 @@ class PendingRequest implements PendingRequestInterface
      *
      * @return string
      */
-	public function getUrl(): string
-	{
-		return sprintf('%s/bot%s/%s', $this->endpoint, $this->apiKey, $this->method);
-	}
+    public function getUrl(): string
+    {
+        return sprintf('%s/bot%s/%s', $this->endpoint, $this->apiKey, $this->method);
+    }
 
     /**
      * Get body of HTTP request.

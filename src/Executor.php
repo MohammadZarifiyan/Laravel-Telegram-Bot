@@ -63,7 +63,7 @@ class Executor
         }
 
         return array_map(
-            fn ($item) => is_array($pendingRequest) ? json_encode($item) : $item,
+            fn ($item) => is_array($item) ? json_encode($item) : $item,
             $pendingRequest->getBody()
         );
     }
