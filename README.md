@@ -369,7 +369,7 @@ class PaymentPaidNotification extends Notification
 ```
 
 # Attachment
-Use the `MohammadZarifiyan\Telegram\Attachment` class to attach a file stored on the server to request.
+Use the `MohammadZarifiyan\Telegram\Attachment` class to attach a file stored on the server to the request.
 
 ## Example
 In the example below, The photo stored on the server will be sent in the chat.
@@ -387,13 +387,13 @@ Telegram::perform('sendPhoto', [
 ```
 
 # Manipulating requests
-Sometimes you may want to manipulate information before sending a request to the Telegram API.
+Sometimes, you may want to manipulate request before sending executing it.
 
-First of all create a class and implement `App\Interfaces\PendingRequest`. Then get `App\Interfaces\PendingRequest` in its constructor.
+First, create a class and implement `App\Interfaces\PendingRequest`. Then, retrieve `App\Interfaces\PendingRequest` in its constructor.
 
-Then, in the `telegram.php` configuration file, set the value of `pending-request-manipulator` equal to the address of your class.
+Next, in the `telegram.php` configuration file, set the value of `pending-request-manipulator` to the address of your class.
 
-You can do whatever you want with the data received in the constructor.
+You can then manipulate the request received in the constructor as needed.
 
 The `telegram.php` configuration file:
 ```php
@@ -424,17 +424,17 @@ class PendingRequestManipulator implements PendingRequestInterface
     
     public function getUrl(): string
     {
-        return $this->pendingRequest->getUrl();// You can change the URL of request here.
+        return $this->pendingRequest->getUrl();// You can change the URL of the request here.
     }
     
     public function getBody(): array
     {
-        return $this->pendingRequest->getBody();// You can change the body of request here.
+        return $this->pendingRequest->getBody();// You can change the body of the request here.
     }
     
     public function getAttachments(): array
     {
-        return $this->pendingRequest->getAttachments();// You can change the attachments of request here.
+        return $this->pendingRequest->getAttachments();// You can change the attachments of the request here.
     }
 }
 ```
