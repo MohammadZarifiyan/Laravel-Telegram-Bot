@@ -2,12 +2,14 @@
 
 namespace MohammadZarifiyan\Telegram;
 
+use Illuminate\Support\Str;
 use MohammadZarifiyan\Telegram\Interfaces\PendingRequest as PendingRequestInterface;
 use MohammadZarifiyan\Telegram\Interfaces\ReplyMarkup;
 
 class PendingRequest implements PendingRequestInterface
 {
-    public array $content;
+    public array $body;
+    public array $attachments;
 
 	public function __construct(
 		protected string $endpoint,
@@ -16,11 +18,48 @@ class PendingRequest implements PendingRequestInterface
         public array $data = [],
         public ReplyMarkup|string|null $replyMarkup = null
 	) {
-		$this->content = array_merge(
+        $this->setContents();
+	}
+
+    private function setContents(): void
+    {
+        $contents = array_merge(
             $this->data,
             $this->getReplyMarkup(),
         );
-	}
+
+        $contents = array_filter($contents, function ($value, $key) {
+            if ($value instanceof Attachment) {
+                $this->attachments[] = [
+                    $key,
+                    $value->content,
+                    $value->filename,
+                    $value->headers
+                ];
+
+                return false;
+            }
+
+            return true;
+        });
+
+        $this->body = array_map_recursive($contents, function ($value, $key, int $depth) {
+            if ($depth > 0 && $value instanceof Attachment) {
+                $uuid = Str::uuid()->toString();
+
+                $this->attachments[] = [
+                    $uuid,
+                    $value->content,
+                    $value->filename,
+                    $value->headers
+                ];
+
+                return 'attach://'.$uuid;
+            }
+
+            return $value;
+        });
+    }
 
     /**
      * Get URL of HTTP request.
@@ -39,10 +78,7 @@ class PendingRequest implements PendingRequestInterface
      */
     public function getBody(): array
     {
-        return array_filter(
-            $this->content,
-            fn ($value) => $value instanceof Attachment === false
-        );
+        return $this->body;
     }
 
     /**
@@ -52,21 +88,7 @@ class PendingRequest implements PendingRequestInterface
      */
     public function getAttachments(): array
     {
-        $attachments = array_filter(
-            $this->content,
-            fn ($value) => $value instanceof Attachment
-        );
-
-        return array_map(
-            fn (Attachment $attachment, string $name) => [
-                $name,
-                $attachment->content,
-                $attachment->filename,
-                $attachment->headers
-            ],
-            $attachments,
-            array_keys($attachments)
-        );
+        return $this->attachments;
     }
 
     /**
@@ -83,7 +105,7 @@ class PendingRequest implements PendingRequestInterface
         }
 
         return [
-            'reply_markup' => json_encode($resolved_reply_markup())
+            'reply_markup' => $resolved_reply_markup()
         ];
     }
 }
