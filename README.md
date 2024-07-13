@@ -473,6 +473,7 @@ use MohammadZarifiyan\Telegram\Facades\Telegram;
 
 echo Telegram::getBotId();// Output: 123456
 ```
+
 # Webhook setup
 If you would like to receive Telegram updates you have to create a route named _telegram-update_. Then, run the following command.
 ```shell
@@ -539,8 +540,7 @@ return [
 Handling an update can happen in different steps depending on your needs. This method makes you able to implement all kinds of capabilities you need without considering the obstacles.
 
 ## Start handling
-After making an update route, Handles request using `handleRequest` method.
-You can also store requests in database and handle them later.
+After creating an update route, handles request using the `handleRequest` method. You can also store requests in database and handle them later.
 
 ### Example
 The `api.php` file:
@@ -562,19 +562,18 @@ Route::post('telegram-update', function (Request $request) {
 ## Middlewares
 If you want to run some codes to **modify the processing update** or **prevent processing it**, you can use a _Telegram middleware_.
 
-Telegram middlewares run before Command Handler and Breakers, If a Middleware returns anything other than an instance of `MohammadZarifiyan\Telegram\Update`, Then an instance of `MohammadZarifiyan\Telegram\TelegramMiddlewareFailedException` will be thrown and processing of the Telegram update will stop.
+Telegram middlewares run before Command Handler and Breakers, If a Middleware returns anything other than an instance of `MohammadZarifiyan\Telegram\Update`, an instance of `MohammadZarifiyan\Telegram\TelegramMiddlewareFailedException` will be thrown and processing of the Telegram update will stop.
 
 The method that is called in the Telegram middleware is based on the type of Telegram update that is being processed.
 
 For example, if the update type is `callback_query`, the method called will be `handleCallbackQuery`.
-If there is no specific method based on the Telegram update type related to handling the Telegram update, a method named `handle` is called in the Telegram middleware.
-Also, if there is no `handle` method in the middleware, the Telegram middleware will not be executed.
+If there is no specific method for handling the Telegram update based on its type, a method named `handle` is called in the Telegram middleware.
 
 Both `handle` and `handleCallbackQuery` will receive an instance of `MohammadZarifiyan\Telegram\Update` as the first argument.
 
-Note that `handleCallbackQuery` is used as an example and the method name will be vary in different Telegram updates based on update type.
+Note that `handleCallbackQuery` is used as an example, and the method name will vary with different Telegram updates based on the update type.
 
-To generate a fresh Telegram middleware run the following command.
+To generate a new Telegram middleware, run the following command.
 ```bash
 php artisan make:telegram-middleware <MiddlewareName>
 ```
@@ -594,25 +593,25 @@ return [
 ];
 ```
 
-Telegram middlewares will be executed in the same order as you put in `telegram.php` configuration file.
+Telegram middlewares will be executed in the same order as you place them in the `telegram.php` configuration file.
 
 ## Command handler
 The commands that users send to your bot must be handled by a _Command Handler_.
 
-Telegram Command handler will be run after running successfully all Telegram middlewares.
+The Telegram Command handler will run after all Telegram middlewares have run successfully.
 
 If no Command handler is found for the command the user submitted, an instance of `MohammadZarifiyan\Telegram\TelegramCommandNotFoundException` is thrown.
 
-You can disable of throwing exception by changing `allow-incognito-command` to `true` in `telegram.php` configuration file.
+You can disable throwing exceptions by setting `allow-incognito-command` to `true` in the `telegram.php` configuration file.
 
-Also you can check with the `$update->isCommand()` whether the Telegram update was created because of a bot command or not.
+Additionally, you can check with `$update->isCommand()` whether the Telegram update was created due to a bot command or not.
 
-To generate a fresh Command handler run the following command.
+To generate a new Command handler, run the following command.
 ```bash
 php artisan make:telegram-command-handler <CommandHandlerName>
 ```
 
-You should add your Telegram Command handler in `telegram.php` configuration file.
+You should add your Telegram Command handler to the `telegram.php` configuration file.
 ```php
 <?php
 
@@ -627,7 +626,7 @@ return [
 ];
 ```
 
-A command handler must implement `MohammadZarifiyan\Telegram\Interfaces\CommandHandler` interface and will look like this:
+A command handler must implement the `MohammadZarifiyan\Telegram\Interfaces\CommandHandler` interface and will look like this:
 ```php
 <?php
 
@@ -663,11 +662,11 @@ class StartCommandHandler implements CommandHandler
 
 The `getSignature` method must return the name of the command or commands that the `handle` method can handle.
 
-Sometimes Telegram update comes with command parameter.
+Sometimes a Telegram update comes with a command parameter.
 
-You can access to Telegram bot command data by calling `toCommand` method, Then you will receive an instance of `MohammadZarifiyan\Telegram\Interfaces\Command`.
+You can access Telegram bot command data by calling the `toCommand` method. Then, you will receive an instance of `MohammadZarifiyan\Telegram\Interfaces\Command`.
 
-For example if your Telegram bot username is `MyAwesomeBot` then you can add parameter to your `/start` command:
+For example, if your Telegram bot username is `MyAwesomeBot`, then you can add a parameter to your `/start` command:
 `https://t.me/MyAwesomeBot?start=abc`
 
 ```php
@@ -678,22 +677,22 @@ $command->getValue(); // Returns 'abc'
 ```
 
 ## Breaker
-If the Update is not handled by a `CommandHandler`, the update continues its path and reaches the _Breakers_. Breaker is a class that can handle the request based on its type, But a Breaker unlike Telegram Middlewares cannot modify the update.
+If the Update is not handled by a `CommandHandler`, it continues its path and reaches the Breakers. A _Breaker_ is a class that can handle the request based on its type, but unlike Telegram Middlewares, it cannot modify the update.
 
-The method that is called when Breaker is executed is exactly like Telegram middleware.
+The method that is called when a Breaker is executed is exactly like a Telegram middleware.
 
 A Breaker should extend `MohammadZarifiyan\Telegram\Breaker`.
 
-If a Breaker returns `true`, update processing stops. Otherwise, the next breakers will be executed. You can also stop processing Update by `stop` method in your Telegram breaker. If you do not want to stop processing the Update through next Telegram Breakers or stage, You should return `false` or anything other than `true`. You can also call `continue` method in your Telegram Breaker for the same result.
+If a Breaker returns `true`, update processing stops; otherwise, the next breakers will be executed. You can also stop processing the update with the `stop` method in your Breaker. If you do not want to stop processing the update through subsequent Breakers or stages, you should return `false` or anything other than `true`. Similarly, you can achieve the same result by calling the `continue` method in your Telegram Breaker.
 
-**Note that too many Telegram Middlewares and Breakers can reduce the performance of your Telegram bot.**
+**Note that having too many Telegram Middlewares and Breakers can reduce the performance of your Telegram bot.**
 
-To generate a fresh Breaker run the following command.
+To generate a new Breaker, run the following command.
 ```bash
 php artisan make:telegram-breaker <BreakerName>
 ```
 
-You should add your Telegram Breaker in `telegram.php` configuration file.
+You should add your Telegram Breaker to the `telegram.php` configuration file.
 ```php
 <?php
 
@@ -708,8 +707,7 @@ return [
 ];
 ```
 ### Example
-
-In the example below, we handle all the callback query updates related to an inline button to cancel sending notifications to all users.
+In the example below, we handle all callback query updates related to an inline button to cancel sending notifications to all users.
 
 ```php
 <?php
@@ -744,7 +742,8 @@ class CancelBulkNotificationBreaker extends Breaker
 ```
 
 ## Gainer
-You may want to access something like `Illuminate\Support\Facades\Request::user()` in your application to communicate with the database about the current update. Such a thing is provided for you in this package. Just create a class called `GainerResolver` in `app/Telegram` and implement `MohammadZarifiyan\Telegram\Interfaces\GainerResolver` in it. Then set the name of the class you created in the `telegram.php` configuration file.
+You may want to access something like `Illuminate\Support\Facades\Request::user()` in your application to interact with the database regarding the current update. This functionality is provided for you in this package. Simply create a class called `GainerResolver` in `app/Telegram` and implement the `MohammadZarifiyan\Telegram\Interfaces\GainerResolver` interface in it. Then set the name of the class you created in the `telegram.php` configuration file.
+
 The `telegram.php` configuration file:
 ```php
 <?php
@@ -757,7 +756,7 @@ return [
     // The rest of the file
 ];
 ```
-By using the `$update->gainer()`, you can access the value returned in `GainerResolver.php` handle method throughout your application.
+By using `$update->gainer()`, you can access the value returned by the `handle` method in `GainerResolver.php` throughout your application.
 ### Example
 The `app/Models/User.php` file:
 ```php
@@ -812,30 +811,29 @@ else {
     echo 'The $gainer value is null.';
 }
 ```
-## Stage
-Some robots have an interactive mode, that is, by receiving the new Telegram update, they allow the user to use new features. For example, when the user clicks on a button from the keyboard, a set of new buttons will be displayed to the user, and the user can use the new set of buttons only when he has already clicked on the mentioned button. This feature is often seen in robots that receive information from the user in stages. To implement such a thing, you need to save a _stage_ that should check the user's next update so that when you receive the next update, the code of that stage will be executed. Fortunately, this is greatly simplified by this package, `Stage` is a class that has methods similar to _Middleware_ and _Breaker_ methods. These methods are responsible for handling the robot updates. For example, `handleMessage` method checks the updates that are created due to sending messages in the chat where the bot is present. To use this feature, just define a modal for your `Gainer` and add a column named `stage` to your table in the database, then save the name of the class that should handle the next update along with its namespace in the `stage` column in your database.
-Then implement `MohammadZarifiyan\Telegram\Interfaces\Gainer` in your `Gainer` model.
 
-To create a stage, you must run the following command:
+## Stage
+Some bots have an interactive mode where they allow users to access new features upon receiving a new Telegram update. For example, when a user clicks a button on the keyboard, a new set of buttons is displayed, which the user can interact with only after clicking the initial button. This feature is commonly seen in bots that guide users through stages of information gathering. To implement this, you need to save a _stage_ that checks the user's next update, so that when the next update arrives, the corresponding stage code executes. Fortunately, this package simplifies this process significantly. The _Stage_ class has methods similar to those in _Middleware_ and _Breaker_ classes. These methods handle bot updates; for instance, the `handleMessage` method manages updates triggered by sending messages in the bot's chat. To utilize this feature, define a model for your _Gainer_, add a stage `column` to your database table, and store the fully qualified class name that should handle the next update in the `stage` column. Finally, implement the `MohammadZarifiyan\Telegram\Interfaces\Gainer` interface in your Gainer model.
+
+To create a stage, run the following command:
 ```shell
 php artisan make:telegram-stage <StageName>
 ```
 The above command creates a file in the path `app/Telegram/Stages`.
-### Validation and authorization of updates
-You can validate the updates in the update handler methods in the stage. Update validation works like `FormRequest` in Laravel. To validate the updates, you must create a class that inherits `MohammadZarifiyan\Telegram\FormUpdate` and use it as the first parameter in the update handler method in the stage class. If validation fails, an exception of type `MohammadZarifiyan\Telegram\Exceptions\TelegramValidationException` is thrown.
-You can catch `TelegramValidationException` in `app/Exceptions/Handler.php` file and send validation error to user.
 
-You can also use the authorize method. If the output of this method is false, an exception of `MohammadZarifiyan\Telegram\Exceptions\TelegramAuthorizationException` type will be thrown.
-You can catch `TelegramAuthorizationException` in `app/Exceptions/Handler.php` file and send authorization error to user.
+### Validation and authorization of updates
+You can validate updates in the update handler methods within the stage. Update validation works similar to `FormRequest` in Laravel. To validate updates, you must create a class that extends `MohammadZarifiyan\Telegram\FormUpdate` and use it as the first parameter in the update handler method within the stage class. If validation fails, an exception of type `MohammadZarifiyan\Telegram\Exceptions\TelegramValidationException` is thrown. You can catch `TelegramValidationException` in the `app/Exceptions/Handler.php` file and send validation errors to the user.
+
+You can also use the `authorize` method. If the output of this method is `false`, an exception of type `MohammadZarifiyan\Telegram\Exceptions\TelegramAuthorizationException` will be thrown. You can catch `TelegramAuthorizationException` in the `app/Exceptions/Handler.php` file and send an authorization error to the user.
 
 Run the following command to create a new update:
 ```shell
 php artisan make:telegram-update <UpdateName>
 ```
-This command creates a file in the path `app/Telegram/Updates`.
+This command creates a file at the path `app/Telegram/Updates`.
 
 ### Example
-In the following example, the age of the user is asked, the user can send a number between 1 and 100 to the bot. If the user sends anything other than this number to the robot, the robot will send the user a validation error message.
+In the following example, the bot asks the user for their age, expecting a number between 1 and 100. If the user sends anything other than this number, the bot will respond with a validation error message.
 
 Users migration:
 ```php
@@ -962,6 +960,6 @@ Telegram::perform('sendMessage', [
 ]);
 ```
 ## Update flow chart
-By viewing the chart below, you will better understand the update processing process.
+By viewing the chart below, you will better understand the update processing.
 
 ![Handling process](https://user-images.githubusercontent.com/55022827/210347380-722855a5-d681-43aa-a057-c3be6c49cca4.png)
