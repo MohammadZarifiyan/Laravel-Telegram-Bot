@@ -127,7 +127,7 @@ return [
 ```
 
 # Submit request to Telegram
-Use the `perform` method to send a request to the Telegram API. The first parameter is the method and the second parameter is the payload you want to send to the Telegram API.
+Use the `perform` method to send a request to the Telegram API. The first parameter is the method and the second parameter is the data you want to send to the Telegram API.
 
 **Note: See available Telegram methods at [this link](https://core.telegram.org/bots/api#available-methods)**
 
@@ -181,23 +181,25 @@ else {
 ```
 
 # Send notification by Telegram bot
-To send a notification by Telegram add `routeNotificationForTelegram` method to your notifiable model, then you have to return the Telegram `chat_id` of the notifiable.
+To send a notification via Telegram add the `routeNotificationForTelegram` method to your notifiable model. Then, return the Telegram `chat_id` of the notifiable.
 ```php
 public function routeNotificationForTelegram($notification)
 {
     // return telegram id
 }
 ```
-Return `telegram` channel from your notification `via` method.
+Return the `telegram` channel from your notification's `via` method.
 ```php
 public function via($notifiable): array
 {
     return ['telegram'];
 }
 ```
-Finally add `toTelegram` to your notification class and use `MohammadZarifiyan\Telegram\TelegramRequestContent` to specify your Telegram notification information.
+Finally, add `toTelegram` to your notification class and use `MohammadZarifiyan\Telegram\TelegramRequestContent` to specify your Telegram notification data.
 ```php
-public function toTelegram($notifiable): \MohammadZarifiyan\Telegram\Interfaces\TelegramRequestContent
+use \MohammadZarifiyan\Telegram\Interfaces\TelegramRequestContent as TelegramRequestContentInterface;
+
+public function toTelegram($notifiable): TelegramRequestContentInterface
 {
     // Return an instance of \MohammadZarifiyan\Telegram\TelegramRequestContent
 }
@@ -267,7 +269,7 @@ class PaymentPaidNotification extends Notification
 ```
 
 # Reply Markup
-If you want to add a reusable reply markup to your request payload, you need to create a **ReplyMarkup** class.
+If you want to add a reusable reply markup to your request payload, simply create a **ReplyMarkup** class.
 To create a ReplyMarkup class run the following command:
 ```shell
 php artisan make:telegram-reply-markup <ReplyMarkupName>
@@ -322,7 +324,7 @@ class MyKeyboard implements ReplyMarkup
     }
 }
 ```
-The final code:
+Here is the final code:
 ```php
 use \App\Telegram\ReplyMarkups\MyKeyboard;
 use \MohammadZarifiyan\Telegram\Facades\Telegram;
