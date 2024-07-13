@@ -440,7 +440,7 @@ class PendingRequestManipulator implements PendingRequestInterface
 ```
 
 # Generate file url
-Use the `generateFileUrl` method to create a link for a file located on Telegram servers.
+Use the `generateFileUrl` method to create a link for a file located on Telegram's servers.
 
 ## Example
 ```php
@@ -474,13 +474,13 @@ use MohammadZarifiyan\Telegram\Facades\Telegram;
 echo Telegram::getBotId();// Output: 123456
 ```
 # Webhook setup
-If you would like to receive Telegram updates you have to create a route named telegram-update, Then run the following command.
+If you would like to receive Telegram updates you have to create a route named _telegram-update_. Then, run the following command.
 ```shell
 php artisan telegram:set-webhook
 ```
-You can use your custom route name instead of `telegram-update`, but you have to update `update-route` in the `telegram.php` configuration file.
+You can use your custom route name instead of _telegram-update_, but you have to update `update-route` in the `telegram.php` configuration file.
 
-**Note: Your update route URL must start with `https://` and you have to install a valid SSL/TSL certificate on your domain.**
+**Note: Your update route URL must start with `https://` and you must install a valid SSL/TSL certificate on your domain.**
 
 ## Configure Secure Token
 It is strongly recommend to set a secure token for your bot to make sure that the updates are sent by Telegram.
