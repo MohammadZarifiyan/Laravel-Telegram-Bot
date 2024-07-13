@@ -16,7 +16,7 @@ php artisan vendor:publish --provider="MohammadZarifiyan\Telegram\Providers\Tele
 ```
 
 ## Configure API Key
-To use Telegram bots, you must have an API key. Obtain your API key via [@BotFather](https://t.me/BotFather) Then, you need to set your bot's API key. By default, you should add the following code to the `config/services.php` file:
+To use Telegram bots, you must have an API key. Obtain your API key via [@BotFather](https://t.me/BotFather). Then, set your bot's API key. By default, you should add the following code to the `config/services.php` file:
 ```php
 <?php
 
@@ -31,7 +31,7 @@ return [
 Then add `TELEGRAM_API_KEY` to your `.env` file.
 
 ### Custom repository
-If you want to get the API Key through another way, such as a database, you can create a repository for yourself instead of the above method. Just create a class and implement `MohammadZarifiyan\Telegram\Interfaces\ApiKeyRepository` in it. Then, in the `telegram.php` configuration file, set the value of `api-key-repository` equal to the address of your class.
+If you want to obtain the API Key through another way, such as a database, you can create your own repository instead of the above method. Simple create a class and implement `MohammadZarifiyan\Telegram\Interfaces\ApiKeyRepository` in it. Then, in the `telegram.php` configuration file, set the value of `api-key-repository` to the address of your class.
 #### Example
 `app/Repositories/TelegramApiKeyRepository.php` file:
 ```php
