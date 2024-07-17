@@ -6,7 +6,7 @@ Please read [The Telegram API documentation](https://core.telegram.org/bots/api)
 # Installation
 To install the package in your project, run the following command in your project root folder:
 ```shell
-composer require mohammad-zarifiyan/laravel-telegram-bot:^6.7
+composer require mohammad-zarifiyan/laravel-telegram-bot:^6.8
 ```
 
 # Basic configuration
@@ -665,7 +665,7 @@ $command->getValue(); // Returns 'abc'
 ```
 
 ## Anonymous command handler
-Sometimes you may want to create a command handler without specifying the signature. This feature is mostly used for multilingual commands or commands that are case insensitive. For this purpose, you can create a class and implement `MohammadZarifiyan\Telegram\Interfaces\AnonymousCommandHandler` in it. Then add the address of your class to `command_handlers` in the `telegram.php` configuration file.
+Sometimes you may want to create a command handler without specifying the signature. This feature is mostly used for commands that are case-insensitive or commands with dynamic signature. For this purpose, you can create a class and implement `MohammadZarifiyan\Telegram\Interfaces\AnonymousCommandHandler` in it. Then add the address of your class to `command_handlers` in the `telegram.php` configuration file.
 
 In anonymous command handlers, there is a `matchesSignature` method, in which you should check the command match.
 ```php
