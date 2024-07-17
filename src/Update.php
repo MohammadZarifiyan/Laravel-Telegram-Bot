@@ -50,20 +50,7 @@ class Update extends Request
 		);
 		return $this->command = new Command($signature, $trimmed_value);
 	}
-	
-	/**
-	 * Updates command.
-	 *
-	 * @param CommandInterface $command
-	 * @return static
-	 */
-	public function setCommand(CommandInterface $command): static
-	{
-		$this->command = $command;
-		
-		return $this;
-	}
-	
+
 	/**
 	 * Returns type of the Telegram update.
 	 *

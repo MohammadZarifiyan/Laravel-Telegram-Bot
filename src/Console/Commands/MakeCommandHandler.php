@@ -52,8 +52,8 @@ class MakeCommandHandler extends GeneratorCommand
 	 */
 	protected function getStub()
 	{
-		$relativePath = '/../stubs/command-handler.stub';
-		
+		$relativePath = $this->option('anonymous') ? '/../stubs/anonymous-command-handler.stub' : '/../stubs/command-handler.stub';
+
 		return file_exists($customPath = $this->laravel->basePath(trim($relativePath, '/')))
 			? $customPath
 			: __DIR__.$relativePath;
@@ -91,6 +91,7 @@ class MakeCommandHandler extends GeneratorCommand
 	{
 		return [
 			['force', 'f', InputOption::VALUE_NONE, 'Create the class even if the Telegram command handler already exists'],
+            ['anonymous', 'a', InputOption::VALUE_NONE, 'Create an anonymous command handler'],
 		];
 	}
 }

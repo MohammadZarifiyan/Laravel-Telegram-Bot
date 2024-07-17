@@ -1,0 +1,30 @@
+<?php
+
+namespace {{ namespace }};
+
+use MohammadZarifiyan\Telegram\Interfaces\AnonymousCommandHandler;
+use MohammadZarifiyan\Telegram\Update;
+
+class {{ class }} implements AnonymousCommandHandler
+{
+	/**
+     * Checks whether the current CommandHandler can process the command.
+     *
+     * @param Update $update
+     * @return bool
+     */
+    public function matchesSignature(Update $update): bool
+	{
+		// TODO: Implement matchesSignature() method.
+	}
+
+    /**
+     * Handles the Telegram command.
+	 *
+	 * @param Update $update
+     */
+	public function handle(Update $update)
+	{
+		// TODO: Implement handle() method.
+	}
+}

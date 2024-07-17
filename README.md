@@ -664,6 +664,45 @@ $command->getSignature(); // Returns 'start'
 $command->getValue(); // Returns 'abc'
 ```
 
+## Anonymous command handler
+Sometimes you may want to create a command handler without specifying the signature. This feature is mostly used for multilingual commands or commands that are case insensitive. For this purpose, you can create a class and implement `MohammadZarifiyan\Telegram\Interfaces\AnonymousCommandHandler` in it. Then add the address of your class to `command_handlers` in the `telegram.php` configuration file.
+
+In anonymous command handlers, there is a `matchesSignature` method, in which you should check the command match.
+```php
+<?php
+
+namespace App\Telegram\CommandHandlers;
+
+use MohammadZarifiyan\Telegram\Interfaces\AnonymousCommandHandler;
+use MohammadZarifiyan\Telegram\Update;
+
+class MyAnonymousCommandHandler implements AnonymousCommandHandler
+{
+    /**
+     * Checks whether the current CommandHandler can process the command.
+     *
+     * @param Update $update
+     * @return bool
+     */
+    public function matchesSignature(Update $update): bool
+    {
+        $signature = $update->isCommand()->getSignature();
+        
+        return $signature === 'start';
+    }
+    
+    /**
+     * Handles the Telegram command.
+     *
+     * @param Update $update
+     */
+    public function handle(Update $update)
+    {
+        // Handle command here
+    }
+}
+```
+
 ## Breaker
 If the Update is not handled by a `CommandHandler`, it continues its path and reaches the Breakers. A _Breaker_ is a class that can handle the request based on its type, but unlike Telegram Middlewares, it cannot modify the update.
 
