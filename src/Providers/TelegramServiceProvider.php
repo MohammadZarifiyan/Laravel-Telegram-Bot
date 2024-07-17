@@ -62,7 +62,18 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
                 $endpoint = $parameters['endpoint'];
             }
 
-            return new Telegram($api_key, $endpoint);
+            if (empty($parameters['secureToken'])) {
+                /**
+                 * @var SecureTokenRepositoryInterface $secure_token_repository
+                 */
+                $secure_token_repository = $application->make(SecureTokenRepositoryInterface::class);
+                $secure_token = $secure_token_repository->get();
+            }
+            else {
+                $secure_token = $parameters['secureToken'];
+            }
+
+            return new Telegram($api_key, $endpoint, $secure_token);
         });
 	
 		$this->app->bind(PendingRequestStackInterface::class, PendingRequestStack::class);

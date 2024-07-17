@@ -13,13 +13,12 @@ use MohammadZarifiyan\Telegram\Interfaces\CanGetCommand;
 use MohammadZarifiyan\Telegram\Interfaces\Command;
 use MohammadZarifiyan\Telegram\Interfaces\CommandHandler;
 use MohammadZarifiyan\Telegram\Interfaces\Gainer;
-use MohammadZarifiyan\Telegram\Interfaces\SecureTokenRepository;
 use ReflectionException;
 use ReflectionMethod;
 
 class UpdateHandler
 {
-	public function __construct(public Update $update)
+	public function __construct(public Update $update, protected ?string $secureToken = null)
 	{
 		//
 	}
@@ -62,16 +61,11 @@ class UpdateHandler
 	 */
 	public function validateOrigin(): void
 	{
-        /**
-         * @var SecureTokenRepository $secure_token_repository
-         */
-        $secure_token_repository = App::make(SecureTokenRepository::class);
-
-        if (empty($secure_token = $secure_token_repository->get())) {
+        if (empty($this->secureToken)) {
             return;
         }
 
-		if (trim($secure_token) === trim((string) $this->update->header('X-Telegram-Bot-Api-Secret-Token'))) {
+		if (trim($this->secureToken) === trim((string) $this->update->header('X-Telegram-Bot-Api-Secret-Token'))) {
 			return;
 		}
 		

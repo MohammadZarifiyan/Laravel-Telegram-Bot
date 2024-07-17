@@ -21,11 +21,6 @@ return [
      * It must be an instance of \MohammadZarifiyan\Telegram\Interfaces\ApiKeyRepository
 	 */
 	'api-key-repository' => \MohammadZarifiyan\Telegram\Repositories\ApiKeyRepository::class,
-	
-	/**
-	 * Route name of Telegram update controller.
-	 */
-	'update-route' => 'telegram-update',
 
     /**
      * An instance of App\Interfaces\PendingRequest that accepts App\Interfaces\PendingRequest as its constructor parameter.

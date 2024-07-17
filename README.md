@@ -6,7 +6,7 @@ Please read [The Telegram API documentation](https://core.telegram.org/bots/api)
 # Installation
 To install the package in your project, run the following command in your project root folder:
 ```shell
-composer require mohammad-zarifiyan/laravel-telegram-bot:^6.6
+composer require mohammad-zarifiyan/laravel-telegram-bot:^6.7
 ```
 
 # Basic configuration
@@ -79,7 +79,7 @@ return [
 Then add `TELEGRAM_ENDPOINT` to your `.env` file.
 
 ### Custom repository
-If you want to get the endpoint through another way, such as a database, you can create a repository for yourself instead of the above method. Just create a class and implement `MohammadZarifiyan\Telegram\Interfaces\EndpointRepository` in it. Then, in the `telegram.php` configuration file, set the value of `endpoint-repository` equal to the address of your class.
+If you want to get the endpoint through another way, such as a database, you can create a repository for yourself instead of the above method. Just create a class and implement `MohammadZarifiyan\Telegram\Interfaces\EndpointRepository` in it. Then, in the `telegram.php` configuration file, set the value of `endpoint-repository` to the address of your class.
 #### Example
 `app/Repositories/TelegramEndpointRepository.php` file:
 ```php
@@ -474,17 +474,8 @@ use MohammadZarifiyan\Telegram\Facades\Telegram;
 echo Telegram::getBotId();// Output: 123456
 ```
 
-# Webhook setup
-If you would like to receive Telegram updates you have to create a route named _telegram-update_. Then, run the following command.
-```shell
-php artisan telegram:set-webhook
-```
-You can use your custom route name instead of _telegram-update_, but you have to update `update-route` in the `telegram.php` configuration file.
-
-**Note: Your update route URL must start with `https://` and you must install a valid SSL/TSL certificate on your domain.**
-
-## Configure Secure Token
-It is strongly recommend to set a secure token for your bot to make sure that the updates are sent by Telegram.
+# Configure Secure Token
+It is strongly recommend to set a secure token for your bot to make sure that the updates are sent by Telegram webhook.
 
 By default, you should add the following code to the `config/services.php` file.
 ```php
@@ -504,9 +495,9 @@ Note: Only characters A-Z, a-z, 0-9, _ and - are allowed.
 
 Note: After changing the secure token, you must set your bot's webhook again.
 
-### Custom repository
-If you want to get the secure token through another way, such as a database, you can create a repository for yourself instead of the above method. Just create a class and implement `MohammadZarifiyan\Telegram\Interfaces\SecureTokenRepository` in it. Then, in the `telegram.php` configuration file, set the value of `secure-token-repository` equal to the address of your class.
-#### Example
+## Custom repository
+If you want to get the secure token through another way, such as a database, you can create a repository for yourself instead of the above method. Just create a class and implement `MohammadZarifiyan\Telegram\Interfaces\SecureTokenRepository` in it. Then, in the `telegram.php` configuration file, set the value of `secure-token-repository` to the address of your class.
+### Example
 `app/Repositories/TelegramSecureTokenRepository.php` file:
 ```php
 <?php
@@ -540,7 +531,7 @@ return [
 Handling an update can happen in different steps depending on your needs. This method makes you able to implement all kinds of capabilities you need without considering the obstacles.
 
 ## Start handling
-After creating an update route, handles request using the `handleRequest` method. You can also store requests in database and handle them later.
+After creating a route, handles request using the `handleRequest` method. You can also store requests in database and handle them later.
 
 ### Example
 The `api.php` file:
@@ -553,10 +544,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('telegram-update', function (Request $request) {
    Telegram::handleRequest($request);
-})
-   ->name(
-      config('telegram.update-route')
-   );
+});
 ```
 
 ## Middlewares

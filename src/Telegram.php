@@ -20,8 +20,11 @@ class Telegram implements TelegramInterface
 	
 	protected ?Update $update;
 	
-	public function __construct(protected string $apiKey, protected string $endpoint)
-	{
+	public function __construct(
+        protected string $apiKey,
+        protected string $endpoint,
+        protected ?string $secureToken = null
+    ) {
 		//
 	}
 	
@@ -39,17 +42,24 @@ class Telegram implements TelegramInterface
 		return $this;
 	}
 
+	public function setSecureToken(?string $secureToken = null): static
+	{
+		$this->secureToken = $secureToken;
+
+		return $this;
+	}
+
 	/**
 	 * @throws TelegramException
 	 * @throws TelegramOriginException|\ReflectionException
 	 */
 	public function handleRequest(Request $request): void
 	{
-		if (!($request instanceof Update)) {
+		if ($request instanceof Update === false) {
 			$this->update = Update::createFrom($request);
 		}
 
-		$update_handler = new UpdateHandler($this->update);
+		$update_handler = new UpdateHandler($this->update, $this->secureToken);
 
 		foreach ($update_handler->run() as $update) {
 			$this->update = $update;
