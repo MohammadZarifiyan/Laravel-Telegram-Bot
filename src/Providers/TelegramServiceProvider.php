@@ -16,7 +16,6 @@ use MohammadZarifiyan\Telegram\Console\Commands\MakeMiddleware;
 use MohammadZarifiyan\Telegram\Console\Commands\MakeReplyMarkup;
 use MohammadZarifiyan\Telegram\Console\Commands\MakeStage;
 use MohammadZarifiyan\Telegram\Console\Commands\MakeUpdate;
-use MohammadZarifiyan\Telegram\Console\Commands\SetWebhook;
 use MohammadZarifiyan\Telegram\Interfaces\Telegram as TelegramInterface;
 use MohammadZarifiyan\Telegram\Interfaces\ApiKeyRepository as ApiKeyRepositoryInterface;
 use MohammadZarifiyan\Telegram\Interfaces\EndpointRepository as EndpointRepositoryInterface;
@@ -141,7 +140,6 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
 	{
 		if ($this->app->runningInConsole()) {
 			$this->commands([
-				SetWebhook::class,
 				MakeBreaker::class,
 				MakeCommandHandler::class,
 				MakeMiddleware::class,
