@@ -2,6 +2,7 @@
 
 namespace MohammadZarifiyan\Telegram;
 
+use Exception;
 use Generator;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
@@ -9,8 +10,7 @@ use MohammadZarifiyan\Telegram\Exceptions\TelegramCommandHandlerNotFoundExceptio
 use MohammadZarifiyan\Telegram\Exceptions\TelegramException;
 use MohammadZarifiyan\Telegram\Exceptions\TelegramMiddlewareFailedException;
 use MohammadZarifiyan\Telegram\Exceptions\TelegramOriginException;
-use MohammadZarifiyan\Telegram\Interfaces\CanGetCommand;
-use MohammadZarifiyan\Telegram\Interfaces\Command;
+use MohammadZarifiyan\Telegram\Interfaces\AnonymousCommandHandler;
 use MohammadZarifiyan\Telegram\Interfaces\CommandHandler;
 use MohammadZarifiyan\Telegram\Interfaces\Gainer;
 use ReflectionException;
@@ -147,29 +147,29 @@ class UpdateHandler
 	
 	public function getMatchedCommand(): ?CommandHandler
 	{
-		$default_command = $this->update->toCommand();
-		
 		foreach ((array) config('telegram.command_handlers') as $command_handler) {
 			/**
-			 * @var CommandHandler|null $command_handler
+			 * @var CommandHandler|null $command_handler_instance
 			 */
-			$command_handler = try_resolve($command_handler);
-			
-			$command = $default_command;
-			
-			if ($command_handler instanceof CanGetCommand) {
-				$possible_command = $command_handler->getCommand($this->update);
-				
-				if ($possible_command instanceof Command) {
-					$command = $possible_command;
-				}
-			}
-			
-			if (in_array($command->getSignature(), (array) $command_handler->getSignature($this->update))) {
-				$this->update->setCommand($command);
-				
-				return $command_handler;
-			}
+			$command_handler_instance = try_resolve($command_handler);
+
+            if ($command_handler_instance instanceof CommandHandler) {
+                $signature = $this->update->toCommand()->getSignature();
+
+                if (in_array($signature, (array) $command_handler->getSignature($this->update))) {
+                    return $command_handler;
+                }
+            }
+            else if ($command_handler_instance instanceof AnonymousCommandHandler) {
+                if ($command_handler_instance->matchesSignature($this->update)) {
+                    return $command_handler;
+                }
+            }
+            else {
+                throw new Exception(
+                    sprintf('(%s) is not a valid command handler', (string) $command_handler)
+                );
+            }
 		}
 		
 		return null;
