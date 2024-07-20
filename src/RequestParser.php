@@ -19,7 +19,7 @@ class RequestParser implements Interfaces\RequestParser
         if (!isset($this->updateType)) {
             $update_keys = new Collection($this->request->keys());
 
-            $this->updateType = $update_keys->except('update_id')->first();
+            $this->updateType = $update_keys->first(fn ($key) => $key !== 'update_id');
         }
 
         return $this->updateType;
