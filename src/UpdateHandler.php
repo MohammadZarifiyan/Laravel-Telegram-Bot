@@ -156,13 +156,13 @@ class UpdateHandler
             if ($command_handler_instance instanceof CommandHandler) {
                 $signature = $this->update->toCommand()->getSignature();
 
-                if (in_array($signature, (array) $command_handler->getSignature($this->update))) {
-                    return $command_handler;
+                if (in_array($signature, (array) $command_handler_instance->getSignature($this->update))) {
+                    return $command_handler_instance;
                 }
             }
             else if ($command_handler_instance instanceof AnonymousCommandHandler) {
                 if ($command_handler_instance->matchesSignature($this->update)) {
-                    return $command_handler;
+                    return $command_handler_instance;
                 }
             }
             else {
