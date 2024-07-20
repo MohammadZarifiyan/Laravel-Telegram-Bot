@@ -42,13 +42,13 @@ class Update extends Request
 		if (isset($this->command)) {
 			return $this->command;
 		}
-		
-		$command_parts = explode(' ', $this->input('message.text'));
-		$signature = substr($command_parts[0], 1);
-		$trimmed_value = trim(
-			implode(' ', array_slice($command_parts, 1))
-		);
-		return $this->command = new Command($signature, $trimmed_value);
+
+        $command_parts = $this->string('message.text')->explode(' ');
+        $signature = substr($command_parts->first(), 1);
+        $value = $command_parts->slice(1)->implode(' ');
+        $value = trim($value) === '' ? null : trim($value);
+
+        return $this->command = new Command($signature, $value);
 	}
 
 	/**

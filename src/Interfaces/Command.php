@@ -14,7 +14,7 @@ interface Command
 	/**
 	 * Returns command value.
 	 *
-	 * @return mixed
+	 * @return null|string
 	 */
-	public function getValue(): mixed;
+	public function getValue(): ?string;
 }

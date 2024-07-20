@@ -6,7 +6,7 @@ use MohammadZarifiyan\Telegram\Interfaces\Command as CommandInterface;
 
 class Command implements CommandInterface
 {
-	public function __construct(public string $signature, public mixed $value)
+	public function __construct(public string $signature, public ?string $value)
 	{
 		//
 	}
@@ -16,7 +16,7 @@ class Command implements CommandInterface
 		return $this->signature;
 	}
 	
-	public function getValue(): mixed
+	public function getValue(): ?string
 	{
 		return $this->value;
 	}
