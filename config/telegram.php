@@ -23,7 +23,7 @@ return [
 	'api-key-repository' => \MohammadZarifiyan\Telegram\Repositories\ApiKeyRepository::class,
 
     /**
-     * An instance of \MohammadZarifiyan\Telegram\PendingRequest that accepts \MohammadZarifiyan\Telegram\PendingRequest as its constructor parameter.
+     * An instance of \MohammadZarifiyan\Telegram\Interfaces\PendingRequest that accepts \MohammadZarifiyan\Telegram\Interfaces\PendingRequest as its constructor parameter.
      */
     'pending-request-manipulator' => null,
 	
