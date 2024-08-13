@@ -389,7 +389,7 @@ Telegram::perform('sendPhoto', [
 # Manipulating requests
 Sometimes, you may want to manipulate request before sending executing it.
 
-First, create a class and implement `App\Interfaces\PendingRequest`. Then, retrieve `App\Interfaces\PendingRequest` in its constructor.
+First, create a class and implement `\MohammadZarifiyan\Telegram\PendingRequest`. Then, retrieve `\MohammadZarifiyan\Telegram\PendingRequest` in its constructor.
 
 Next, in the `telegram.php` configuration file, set the value of `pending-request-manipulator` to the address of your class.
 
