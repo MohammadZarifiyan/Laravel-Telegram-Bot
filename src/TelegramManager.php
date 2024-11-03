@@ -14,7 +14,7 @@ use MohammadZarifiyan\Telegram\Exceptions\TelegramException;
 use MohammadZarifiyan\Telegram\Exceptions\TelegramOriginException;
 use MohammadZarifiyan\Telegram\Interfaces\PendingRequestStack;
 
-class Telegram implements TelegramInterface
+class TelegramManager implements TelegramInterface
 {
 	use Macroable;
 	

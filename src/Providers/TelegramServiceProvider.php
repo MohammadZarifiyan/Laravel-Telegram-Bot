@@ -25,7 +25,7 @@ use MohammadZarifiyan\Telegram\Interfaces\RequestParser as RequestParserInterfac
 use MohammadZarifiyan\Telegram\PendingRequestStack;
 use MohammadZarifiyan\Telegram\FormUpdate;
 use MohammadZarifiyan\Telegram\RequestParser;
-use MohammadZarifiyan\Telegram\Telegram;
+use MohammadZarifiyan\Telegram\TelegramManager;
 
 class TelegramServiceProvider extends ServiceProvider implements DeferrableProvider
 {
@@ -72,7 +72,7 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
                 $secure_token = $parameters['secureToken'];
             }
 
-            return new Telegram($api_key, $endpoint, $secure_token);
+            return new TelegramManager($api_key, $endpoint, $secure_token);
         });
 	
 		$this->app->bind(PendingRequestStackInterface::class, PendingRequestStack::class);

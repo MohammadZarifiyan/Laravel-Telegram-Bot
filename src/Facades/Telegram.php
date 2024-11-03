@@ -13,9 +13,9 @@ use MohammadZarifiyan\Telegram\Update;
 
 /**
  * @method static void handleRequest(Request $request)
- * @method static \MohammadZarifiyan\Telegram\Telegram setApiKey(string $apiKey)
- * @method static \MohammadZarifiyan\Telegram\Telegram setEndpoint(string $endpoint)
- * @method static \MohammadZarifiyan\Telegram\Telegram setSecureToken(string $endpoint)
+ * @method static \MohammadZarifiyan\Telegram\TelegramManager setApiKey(string $apiKey)
+ * @method static \MohammadZarifiyan\Telegram\TelegramManager setEndpoint(string $endpoint)
+ * @method static \MohammadZarifiyan\Telegram\TelegramManager setSecureToken(string $endpoint)
  * @method static Update|null getUpdate()
  * @method static int getBotId()
  * @method static Response perform(string $method, array $data = [], ReplyMarkup|string|null $replyMarkup = null)
@@ -26,7 +26,7 @@ use MohammadZarifiyan\Telegram\Update;
  * @method static hasMacro($name)
  * @method static flushMacros()
  *
- * @see \MohammadZarifiyan\Telegram\Telegram
+ * @see \MohammadZarifiyan\Telegram\TelegramManager
  */
 
 class Telegram extends Facade
