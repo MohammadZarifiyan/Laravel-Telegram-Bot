@@ -26,6 +26,7 @@ use MohammadZarifiyan\Telegram\PendingRequestStack;
 use MohammadZarifiyan\Telegram\FormUpdate;
 use MohammadZarifiyan\Telegram\RequestParser;
 use MohammadZarifiyan\Telegram\TelegramManager;
+use MohammadZarifiyan\Telegram\Update;
 
 class TelegramServiceProvider extends ServiceProvider implements DeferrableProvider
 {
@@ -173,6 +174,17 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
 	 */
 	public function addTelegramRequestResolver(): void
 	{
+        $this->app->resolving(
+            Update::class,
+            function ($update, Container $app) {
+                $from = $app->has('telegram')
+                    ? $app->get('telegram')->getUpdate()
+                    : $app['request'];
+
+                return Update::createFrom($from, $update);
+            }
+        );
+
 		$this->app->resolving(
 			FormUpdate::class,
 			function ($update, Container $app) {
@@ -180,7 +192,7 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
 					? $app->get('telegram')->getUpdate()
 					: $app['request'];
 				
-				FormUpdate::createFrom($from, $update)->setContainer($app);
+				return FormUpdate::createFrom($from, $update)->setContainer($app);
 			}
 		);
 	}
