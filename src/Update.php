@@ -12,7 +12,7 @@ use MohammadZarifiyan\Telegram\Interfaces\RequestParser;
 class Update extends Request
 {
 	protected ?string $updateType;
-	protected CommandInterface $command;
+	protected ?CommandInterface $command;
 	protected mixed $gainer;
 	protected RequestParser $requestParser;
     private bool $initializedGainerResolver = false;
@@ -35,13 +35,17 @@ class Update extends Request
 	/**
 	 * Converts Telegram update to command instance.
 	 *
-	 * @return CommandInterface
+	 * @return ?CommandInterface
 	 */
-	public function toCommand(): CommandInterface
+	public function toCommand(): ?CommandInterface
 	{
 		if (isset($this->command)) {
 			return $this->command;
 		}
+
+        if (!$this->isCommand()) {
+            return $this->command = null;
+        }
 
         $command_parts = $this->string('message.text')->explode(' ');
         $signature = substr($command_parts->first(), 1);
