@@ -145,7 +145,7 @@ class UpdateHandler
 		return null;
 	}
 	
-	public function getMatchedCommand(): ?CommandHandler
+	public function getMatchedCommand(): null|CommandHandler|AnonymousCommandHandler
 	{
 		foreach ((array) config('telegram.command_handlers') as $command_handler) {
 			/**
