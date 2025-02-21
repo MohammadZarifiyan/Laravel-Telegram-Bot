@@ -13,7 +13,7 @@ class Executor
 	public function run(PendingRequestInterface $pendingRequest): Response
 	{
         $retry = config('telegram.retry');
-        $options = config('telegram.request-options');
+        $verify_endpoint = config('telegram.verify-endpoint');
         $throw_http_exception = config('telegram.throw-http-exception');
         $request_manipulator = config('telegram.pending-request-manipulator');
         $final_pending_request = empty($request_manipulator) ? $pendingRequest : new $request_manipulator($pendingRequest);
@@ -22,7 +22,7 @@ class Executor
         return Http::throwIf($throw_http_exception)
 			->acceptJson()
             ->attach($final_pending_request->getAttachments())
-            ->withOptions($options)
+            ->when(!$verify_endpoint, fn ($pendingRequest) => $pendingRequest->withoutVerifying())
 			->retry(
                 $retry['times'],
                 $retry['sleep'],
@@ -36,7 +36,7 @@ class Executor
 	{
 		return Http::pool(function (Pool $pool) use ($pendingRequests) {
             $request_manipulator = config('telegram.pending-request-manipulator');
-            $options = config('telegram.request-options');
+            $verify_endpoint = config('telegram.verify-endpoint');
             $retry = config('telegram.retry');
 
             foreach ($pendingRequests as $pendingRequest) {
@@ -44,7 +44,7 @@ class Executor
 
                 $pool->acceptJson()
                     ->attach($final_pending_request->getAttachments())
-                    ->withOptions($options)
+                    ->when(!$verify_endpoint, fn ($pendingRequest) => $pendingRequest->withoutVerifying())
                     ->retry(
                         $retry['times'],
                         $retry['sleep'],

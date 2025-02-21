@@ -129,8 +129,8 @@ return [
 ];
 ```
 
-## Request options
-You can set your desired options (such as proxy, endpoint authentication, etc.) to be applied to HTTP requests.
+## Verify TLS Certificate of the endpoint
+You can also set your endpoint's tls certificate to be verified when you send a request to it. For this you can set `TELEGRAM_VERIFY_ENDPOINT` in your `.env`. It is recommended that the `TELEGRAM_VERIFY_ENDPOINT` value is always `true`.
 
 The `telegram.php` configuration file:
 ```php
@@ -139,11 +139,7 @@ The `telegram.php` configuration file:
 return [
     // The rest of the file
     
-    'request-options' => [
-        'proxy' => 'Proxy configuration', // Put your proxy configuration here
-        'verify' => false, // Do not verify SSL certificate (true / false)
-        // other options...
-    ],
+    'verify-endpoint' => (bool) env('TELEGRAM_VERIFY_ENDPOINT', true),
     
     // The rest of the file
 ];

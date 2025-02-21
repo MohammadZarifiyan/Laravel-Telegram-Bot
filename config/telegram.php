@@ -10,11 +10,11 @@ return [
     ],
 
     /**
-     * Options that must be considered when sending an HTTP request
+     * status of TLS Certificate endpoint verification
+     *
+     * It is recommended to set this to true
      */
-    'request-options' => [
-        //
-    ],
+    'verify-endpoint' => (bool) env('TELEGRAM_VERIFY_ENDPOINT', true),
 
 	/**
 	 * Telegram API endpoint repository.
