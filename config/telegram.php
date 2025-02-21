@@ -2,11 +2,19 @@
 
 return [
     /**
-     * status of TLS Certificate endpoint verification
-     *
-     * It is recommended to set this to true
+     * Settings for retrying requests in case of connection errors
      */
-    'verify-endpoint' => (bool) env('TELEGRAM_VERIFY_ENDPOINT', true),
+    'retry' => [
+        'times' => 5,
+        'sleep' => 200,
+    ],
+
+    /**
+     * Options that must be considered when sending an HTTP request
+     */
+    'request-options' => [
+        //
+    ],
 
 	/**
 	 * Telegram API endpoint repository.

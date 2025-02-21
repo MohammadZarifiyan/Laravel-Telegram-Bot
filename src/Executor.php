@@ -12,7 +12,8 @@ class Executor
 {
 	public function run(PendingRequestInterface $pendingRequest): Response
 	{
-        $verify_endpoint = config('telegram.verify-endpoint');
+        $retry = config('telegram.retry');
+        $options = config('telegram.request-options');
         $throw_http_exception = config('telegram.throw-http-exception');
         $request_manipulator = config('telegram.pending-request-manipulator');
         $final_pending_request = empty($request_manipulator) ? $pendingRequest : new $request_manipulator($pendingRequest);
@@ -21,10 +22,10 @@ class Executor
         return Http::throwIf($throw_http_exception)
 			->acceptJson()
             ->attach($final_pending_request->getAttachments())
-            ->when(!$verify_endpoint, fn ($pendingRequest) => $pendingRequest->withoutVerifying())
+            ->withOptions($options)
 			->retry(
-				5,
-				100,
+                $retry['times'],
+                $retry['sleep'],
 				fn ($exception, $request) => $exception instanceof ConnectionException,
                 $throw_http_exception
 			)
@@ -33,19 +34,20 @@ class Executor
 	
 	public function runConcurrent(array $pendingRequests): array
 	{
-        $request_manipulator = config('telegram.pending-request-manipulator');
-        $verify_endpoint = config('telegram.verify-endpoint');
+		return Http::pool(function (Pool $pool) use ($pendingRequests) {
+            $request_manipulator = config('telegram.pending-request-manipulator');
+            $options = config('telegram.request-options');
+            $retry = config('telegram.retry');
 
-		return Http::pool(function (Pool $pool) use ($pendingRequests, $request_manipulator, $verify_endpoint) {
             foreach ($pendingRequests as $pendingRequest) {
                 $final_pending_request = empty($request_manipulator) ? $pendingRequest : new $request_manipulator($pendingRequest);
 
                 $pool->acceptJson()
                     ->attach($final_pending_request->getAttachments())
-                    ->when(!$verify_endpoint, fn ($pendingRequest) => $pendingRequest->withoutVerifying())
+                    ->withOptions($options)
                     ->retry(
-                        5,
-                        100,
+                        $retry['times'],
+                        $retry['sleep'],
                         fn ($exception, $request) => $exception instanceof ConnectionException,
                         false
                     )
