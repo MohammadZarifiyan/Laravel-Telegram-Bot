@@ -110,6 +110,22 @@ return [
 ];
 ```
 
+## Verify TLS Certificate of the endpoint
+You can also set your endpoint's tls certificate to be verified when you send a request to it. For this you can set `TELEGRAM_VERIFY_ENDPOINT` in your `.env`. It is recommended that the `TELEGRAM_VERIFY_ENDPOINT` value is always `true`.
+
+The `telegram.php` configuration file:
+```php
+<?php
+
+return [
+    // The rest of the file
+    
+    'verify-endpoint' => (bool) env('TELEGRAM_VERIFY_ENDPOINT', true),
+    
+    // The rest of the file
+];
+```
+
 ## Retry request
 You can set the number of retries and the delay between each retry if the HTTP connection is lost.
 
@@ -124,22 +140,6 @@ return [
         'times' => 5,// How many times to retry requests in case of connection errors
         'sleep' => 200,// How long to sleep between retries in milliseconds
     ],
-    
-    // The rest of the file
-];
-```
-
-## Verify TLS Certificate of the endpoint
-You can also set your endpoint's tls certificate to be verified when you send a request to it. For this you can set `TELEGRAM_VERIFY_ENDPOINT` in your `.env`. It is recommended that the `TELEGRAM_VERIFY_ENDPOINT` value is always `true`.
-
-The `telegram.php` configuration file:
-```php
-<?php
-
-return [
-    // The rest of the file
-    
-    'verify-endpoint' => (bool) env('TELEGRAM_VERIFY_ENDPOINT', true),
     
     // The rest of the file
 ];
