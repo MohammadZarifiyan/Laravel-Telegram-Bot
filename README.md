@@ -145,6 +145,90 @@ return [
 ];
 ```
 
+## Configure Proxy
+To use a proxy while sending requests, you need to add the following code to the `config/services.php` file by default.
+```php
+<?php
+
+return [
+    // The rest of your code
+
+    'telegram' => [
+        'proxies' => explode(',', env('TELEGRAM_PROXIES', '')),
+    ],
+];
+```
+Then add `TELEGRAM_PROXIES` to your `.env` file.
+
+You need to separate your list of proxies in the `.env` file with a comma (`,`). Look at the following example:
+```dotenv
+TELEGRAM_PROXIES=http://username:password@127.0.0.1:8080,http://username:password@127.0.0.1:8081
+```
+
+### Custom repository
+If you want to get the proxies through another way, such as a database, you can create a repository for yourself instead of the above method. Just create a class and implement `MohammadZarifiyan\Telegram\Interfaces\ProxyRepository` in it. Then, in the `telegram.php` configuration file, set the value of `proxy-repository` to the address of your class.
+### Example
+`app/Repositories/TelegramProxyRepository.php` file:
+
+```php
+<?php
+
+namespace App\Repositories;
+
+use Illuminate\Support\Collection;
+use MohammadZarifiyan\Telegram\Interfaces\Proxy;
+use MohammadZarifiyan\Telegram\Interfaces\ProxyRepository;
+use App\Models\TelegramProxy;
+
+class TelegramProxyRepository implements ProxyRepository
+{
+    public function get(): Collection
+    {
+        return TelegramProxy::active()// Only get active proxies
+            ->orderByDesc('score')// Sort by score
+            ->get()
+            ->toBase()
+            ->map([$this, 'mapToProxy']);// Must return a collection of Proxy objects
+    }
+    
+    public function mapToProxy(TelegramProxy $telegramProxy): Proxy
+    {
+        return new class ($telegramProxy) implements Proxy {
+            public function __construct(public TelegramProxy $telegramProxy)
+            {
+                //
+            }
+
+            public function getKey(): string
+            {
+                return (string) $this->telegramProxy->getKey();
+            }
+
+            public function getConfiguration(): string
+            {
+                return $this->telegramProxy->schema'://'.$this->telegramProxy->username.':'.$this->telegramProxy->password.'@'.$this->telegramProxy->hostname.':'.$this->telegramProxy->port;
+            }
+        };
+    }
+}
+```
+The `telegram.php` configuration file:
+```php
+<?php
+
+return [
+    // The rest of the file
+
+    'proxy-repository' => \App\Repositories\TelegramProxyRepository::class,// Set your own custom repository
+
+    // The rest of the file
+];
+```
+### Events
+When a request is sent to the Telegram API via a proxy, the `MohammadZarifiyan\Telegram\Events\ProxyUsed` event is dispatched.
+
+When sending request failed due to a proxy, the `MohammadZarifiyan\Telegram\Events\ProxyFailed` event is dispatched.
+
 # Submit request to Telegram
 Use the `perform` method to send a request to the Telegram API. The first parameter is the method and the second parameter is the data you want to send to the Telegram API.
 
