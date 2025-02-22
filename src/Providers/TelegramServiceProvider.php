@@ -16,6 +16,7 @@ use MohammadZarifiyan\Telegram\Console\Commands\MakeMiddleware;
 use MohammadZarifiyan\Telegram\Console\Commands\MakeReplyMarkup;
 use MohammadZarifiyan\Telegram\Console\Commands\MakeStage;
 use MohammadZarifiyan\Telegram\Console\Commands\MakeUpdate;
+use MohammadZarifiyan\Telegram\Interfaces\ProxyRepository as ProxyRepositoryInterface;
 use MohammadZarifiyan\Telegram\Interfaces\Telegram as TelegramInterface;
 use MohammadZarifiyan\Telegram\Interfaces\ApiKeyRepository as ApiKeyRepositoryInterface;
 use MohammadZarifiyan\Telegram\Interfaces\EndpointRepository as EndpointRepositoryInterface;
@@ -85,6 +86,8 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
         $this->app->bind(ApiKeyRepositoryInterface::class, config('telegram.api-key-repository'));
 
         $this->app->bind(SecureTokenRepositoryInterface::class, config('telegram.secure-token-repository'));
+
+        $this->app->bind(ProxyRepositoryInterface::class, config('telegram.proxy-repository'));
 
 		$this->addTelegramRequestResolver();
     }

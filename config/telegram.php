@@ -10,6 +10,13 @@ return [
     ],
 
     /**
+     * Proxy repository
+     *
+     * It must be an instance of \MohammadZarifiyan\Telegram\Interfaces\ProxyRepository
+     */
+    'proxy-repository' => \MohammadZarifiyan\Telegram\Repositories\ProxyRepository::class,
+
+    /**
      * status of TLS Certificate endpoint verification
      *
      * It is recommended to set this to true
