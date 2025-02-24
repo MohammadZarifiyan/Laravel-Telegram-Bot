@@ -129,15 +129,9 @@ class Executor
     private function getProxy(): ?Proxy
     {
         static $index = 0;
+        $proxy = $this->proxyList[$index] ?? null;
+        $index = $index + 1 < $this->proxyList->count() ? $index + 1 : 0;
 
-        if (isset($this->proxyList[$index])) {
-            $proxy = $this->proxyList[$index];
-            $index++;
-
-            return $proxy;
-        }
-
-        $index = 0;
-        return null;
+        return $proxy;
     }
 }
