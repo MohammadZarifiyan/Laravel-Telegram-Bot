@@ -55,10 +55,7 @@ class TelegramManager implements TelegramInterface
 	 */
 	public function handleRequest(Request $request): void
 	{
-		if ($request instanceof Update === false) {
-			$this->update = Update::createFrom($request);
-		}
-
+        $this->update = $request instanceof Update ? $request : Update::createFrom($request);
 		$update_handler = new UpdateHandler($this->update, $this->secureToken);
 
 		foreach ($update_handler->run() as $update) {
