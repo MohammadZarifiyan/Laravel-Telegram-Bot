@@ -179,16 +179,16 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
 	{
         $this->app->resolving(
             Update::class,
-            fn ($update, Container $app) => $app->has('telegram')
-                ? $app->get('telegram')->getUpdate()
+            fn ($update, Container $app) => $app->has(TelegramInterface::class)
+                ? $app->get(TelegramInterface::class)->getUpdate()
                 : Update::createFrom($app['request'], $update)
         );
 
 		$this->app->resolving(
 			FormUpdate::class,
 			function ($update, Container $app) {
-				$from = $app->has('telegram')
-					? $app->get('telegram')->getUpdate()
+				$from = $app->has(TelegramInterface::class)
+					? $app->get(TelegramInterface::class)->getUpdate()
 					: $app['request'];
 				
 				return FormUpdate::createFrom($from, $update)->setContainer($app);
