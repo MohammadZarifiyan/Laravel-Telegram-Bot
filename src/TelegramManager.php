@@ -21,8 +21,8 @@ class TelegramManager implements TelegramInterface
 	protected ?Update $update;
 	
 	public function __construct(
-        protected string $apiKey,
-        protected string $endpoint,
+        protected ?string $apiKey = null,
+        protected ?string $endpoint = null,
         protected ?string $secureToken = null
     ) {
 		//
