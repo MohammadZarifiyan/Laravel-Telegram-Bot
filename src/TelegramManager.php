@@ -65,7 +65,7 @@ class TelegramManager implements TelegramInterface
 
 	public function getUpdate(): ?Update
 	{
-		return @$this->update;
+		return $this->update ?? null;
 	}
 
     public function getBotId(): int
