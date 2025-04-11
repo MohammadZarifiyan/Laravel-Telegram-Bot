@@ -206,9 +206,7 @@ class UpdateHandler
 			return;
 		}
 		
-		$stage = try_resolve(
-			$gainer->{$gainer->getStageColumnName()}
-		);
+		$stage = try_resolve($gainer->getStage());
 		
 		if (empty($stage) || empty($method = $this->getMethod($stage)) || !method_exists($stage, $method)) {
 			return;
