@@ -12,7 +12,7 @@ use MohammadZarifiyan\Telegram\Exceptions\TelegramMiddlewareFailedException;
 use MohammadZarifiyan\Telegram\Exceptions\TelegramOriginException;
 use MohammadZarifiyan\Telegram\Interfaces\AnonymousCommandHandler;
 use MohammadZarifiyan\Telegram\Interfaces\CommandHandler;
-use MohammadZarifiyan\Telegram\Interfaces\Gainer;
+use MohammadZarifiyan\Telegram\Interfaces\HasStage;
 use ReflectionException;
 use ReflectionMethod;
 
@@ -202,7 +202,7 @@ class UpdateHandler
 	{
 		$gainer = $this->update->gainer();
 		
-		if (!($gainer instanceof Gainer)) {
+		if (!($gainer instanceof HasStage)) {
 			return;
 		}
 		

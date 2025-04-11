@@ -943,7 +943,7 @@ else {
 ```
 
 ## Stage
-Some bots have an interactive mode where they allow users to access new features upon receiving a new Telegram update. For example, when a user clicks a button on the keyboard, a new set of buttons is displayed, which the user can interact with only after clicking the initial button. This feature is commonly seen in bots that guide users through stages of information gathering. To implement this, you need to save a _stage_ that checks the user's next update, so that when the next update arrives, the corresponding stage code executes. Fortunately, this package simplifies this process significantly. The _Stage_ class has methods similar to those in _Middleware_ and _Breaker_ classes. These methods handle bot updates; for instance, the `handleMessage` method manages updates triggered by sending messages in the bot's chat. To utilize this feature, define a model for your _Gainer_, add a stage `column` to your database table, and store the fully qualified class name that should handle the next update in the `stage` column. Finally, implement the `MohammadZarifiyan\Telegram\Interfaces\Gainer` interface in your Gainer model.
+Some bots have an interactive mode where they allow users to access new features upon receiving a new Telegram update. For example, when a user clicks a button on the keyboard, a new set of buttons is displayed, which the user can interact with only after clicking the initial button. This feature is commonly seen in bots that guide users through stages of information gathering. To implement this, you need to save a _stage_ that checks the user's next update, so that when the next update arrives, the corresponding stage code executes. Fortunately, this package simplifies this process significantly. The _Stage_ class has methods similar to those in _Middleware_ and _Breaker_ classes. These methods handle bot updates; for instance, the `handleMessage` method manages updates triggered by sending messages in the bot's chat. To utilize this feature, define a model for your _Gainer_, add a stage `column` to your database table, and store the fully qualified class name that should handle the next update in the `stage` column. Finally, implement the `MohammadZarifiyan\Telegram\Interfaces\Gainer` interface in your _Gainer_ model.
 
 To create a stage, run the following command:
 ```shell
@@ -1008,23 +1008,26 @@ The `app\Models\User.php` file:
 
 namespace App\Models;
 
-use MohammadZarifiyan\Telegram\Interfaces\Gainer as GainerInterface;
-use MohammadZarifiyan\Telegram\Traits\Gainer;
+use MohammadZarifiyan\Telegram\Interfaces\HasStage;
 use Illuminate\Database\Eloquent\Model;
 
-class User extends Model implements GainerInterface
+class User extends Model implements HasStage
 {
-    use Gainer;
-    
     protected $fillable = [
         'telegram_id',
         'age',
+        'stage',
     ];
 
     protected $casts = [
         'telegram_id' => 'integer',
         'age' => 'integer',
     ];
+
+	public function getStageColumnName(): string
+	{
+	    return 'stage';
+	}
 }
 ```
 `App\Telegram\Stages\Age.php` file:

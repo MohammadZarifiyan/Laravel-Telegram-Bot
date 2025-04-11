@@ -2,7 +2,7 @@
 
 namespace MohammadZarifiyan\Telegram\Interfaces;
 
-interface Gainer
+interface HasStage
 {
 	/**
 	 * Get the name of "stage" column.
