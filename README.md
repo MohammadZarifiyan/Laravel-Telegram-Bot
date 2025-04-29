@@ -72,7 +72,7 @@ return [
     // The rest of your code
 
     'telegram' => [
-        'endpoint' => env('TELEGRAM_ENDPOINT'),
+        'endpoint' => env('TELEGRAM_ENDPOINT', 'https://api.telegram.org'),
     ],
 ];
 ```
