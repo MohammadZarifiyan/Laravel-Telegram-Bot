@@ -1024,10 +1024,10 @@ class User extends Model implements HasStage
         'age' => 'integer',
     ];
 
-	public function getStageClass(): null|string|object
-	{
-	    return $this->stage;
-	}
+    public function getStageClass(): null|string|object
+    {
+        return $this->stage;
+    }
 }
 ```
 `App\Telegram\Stages\Age.php` file:
