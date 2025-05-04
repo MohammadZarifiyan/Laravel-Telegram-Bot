@@ -45,7 +45,7 @@ class TelegramAuthorizationException extends TelegramException
 	 * Set the response from the gate.
 	 *
 	 * @param  \Illuminate\Auth\Access\Response  $response
-	 * @return $this
+	 * @return static
 	 */
 	public function setResponse($response)
 	{

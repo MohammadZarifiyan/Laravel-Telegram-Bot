@@ -162,7 +162,7 @@ class FormUpdate extends Update implements ValidatesWhenResolved
 	 * Set the Validator instance.
 	 *
 	 * @param  \Illuminate\Contracts\Validation\Validator  $validator
-	 * @return $this
+	 * @return static
 	 */
 	public function setValidator(Validator $validator)
 	{
@@ -175,7 +175,7 @@ class FormUpdate extends Update implements ValidatesWhenResolved
 	 * Set the container implementation.
 	 *
 	 * @param  \Illuminate\Contracts\Container\Container  $container
-	 * @return $this
+	 * @return static
 	 */
 	public function setContainer(Container $container)
 	{

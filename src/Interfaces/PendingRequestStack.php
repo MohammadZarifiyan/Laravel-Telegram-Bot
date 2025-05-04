@@ -22,7 +22,7 @@ interface PendingRequestStack extends Arrayable
      * @param ReplyMarkup|string|null $replyMarkup
      * @param string|null $apiKey
      * @param string|null $endpoint
-     * @return $this
+     * @return static
      */
 	public function add(string $method, array $data = [], ReplyMarkup|string|null $replyMarkup = null, string $apiKey = null, string $endpoint = null): static;
 }
