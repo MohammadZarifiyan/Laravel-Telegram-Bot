@@ -9,9 +9,9 @@ use MohammadZarifiyan\Telegram\Update;
 
 interface Telegram
 {
-    public function setApiKey(string $apiKey): static;
+    public function setApiKey(?string $apiKey = null): static;
 
-    public function setEndpoint(string $endpoint): static;
+    public function setEndpoint(?string $endpoint = null): static;
 
     public function setSecureToken(?string $secureToken = null): static;
 

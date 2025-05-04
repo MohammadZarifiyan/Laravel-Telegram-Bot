@@ -28,14 +28,14 @@ class TelegramManager implements TelegramInterface
 		//
 	}
 	
-	public function setApiKey(string $apiKey): static
+	public function setApiKey(?string $apiKey = null): static
 	{
 		$this->apiKey = $apiKey;
 		
 		return $this;
 	}
 
-	public function setEndpoint(string $endpoint): static
+	public function setEndpoint(?string $endpoint = null): static
 	{
 		$this->endpoint = $endpoint;
 

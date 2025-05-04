@@ -13,9 +13,9 @@ use MohammadZarifiyan\Telegram\Update;
 
 /**
  * @method static void handleRequest(Request $request)
- * @method static \MohammadZarifiyan\Telegram\TelegramManager setApiKey(string $apiKey)
- * @method static \MohammadZarifiyan\Telegram\TelegramManager setEndpoint(string $endpoint)
- * @method static \MohammadZarifiyan\Telegram\TelegramManager setSecureToken(string $endpoint)
+ * @method static TelegramInterface setApiKey(?string $apiKey = null)
+ * @method static TelegramInterface setEndpoint(?string $endpoint = null)
+ * @method static TelegramInterface setSecureToken(?string $endpoint = null)
  * @method static Update|null getUpdate()
  * @method static int getBotId()
  * @method static Response perform(string $method, array $data = [], ReplyMarkup|string|null $replyMarkup = null)
