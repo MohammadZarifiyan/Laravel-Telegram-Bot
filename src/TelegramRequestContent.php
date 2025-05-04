@@ -15,7 +15,7 @@ class TelegramRequestContent implements TelegramRequestContentInterface
         //
     }
 
-    public static function fresh(string $method = null, array $data = [], ?ReplyMarkup $replyMarkup = null): static
+    public static function fresh(?string $method = null, array $data = [], ?ReplyMarkup $replyMarkup = null): static
     {
         return new static($method, $data, $replyMarkup);
     }
