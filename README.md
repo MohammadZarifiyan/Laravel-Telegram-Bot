@@ -6,7 +6,7 @@ Please read [The Telegram API documentation](https://core.telegram.org/bots/api)
 # Installation
 To install the package in your project, run the following command in your project root folder:
 ```shell
-composer require mohammad-zarifiyan/laravel-telegram-bot:^7.0
+composer require mohammad-zarifiyan/laravel-telegram-bot:^7.1
 ```
 
 # Basic configuration

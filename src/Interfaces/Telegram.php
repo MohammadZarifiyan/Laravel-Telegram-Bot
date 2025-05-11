@@ -5,6 +5,7 @@ namespace MohammadZarifiyan\Telegram\Interfaces;
 use Closure;
 use Illuminate\Http\Client\Response;
 use Illuminate\Http\Request;
+use MohammadZarifiyan\Telegram\Exceptions\InvalidTelegramBotApiKeyException;
 use MohammadZarifiyan\Telegram\Update;
 
 interface Telegram
@@ -19,6 +20,10 @@ interface Telegram
 
     public function getUpdate(): ?Update;
 
+    /**
+     * @throws InvalidTelegramBotApiKeyException
+     * @return int
+     */
     public function getBotId(): int;
 
     public function perform(string $method, array $data = [], ReplyMarkup|string|null $replyMarkup = null): Response;
