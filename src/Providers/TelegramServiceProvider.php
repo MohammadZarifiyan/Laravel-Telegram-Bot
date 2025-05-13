@@ -5,7 +5,6 @@ namespace MohammadZarifiyan\Telegram\Providers;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Support\DeferrableProvider;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Notifications\ChannelManager;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\ServiceProvider;
@@ -102,8 +101,6 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
     {
         $this->publish();
 
-        $this->declareMacros();
-
 		$this->addConsoleCommands();
 	
 		$this->addNotificationChannel();
@@ -120,19 +117,6 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
 			[__DIR__.'/../../config/telegram.php' => config_path('telegram.php')],
 			'telegram-config'
 		);
-    }
-
-    /**
-     * Declares service macros
-     *
-     * @return void
-     */
-    public function declareMacros(): void
-    {
-        Blueprint::macro('telegram', function () {
-            static::bigInteger('telegram_id')->nullable();
-            static::longText('stage')->nullable();
-        });
     }
 	
 	/**
