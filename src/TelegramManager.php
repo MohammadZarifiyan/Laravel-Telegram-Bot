@@ -23,7 +23,7 @@ class TelegramManager implements TelegramInterface
 	public function __construct(
         protected ?string $apiKey = null,
         protected ?string $endpoint = null,
-        protected ?string $secureToken = null
+        protected ?string $secretToken = null
     ) {
 		//
 	}
@@ -42,9 +42,9 @@ class TelegramManager implements TelegramInterface
 		return $this;
 	}
 
-	public function setSecureToken(?string $secureToken = null): static
+	public function setSecretToken(?string $secretToken = null): static
 	{
-		$this->secureToken = $secureToken;
+		$this->secretToken = $secretToken;
 
 		return $this;
 	}
@@ -56,7 +56,7 @@ class TelegramManager implements TelegramInterface
 	public function handleRequest(Request $request): void
 	{
         $this->update = $request instanceof Update ? $request : Update::createFrom($request);
-		$update_handler = new UpdateHandler($this->update, $this->secureToken);
+		$update_handler = new UpdateHandler($this->update, $this->secretToken);
 
 		foreach ($update_handler->run() as $update) {
 			$this->update = $update;

@@ -15,7 +15,7 @@ use MohammadZarifiyan\Telegram\Update;
  * @method static void handleRequest(Request $request)
  * @method static TelegramInterface setApiKey(?string $apiKey = null)
  * @method static TelegramInterface setEndpoint(?string $endpoint = null)
- * @method static TelegramInterface setSecureToken(?string $endpoint = null)
+ * @method static TelegramInterface setSecretToken(?string $secretToken = null)
  * @method static Update|null getUpdate()
  * @method static int getBotId()
  * @method static Response perform(string $method, array $data = [], ReplyMarkup|string|null $replyMarkup = null)
@@ -36,8 +36,8 @@ class Telegram extends Facade
         return TelegramInterface::class;
     }
 
-    public static function fresh(string $apiKey = null, string $endpoint = null, ?string $secureToken = null): TelegramInterface
+    public static function fresh(string $apiKey = null, string $endpoint = null, ?string $secretToken = null): TelegramInterface
     {
-        return App::makeWith(TelegramInterface::class, compact('apiKey', 'endpoint', 'secureToken'));
+        return App::makeWith(TelegramInterface::class, compact('apiKey', 'endpoint', 'secretToken'));
     }
 }

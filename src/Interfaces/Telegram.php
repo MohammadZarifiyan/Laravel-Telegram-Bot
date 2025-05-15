@@ -14,7 +14,7 @@ interface Telegram
 
     public function setEndpoint(?string $endpoint = null): static;
 
-    public function setSecureToken(?string $secureToken = null): static;
+    public function setSecretToken(?string $secretToken = null): static;
 
     public function handleRequest(Request $request): void;
 

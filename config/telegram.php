@@ -43,11 +43,11 @@ return [
     'pending-request-manipulator' => null,
 	
 	/**
-	 * Telegram secure token repository.
+	 * Telegram secret token repository.
      *
      * It must be an instance of \MohammadZarifiyan\Telegram\Interfaces\EndpointRepository
 	 */
-	'secure-token-repository' => \MohammadZarifiyan\Telegram\Repositories\SecureTokenRepository::class,
+	'secret-token-repository' => \MohammadZarifiyan\Telegram\Repositories\SecretTokenRepository::class,
 	
 	/**
 	 * Allow handling incognito command.

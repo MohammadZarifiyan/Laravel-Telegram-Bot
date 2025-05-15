@@ -18,7 +18,7 @@ use ReflectionMethod;
 
 class UpdateHandler
 {
-	public function __construct(public Update $update, protected ?string $secureToken = null)
+	public function __construct(public Update $update, protected ?string $secretToken = null)
 	{
 		//
 	}
@@ -61,11 +61,11 @@ class UpdateHandler
 	 */
 	public function validateOrigin(): void
 	{
-        if (empty($this->secureToken)) {
+        if (empty($this->secretToken)) {
             return;
         }
 
-		if (trim($this->secureToken) === trim((string) $this->update->header('X-Telegram-Bot-Api-Secret-Token'))) {
+		if (trim($this->secretToken) === trim((string) $this->update->header('X-Telegram-Bot-Api-Secret-Token'))) {
 			return;
 		}
 		

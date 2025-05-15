@@ -577,8 +577,8 @@ use MohammadZarifiyan\Telegram\Facades\Telegram;
 echo Telegram::getBotId();// Output: 123456
 ```
 
-# Configure Secure Token
-It is strongly recommend to set a secure token for your bot to make sure that the updates are sent by Telegram webhook.
+# Configure Secret Token
+It is strongly recommend to set a secret token for your bot to make sure that the updates are sent by Telegram webhook.
 
 By default, you should add the following code to the `config/services.php` file.
 ```php
@@ -588,32 +588,33 @@ return [
     // The rest of your code
 
     'telegram' => [
-        'secure-token' => env('TELEGRAM_SECURE_TOKEN'),
+        'secret-token' => env('TELEGRAM_SECRET_TOKEN'),
     ],
 ];
 ```
-Then add `TELEGRAM_SECURE_TOKEN` to your `.env` file.
+Then add `TELEGRAM_SECRET_TOKEN` to your `.env` file.
 
 Note: Only characters A-Z, a-z, 0-9, _ and - are allowed.
 
-Note: After changing the secure token, you must set your bot's webhook again.
+Note: After changing the secret token, you must set your bot's webhook again.
 
 ## Custom repository
-If you want to get the secure token through another way, such as a database, you can create a repository for yourself instead of the above method. Just create a class and implement `MohammadZarifiyan\Telegram\Interfaces\SecureTokenRepository` in it. Then, in the `telegram.php` configuration file, set the value of `secure-token-repository` to the address of your class.
+If you want to get the secret token through another way, such as a database, you can create a repository for yourself instead of the above method. Just create a class and implement `MohammadZarifiyan\Telegram\Interfaces\SecretTokenRepository` in it. Then, in the `telegram.php` configuration file, set the value of `secret-token-repository` to the address of your class.
 ### Example
-`app/Repositories/TelegramSecureTokenRepository.php` file:
+`app/Repositories/TelegramSecretTokenRepository.php` file:
+
 ```php
 <?php
 
 namespace App\Repositories;
 
-use MohammadZarifiyan\Telegram\Interfaces\SecureTokenRepository;
+use MohammadZarifiyan\Telegram\Interfaces\SecretTokenRepository;
 
-class TelegramSecureTokenRepository implements SecureTokenRepository
+class TelegramSecretTokenRepository implements SecretTokenRepository
 {
     public function get(): ?string
     {
-        return 'abcdefg';// Return your secure token
+        return 'abcdefg';// Return your secret token
     }
 }
 ```
@@ -624,7 +625,7 @@ The `telegram.php` configuration file:
 return [
     // The rest of the file
 
-    'secure-token-repository' => \App\Repositories\TelegramSecureTokenRepository::class,// Set your own custom repository
+    'secret-token-repository' => \App\Repositories\TelegramSecretTokenRepository::class,// Set your own custom repository
 
     // The rest of the file
 ];

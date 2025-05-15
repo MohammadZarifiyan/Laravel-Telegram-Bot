@@ -2,7 +2,7 @@
 
 namespace MohammadZarifiyan\Telegram\Interfaces;
 
-interface SecureTokenRepository
+interface SecretTokenRepository
 {
     public function get(): ?string;
 }
