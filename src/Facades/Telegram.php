@@ -20,6 +20,7 @@ use MohammadZarifiyan\Telegram\Update;
  * @method static int getBotId()
  * @method static Response perform(string $method, array $data = [], ReplyMarkup|string|null $replyMarkup = null)
  * @method static array<Response> concurrent(Closure $closure)
+ * @method static bool verifyContentHash(array|string $content)
  * @method static string generateFileUrl(string $filePath)
  * @method static macro($name, $macro)
  * @method static mixin($mixin, $replace = true)

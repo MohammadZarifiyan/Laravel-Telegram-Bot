@@ -30,5 +30,7 @@ interface Telegram
 
     public function concurrent(Closure $closure): array;
 
+    public function verifyContentHash(array|string $content): bool;
+
     public function generateFileUrl(string $filePath): string;
 }

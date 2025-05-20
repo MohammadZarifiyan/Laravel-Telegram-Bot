@@ -115,7 +115,36 @@ class TelegramManager implements TelegramInterface
 			$stack->toArray()
 		);
     }
-	
+
+    public function verifyContentHash(array|string $content): bool
+    {
+        if (is_array($content)) {
+            $data = $content;
+        }
+        else if (json_validate($content)) {
+            $data = json_decode($content);
+        }
+        else {
+            parse_str($content, $data);
+        }
+
+        if (empty($data['hash'])) {
+            return false;
+        }
+
+        $authData = collect($data)
+            ->except('hash')
+            ->sortKeys()
+            ->map(fn ($value, $key) => $key . '=' . $value)
+            ->sort()
+            ->implode(PHP_EOL);
+
+        $secretKey = hash('sha256', $this->apiKey, true);
+        $calculatedHash = hash_hmac('sha256', $authData, $secretKey);
+
+        return hash_equals($data['hash'], $calculatedHash);
+    }
+
 	public function generateFileUrl(string $filePath): string
 	{
 		return sprintf('%s/file/bot%s/%s', $this->endpoint, $this->apiKey, $filePath);

@@ -6,7 +6,7 @@ Please read [The Telegram API documentation](https://core.telegram.org/bots/api)
 # Installation
 To install the package in your project, run the following command in your project root folder:
 ```shell
-composer require mohammad-zarifiyan/laravel-telegram-bot:^7.2
+composer require mohammad-zarifiyan/laravel-telegram-bot:^8.1
 ```
 
 # Basic configuration
@@ -576,6 +576,11 @@ use MohammadZarifiyan\Telegram\Facades\Telegram;
 
 echo Telegram::getBotId();// Output: 123456
 ```
+
+# Verify Content Hash
+The `verifyContentHash` method allows you to check if the hash of the provided data is valid.
+
+To use this method, your content must include a key named hash. The method hashes the provided data using the bot's API Key and compares it with the hash included in the content. If the data is verified, the method returns `true`.
 
 # Configure Secret Token
 It is strongly recommend to set a secret token for your bot to make sure that the updates are sent by Telegram webhook.
