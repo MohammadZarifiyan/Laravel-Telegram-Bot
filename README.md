@@ -1030,7 +1030,7 @@ class User extends Model implements HasStage
         'age' => 'integer',
     ];
 
-    public function getStageClass(): null|string|object
+    public function getStage(): null|string|object
     {
         return $this->stage;
     }
