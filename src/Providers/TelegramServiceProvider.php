@@ -42,21 +42,21 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
         $this->app->bind(TelegramInterface::class, function (Application $application, array $parameters = []) {
             if (empty($parameters['apiKey'])) {
                 /**
-                 * @var ApiKeyRepositoryInterface $api_key_repository
+                 * @var ApiKeyRepositoryInterface $apiKeyRepository
                  */
-                $api_key_repository = $application->make(ApiKeyRepositoryInterface::class);
-                $api_key = $api_key_repository->get();
+                $apiKeyRepository = $application->make(ApiKeyRepositoryInterface::class);
+                $apiKey = $apiKeyRepository->get();
             }
             else {
-                $api_key = $parameters['apiKey'];
+                $apiKey = $parameters['apiKey'];
             }
 
             if (empty($parameters['endpoint'])) {
                 /**
-                 * @var EndpointRepositoryInterface $endpoint_repository
+                 * @var EndpointRepositoryInterface $endpointRepository
                  */
-                $endpoint_repository = $application->make(EndpointRepositoryInterface::class);
-                $endpoint = $endpoint_repository->get();
+                $endpointRepository = $application->make(EndpointRepositoryInterface::class);
+                $endpoint = $endpointRepository->get();
             }
             else {
                 $endpoint = $parameters['endpoint'];
@@ -64,16 +64,16 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
 
             if (empty($parameters['secretToken'])) {
                 /**
-                 * @var SecretTokenRepositoryInterface $secret_token_repository
+                 * @var SecretTokenRepositoryInterface $secretTokenRepository
                  */
-                $secret_token_repository = $application->make(SecretTokenRepositoryInterface::class);
-                $secret_token = $secret_token_repository->get();
+                $secretTokenRepository = $application->make(SecretTokenRepositoryInterface::class);
+                $secretToken = $secretTokenRepository->get();
             }
             else {
-                $secret_token = $parameters['secretToken'];
+                $secretToken = $parameters['secretToken'];
             }
 
-            return new TelegramManager($api_key, $endpoint, $secret_token);
+            return new TelegramManager($apiKey, $endpoint, $secretToken);
         });
 	
 		$this->app->bind(PendingRequestStackInterface::class, PendingRequestStack::class);

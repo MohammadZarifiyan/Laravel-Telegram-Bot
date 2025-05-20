@@ -56,9 +56,9 @@ class TelegramManager implements TelegramInterface
 	public function handleRequest(Request $request): void
 	{
         $this->update = $request instanceof Update ? $request : Update::createFrom($request);
-		$update_handler = new UpdateHandler($this->update, $this->secretToken);
+		$updateHandler = new UpdateHandler($this->update, $this->secretToken);
 
-		foreach ($update_handler->run() as $update) {
+		foreach ($updateHandler->run() as $update) {
 			$this->update = $update;
 		}
 	}
@@ -85,7 +85,7 @@ class TelegramManager implements TelegramInterface
 
     public function perform(string $method, array $data = [], ReplyMarkup|string|null $replyMarkup = null): Response
     {
-        $pending_request = new PendingRequest(
+        $pendingRequest = new PendingRequest(
             $this->endpoint,
             $this->apiKey,
             $method,
@@ -94,7 +94,7 @@ class TelegramManager implements TelegramInterface
         );
 
         $executor = new Executor;
-        return $executor->run($pending_request);
+        return $executor->run($pendingRequest);
     }
 
 	public function concurrent(Closure $closure): array

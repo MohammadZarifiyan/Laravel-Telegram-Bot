@@ -47,9 +47,9 @@ class Update extends Request
             return $this->command = null;
         }
 
-        $command_parts = $this->string('message.text')->explode(' ');
-        $signature = substr($command_parts->first(), 1);
-        $value = $command_parts->slice(1)->implode(' ');
+        $commandParts = $this->string('message.text')->explode(' ');
+        $signature = substr($commandParts->first(), 1);
+        $value = $commandParts->slice(1)->implode(' ');
         $value = trim($value) === '' ? null : trim($value);
 
         return $this->command = new Command($signature, $value);

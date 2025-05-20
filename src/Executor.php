@@ -21,37 +21,37 @@ class Executor
     public function __construct()
     {
         /**
-         * @var ProxyRepository $proxy_repository
+         * @var ProxyRepository $proxyRepository
          */
-        $proxy_repository = App::make(ProxyRepository::class);
-        $this->proxyList = $proxy_repository->get();
+        $proxyRepository = App::make(ProxyRepository::class);
+        $this->proxyList = $proxyRepository->get();
     }
 
 	public function run(PendingRequestInterface $pendingRequest): Response
 	{
         $proxy = $this->getProxy();
         $retry = config('telegram.retry');
-        $verify_endpoint = config('telegram.verify-endpoint');
-        $throw_http_exception = config('telegram.throw-http-exception');
-        $request_manipulator = config('telegram.pending-request-manipulator');
-        $final_pending_request = empty($request_manipulator) ? $pendingRequest : new $request_manipulator($pendingRequest);
-        $data = $this->getData($final_pending_request);
+        $verifyEndpoint = config('telegram.verify-endpoint');
+        $throwHttpException = config('telegram.throw-http-exception');
+        $requestManipulator = config('telegram.pending-request-manipulator');
+        $finalPendingRequest = empty($requestManipulator) ? $pendingRequest : new $requestManipulator($pendingRequest);
+        $data = $this->getData($finalPendingRequest);
 
         try {
             $response = Http::acceptJson()
-                ->attach($final_pending_request->getAttachments())
+                ->attach($finalPendingRequest->getAttachments())
                 ->when(
                     $proxy instanceof Proxy,
                     fn ($pendingRequest) => $pendingRequest->withOptions(['proxy' => $proxy->getConfiguration()])
                 )
-                ->when(!$verify_endpoint, fn ($pendingRequest) => $pendingRequest->withoutVerifying())
+                ->unless($verifyEndpoint, fn ($pendingRequest) => $pendingRequest->withoutVerifying())
                 ->retry(
                     $retry['times'],
                     $retry['sleep'],
                     fn ($exception, $request) => $exception instanceof ConnectionException,
                     false
                 )
-                ->post($final_pending_request->getUrl(), $data);
+                ->post($finalPendingRequest->getUrl(), $data);
         }
         catch (ConnectionException $exception) {
             ProxyFailed::dispatchIf($proxy instanceof Proxy, $proxy);
@@ -61,7 +61,7 @@ class Executor
 
         ProxyUsed::dispatchIf($proxy instanceof Proxy, $proxy);
 
-        $response->throwIf($throw_http_exception);
+        $response->throwIf($throwHttpException);
 
         return $response;
 	}
@@ -71,28 +71,28 @@ class Executor
         $proxies = [];
 
 		$responses = Http::pool(function (Pool $pool) use ($pendingRequests, &$proxies) {
-            $request_manipulator = config('telegram.pending-request-manipulator');
-            $verify_endpoint = config('telegram.verify-endpoint');
+            $requestManipulator = config('telegram.pending-request-manipulator');
+            $verifyEndpoint = config('telegram.verify-endpoint');
             $retry = config('telegram.retry');
 
             foreach ($pendingRequests as $index => $pendingRequest) {
                 $proxies[$index] = $this->getProxy();
-                $final_pending_request = empty($request_manipulator) ? $pendingRequest : new $request_manipulator($pendingRequest);
+                $finalPendingRequest = empty($requestManipulator) ? $pendingRequest : new $requestManipulator($pendingRequest);
 
                 $pool->acceptJson()
-                    ->attach($final_pending_request->getAttachments())
+                    ->attach($finalPendingRequest->getAttachments())
                     ->when(
                         $proxies[$index] instanceof Proxy,
                         fn ($pendingRequest) => $pendingRequest->withOptions(['proxy' => $proxies[$index]->getConfiguration()])
                     )
-                    ->when(!$verify_endpoint, fn ($pendingRequest) => $pendingRequest->withoutVerifying())
+                    ->unless($verifyEndpoint, fn ($pendingRequest) => $pendingRequest->withoutVerifying())
                     ->retry(
                         $retry['times'],
                         $retry['sleep'],
                         fn ($exception, $request) => $exception instanceof ConnectionException,
                         false
                     )
-                    ->post($final_pending_request->getUrl(), $this->getData($final_pending_request));
+                    ->post($finalPendingRequest->getUrl(), $this->getData($finalPendingRequest));
             }
         });
 

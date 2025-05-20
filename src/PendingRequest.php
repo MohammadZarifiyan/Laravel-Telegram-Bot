@@ -102,14 +102,14 @@ class PendingRequest implements PendingRequestInterface
      */
     public function getReplyMarkup(): array
     {
-        $resolved_reply_markup = try_resolve($this->replyMarkup);
+        $resolvedReplyMarkup = try_resolve($this->replyMarkup);
 
-        if (empty($resolved_reply_markup)) {
+        if (empty($resolvedReplyMarkup)) {
             return [];
         }
 
         return [
-            'reply_markup' => $resolved_reply_markup()
+            'reply_markup' => $resolvedReplyMarkup()
         ];
     }
 }

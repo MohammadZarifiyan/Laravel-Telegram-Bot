@@ -117,14 +117,14 @@ class UpdateHandler
 			return $this->update;
 		}
 		
-		$request_type = $parameters[0]->getType();
+		$requestType = $parameters[0]->getType();
 		
-		if (empty($request_type)) {
+		if (empty($requestType)) {
 			return null;
 		}
 		
-		if (is_subclass_of($request_type->getName(), FormUpdate::class)) {
-			return App::make($request_type->getName());
+		if (is_subclass_of($requestType->getName(), FormUpdate::class)) {
+			return App::make($requestType->getName());
 		}
 		
 		return $this->update;
@@ -132,10 +132,10 @@ class UpdateHandler
 	
 	public function getMethod(object $object): ?string
 	{
-		$handler_method = $this->getHandlerMethod();
+		$handlerMethod = $this->getHandlerMethod();
 		
-		if (method_exists($object, $handler_method)) {
-			return $handler_method;
+		if (method_exists($object, $handlerMethod)) {
+			return $handlerMethod;
 		}
 		
 		if (method_exists($object, 'handle')) {
@@ -147,27 +147,27 @@ class UpdateHandler
 	
 	public function getMatchedCommand(): null|CommandHandler|AnonymousCommandHandler
 	{
-		foreach ((array) config('telegram.command_handlers') as $command_handler) {
+		foreach ((array) config('telegram.command_handlers') as $commandHandler) {
 			/**
-			 * @var CommandHandler|null $command_handler_instance
+			 * @var CommandHandler|null $commandHandlerInstance
 			 */
-			$command_handler_instance = try_resolve($command_handler);
+			$commandHandlerInstance = try_resolve($commandHandler);
 
-            if ($command_handler_instance instanceof CommandHandler) {
+            if ($commandHandlerInstance instanceof CommandHandler) {
                 $signature = $this->update->toCommand()->getSignature();
 
-                if (in_array($signature, (array) $command_handler_instance->getSignature($this->update))) {
-                    return $command_handler_instance;
+                if (in_array($signature, (array) $commandHandlerInstance->getSignature($this->update))) {
+                    return $commandHandlerInstance;
                 }
             }
-            else if ($command_handler_instance instanceof AnonymousCommandHandler) {
-                if ($command_handler_instance->matchesSignature($this->update)) {
-                    return $command_handler_instance;
+            else if ($commandHandlerInstance instanceof AnonymousCommandHandler) {
+                if ($commandHandlerInstance->matchesSignature($this->update)) {
+                    return $commandHandlerInstance;
                 }
             }
             else {
                 throw new Exception(
-                    sprintf('(%s) is not a valid command handler', (string) $command_handler)
+                    sprintf('(%s) is not a valid command handler', (string) $commandHandler)
                 );
             }
 		}

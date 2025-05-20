@@ -480,11 +480,11 @@ In the example below, The photo stored on the server will be sent in the chat.
 use MohammadZarifiyan\Telegram\Facades\Telegram;
 use MohammadZarifiyan\Telegram\Attachment;
 
-$file_contents = file_get_contents('path/to/file.png');
-$file_name = 'my-file.png';
+$fileContents = file_get_contents('path/to/file.png');
+$fileName = 'my-file.png';
 
 Telegram::perform('sendPhoto', [
-    'photo' => new Attachment($file_contents, $file_name),
+    'photo' => new Attachment($fileContents, $fileName),
     'chat_id' => 1234
 ]);
 ```
@@ -554,9 +554,9 @@ $response = Telegram::perform('getFile', [
 ]);
 
 if ($response->json('ok')) {
-    $file_path = $response->json('result.file_path');
-    $file_url = Telegram::generateFileUrl($file_path);
-    // You can use $file_url to download the file.
+    $filePath = $response->json('result.file_path');
+    $fileUrl = Telegram::generateFileUrl($filePath);
+    // You can use $fileUrl to download the file.
 }
 else {
     $error = $response->json('description');

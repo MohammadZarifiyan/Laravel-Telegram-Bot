@@ -17,9 +17,9 @@ class RequestParser implements Interfaces\RequestParser
 	public function getUpdateType(): ?string
 	{
         if (!isset($this->updateType)) {
-            $update_keys = new Collection($this->request->keys());
+            $updateKeys = new Collection($this->request->keys());
 
-            $this->updateType = $update_keys->first(fn ($key) => $key !== 'update_id');
+            $this->updateType = $updateKeys->first(fn ($key) => $key !== 'update_id');
         }
 
         return $this->updateType;
