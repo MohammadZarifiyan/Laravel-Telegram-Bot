@@ -45,7 +45,7 @@ return [
 	/**
 	 * Telegram secret token repository.
      *
-     * It must be an instance of \MohammadZarifiyan\Telegram\Interfaces\EndpointRepository
+     * It must be an instance of \MohammadZarifiyan\Telegram\Interfaces\SecretTokenRepository
 	 */
 	'secret-token-repository' => \MohammadZarifiyan\Telegram\Repositories\SecretTokenRepository::class,
 	
