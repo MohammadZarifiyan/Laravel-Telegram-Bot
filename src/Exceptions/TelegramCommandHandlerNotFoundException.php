@@ -17,8 +17,8 @@ class TelegramCommandHandlerNotFoundException extends TelegramException
 		return response(status: Response::HTTP_OK);
 	}
 	
-	public function context()
-	{
+	public function context(): array
+    {
 		return [
 			'signature' => $this->command->getSignature(),
 			'value' => $this->command->getValue()
