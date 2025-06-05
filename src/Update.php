@@ -2,7 +2,6 @@
 
 namespace MohammadZarifiyan\Telegram;
 
-use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use MohammadZarifiyan\Telegram\Interfaces\Command as CommandInterface;
@@ -15,8 +14,7 @@ class Update extends Request
 	protected ?CommandInterface $command;
 	protected mixed $gainer;
 	protected RequestParser $requestParser;
-    private bool $initializedGainerResolver = false;
-	
+
 	protected function getRequestParser(): RequestParser
 	{
 		return $this->requestParser ??= App::makeWith(RequestParser::class, ['request' => $this]);
@@ -72,9 +70,9 @@ class Update extends Request
 	/**
 	 * Get gainer resolver.
 	 *
-	 * @return callable|null
+	 * @return null|GainerResolver
 	 */
-	public function getGainerResolver(): callable|null
+	public function getGainerResolver(): ?GainerResolver
 	{
 		return try_resolve(
 			config('telegram.gainer-resolver')
@@ -89,23 +87,11 @@ class Update extends Request
 	 */
 	public function gainer(): mixed
 	{
-		if (isset($this->gainer)) {
-			return $this->gainer;
+		if (!isset($this->gainer)) {
+            $resolver = $this->getGainerResolver();
+            $this->gainer = $resolver instanceof GainerResolver ? call_user_func($resolver, $this) : null;
 		}
-		
-		$resolver = $this->getGainerResolver();
-		
-		if ($resolver instanceof GainerResolver) {
-            if ($this->initializedGainerResolver) {
-                throw new Exception('You should not run gainer() inside the GainerResolver.');
-            }
 
-            $this->initializedGainerResolver = true;
-            $this->gainer = $resolver($this);
-
-            return $this->gainer;
-		}
-		
-		return null;
+        return $this->gainer;
 	}
 }
