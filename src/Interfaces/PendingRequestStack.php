@@ -6,19 +6,19 @@ use Illuminate\Contracts\Support\Arrayable;
 
 interface PendingRequestStack extends Arrayable
 {
-	/**
-	 * Constructs new instance.
-	 *
-	 * @param string $endpoint
-	 * @param string $apiKey
-	 */
-	public function __construct(string $endpoint, string $apiKey);
+    /**
+     * Constructs new instance.
+     *
+     * @param string|null $endpoint
+     * @param string|null $apiKey
+     */
+	public function __construct(?string $endpoint = null, ?string $apiKey = null);
 
     /**
      * Creates pending request and adds it to current instance stack.
      *
-     * @param string $method
-     * @return PendingRequestAdder
+     * @param string|null $as
+     * @return PendingRequestBuilder
      */
-	public function add(string $method): PendingRequestAdder;
+	public function add(?string $as = null): PendingRequestBuilder;
 }

@@ -75,17 +75,18 @@ class Executor
             $verifyEndpoint = config('telegram.verify-endpoint');
             $retry = config('telegram.retry');
 
-            foreach ($pendingRequests as $index => $pendingRequest) {
-                $proxies[$index] = $this->getProxy();
+            foreach ($pendingRequests as $as => $pendingRequest) {
+                $proxies[$as] = $this->getProxy();
                 $finalPendingRequest = empty($requestManipulator) ? $pendingRequest : new $requestManipulator($pendingRequest);
+                $pendingClientRequest = is_string($as) ? $pool->as($as)->acceptJson() : $pool->acceptJson();
 
-                $pool->acceptJson()
+                $pendingClientRequest
                     ->attach($finalPendingRequest->getAttachments())
                     ->when(
-                        $proxies[$index] instanceof Proxy,
-                        fn ($pendingRequest) => $pendingRequest->withOptions(['proxy' => $proxies[$index]->getConfiguration()])
+                        $proxies[$as] instanceof Proxy,
+                        fn ($pendingClientRequest) => $pendingClientRequest->withOptions(['proxy' => $proxies[$as]->getConfiguration()])
                     )
-                    ->unless($verifyEndpoint, fn ($pendingRequest) => $pendingRequest->withoutVerifying())
+                    ->unless($verifyEndpoint, fn ($pendingClientRequest) => $pendingClientRequest->withoutVerifying())
                     ->retry(
                         $retry['times'],
                         $retry['sleep'],
@@ -96,16 +97,16 @@ class Executor
             }
         });
 
-        foreach ($responses as $index => $response) {
-            if ($proxies[$index] instanceof Proxy === false) {
+        foreach ($responses as $as => $response) {
+            if ($proxies[$as] instanceof Proxy === false) {
                 continue;
             }
 
             if ($response instanceof ConnectionException) {
-                ProxyFailed::dispatch($proxies[$index]);
+                ProxyFailed::dispatch($proxies[$as]);
             }
             else if ($response instanceof Response) {
-                ProxyUsed::dispatch($proxies[$index]);
+                ProxyUsed::dispatch($proxies[$as]);
             }
         }
 

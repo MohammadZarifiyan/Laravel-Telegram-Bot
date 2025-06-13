@@ -257,18 +257,24 @@ use \MohammadZarifiyan\Telegram\Interfaces\PendingRequestStack;
 use \MohammadZarifiyan\Telegram\Facades\Telegram;
  
 $responses = Telegram::concurrent(fn (PendingRequestStack $pendingRequestStack) => [
-    $pendingRequestStack->add('sendMessage')->setData([
-        'text' => 'Message 1',
-        'chat_id' => 1234
-    ]),
-    $pendingRequestStack->add('sendMessage')->setData([
-        'text' => 'Message 2',
-        'chat_id' => 1234
-    ]),
-    $pendingRequestStack->add('sendMessage')->setData([
-        'text' => 'Message 3',
-        'chat_id' => 1234
-    ]),
+    $pendingRequestStack->add()
+        ->setMethod('sendMessage')
+        ->setData([
+            'text' => 'Message 1',
+            'chat_id' => 1234
+        ]),
+    $pendingRequestStack->add()
+        ->setMethod('sendMessage')
+        ->setData([
+            'text' => 'Message 2',
+            'chat_id' => 1234
+        ]),
+    $pendingRequestStack->add()
+        ->setMethod('sendMessage')
+        ->setData([
+            'text' => 'Message 3',
+            'chat_id' => 1234
+        ]),
 ]);
 
 $result = $responses[0]->json('ok')
@@ -283,7 +289,7 @@ else {
 }
 ```
 
-As you can see, each response instance can be accessed based on the order it was added to the pool. If you wish, you can name the requests using the `as` method, which allows you to access the corresponding responses by name.
+As you can see, each response instance is accessible based on the order in which it was added to the response collection. If you want, you can name the requests by giving the `add` method a name, which will allow you to access the corresponding responses by name.
 
 ### Example
 ```php
@@ -291,20 +297,20 @@ use \MohammadZarifiyan\Telegram\Interfaces\PendingRequestStack;
 use \MohammadZarifiyan\Telegram\Facades\Telegram;
  
 $responses = Telegram::concurrent(fn (PendingRequestStack $pendingRequestStack) => [
-    $pendingRequestStack->add('sendMessage')
-        ->as('first_message')
+    $pendingRequestStack->add('first_message')
+        ->setMethod('sendMessage')
         ->setData([
             'text' => 'Message 1',
             'chat_id' => 1234
         ]),
-    $pendingRequestStack->add('sendMessage')
-        ->as('second_message')
+    $pendingRequestStack->add('second_message')
+        ->setMethod('sendMessage')
         ->setData([
             'text' => 'Message 2',
             'chat_id' => 1234
         ]),
-    $pendingRequestStack->add('sendMessage')
-        ->as('third_message')
+    $pendingRequestStack->add('third_message')
+        ->setMethod('sendMessage')
         ->setData([
             'text' => 'Message 3',
             'chat_id' => 1234
@@ -323,15 +329,16 @@ else {
 }
 ```
 
-The `add` method returns an instance of `MohammadZarifiyan\Telegram\Interfaces\PendingRequestAdder`, which provides a variety of methods that may be used to modify the request:
+The `add` method returns an instance of `MohammadZarifiyan\Telegram\Interfaces\PendingRequestBuilder`, which provides a variety of methods that may be used to modify the request:
 
 ```php
-use MohammadZarifiyan\Telegram\Interfaces\PendingRequestAdder;
+use MohammadZarifiyan\Telegram\Interfaces\PendingRequestBuilder;
 
-$pendingRequestAdder->setData(array $data = []): PendingRequestAdder;
-$pendingRequestAdder->setReplyMarkup(ReplyMarkup|string|null $replyMarkup = null): PendingRequestAdder;
-$pendingRequestAdder->setApiKey(?string $apikey = null): PendingRequestAdder;
-$pendingRequestAdder->setEndpoint(?string $endpoint = null): PendingRequestAdder;
+$pendingRequestBuilder->setMethod(string $method): PendingRequestBuilder;
+$pendingRequestBuilder->setData(array $data = []): PendingRequestBuilder;
+$pendingRequestBuilder->setReplyMarkup(ReplyMarkup|string|null $replyMarkup = null): PendingRequestBuilder;
+$pendingRequestBuilder->setApiKey(?string $apikey = null): PendingRequestBuilder;
+$pendingRequestBuilder->setEndpoint(?string $endpoint = null): PendingRequestBuilder;
 ```
 
 # Send notification by Telegram bot
