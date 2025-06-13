@@ -15,14 +15,10 @@ interface PendingRequestStack extends Arrayable
 	public function __construct(string $endpoint, string $apiKey);
 
     /**
-     * Converts data to pending request and adds it to current instance stack.
+     * Creates pending request and adds it to current instance stack.
      *
      * @param string $method
-     * @param array $data
-     * @param ReplyMarkup|string|null $replyMarkup
-     * @param string|null $apiKey
-     * @param string|null $endpoint
-     * @return static
+     * @return PendingRequestAdder
      */
-	public function add(string $method, array $data = [], ReplyMarkup|string|null $replyMarkup = null, string $apiKey = null, string $endpoint = null): static;
+	public function add(string $method): PendingRequestAdder;
 }

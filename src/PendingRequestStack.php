@@ -2,10 +2,11 @@
 
 namespace MohammadZarifiyan\Telegram;
 
-use MohammadZarifiyan\Telegram\Interfaces\PendingRequestStack as PendingRequestInterface;
-use MohammadZarifiyan\Telegram\Interfaces\ReplyMarkup;
+use MohammadZarifiyan\Telegram\Interfaces\PendingRequest as PendingRequestInterface;
+use MohammadZarifiyan\Telegram\Interfaces\PendingRequestStack as PendingRequestStackInterface;
+use MohammadZarifiyan\Telegram\Interfaces\PendingRequestAdder as PendingRequestAdderInterface;
 
-class PendingRequestStack implements PendingRequestInterface
+class PendingRequestStack implements PendingRequestStackInterface
 {
     protected array $pendingRequests;
 
@@ -14,17 +15,14 @@ class PendingRequestStack implements PendingRequestInterface
         //
     }
 
-    public function add(string $method, array $data = [], ReplyMarkup|string|null $replyMarkup = null, string $apiKey = null, string $endpoint = null): static
+    public function add(string $method): PendingRequestAdderInterface
     {
-        $this->pendingRequests[] = new PendingRequest(
-            $endpoint ?? $this->endpoint,
-            $apiKey ?? $this->apiKey,
-            $method,
-            $data,
-            $replyMarkup
+        return new PendingRequestAdder(
+            function (PendingRequestInterface $pendingRequest) {
+                $this->pendingRequests[] = $pendingRequest;
+            },
+            $method
         );
-
-        return $this;
     }
 
     public function toArray(): array

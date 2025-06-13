@@ -6,7 +6,7 @@ Please read [The Telegram API documentation](https://core.telegram.org/bots/api)
 # Installation
 To install the package in your project, run the following command in your project root folder:
 ```shell
-composer require mohammad-zarifiyan/laravel-telegram-bot:^8.1
+composer require mohammad-zarifiyan/laravel-telegram-bot:^9.0
 ```
 
 # Basic configuration
@@ -257,15 +257,15 @@ use \MohammadZarifiyan\Telegram\Interfaces\PendingRequestStack;
 use \MohammadZarifiyan\Telegram\Facades\Telegram;
  
 $responses = Telegram::concurrent(fn (PendingRequestStack $pendingRequestStack) => [
-    $pendingRequestStack->add('sendMessage', [
+    $pendingRequestStack->add('sendMessage')->setData([
         'text' => 'Message 1',
         'chat_id' => 1234
     ]),
-    $pendingRequestStack->add('sendMessage', [
+    $pendingRequestStack->add('sendMessage')->setData([
         'text' => 'Message 2',
         'chat_id' => 1234
     ]),
-    $pendingRequestStack->add('sendMessage', [
+    $pendingRequestStack->add('sendMessage')->setData([
         'text' => 'Message 3',
         'chat_id' => 1234
     ]),
@@ -281,6 +281,57 @@ if ($result) {
 else {
     // There was a problem sending some messages.
 }
+```
+
+As you can see, each response instance can be accessed based on the order it was added to the pool. If you wish, you can name the requests using the `as` method, which allows you to access the corresponding responses by name.
+
+### Example
+```php
+use \MohammadZarifiyan\Telegram\Interfaces\PendingRequestStack;
+use \MohammadZarifiyan\Telegram\Facades\Telegram;
+ 
+$responses = Telegram::concurrent(fn (PendingRequestStack $pendingRequestStack) => [
+    $pendingRequestStack->add('sendMessage')
+        ->as('first_message')
+        ->setData([
+            'text' => 'Message 1',
+            'chat_id' => 1234
+        ]),
+    $pendingRequestStack->add('sendMessage')
+        ->as('second_message')
+        ->setData([
+            'text' => 'Message 2',
+            'chat_id' => 1234
+        ]),
+    $pendingRequestStack->add('sendMessage')
+        ->as('third_message')
+        ->setData([
+            'text' => 'Message 3',
+            'chat_id' => 1234
+        ]),
+]);
+
+$result = $responses['first_message']->json('ok')
+    && $responses['second_message']->json('ok')
+    && $responses['third_message']->json('ok');
+
+if ($result) {
+    // All messages have been sent successfully.
+}
+else {
+    // There was a problem sending some messages.
+}
+```
+
+The `add` method returns an instance of `MohammadZarifiyan\Telegram\Interfaces\PendingRequestAdder`, which provides a variety of methods that may be used to modify the request:
+
+```php
+use MohammadZarifiyan\Telegram\Interfaces\PendingRequestAdder;
+
+$pendingRequestAdder->setData(array $data = []): PendingRequestAdder;
+$pendingRequestAdder->setReplyMarkup(ReplyMarkup|string|null $replyMarkup = null): PendingRequestAdder;
+$pendingRequestAdder->setApiKey(?string $apikey = null): PendingRequestAdder;
+$pendingRequestAdder->setEndpoint(?string $endpoint = null): PendingRequestAdder;
 ```
 
 # Send notification by Telegram bot
