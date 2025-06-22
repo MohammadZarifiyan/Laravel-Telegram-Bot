@@ -7,17 +7,9 @@ use MohammadZarifiyan\Telegram\Interfaces\TelegramRequestContent as TelegramRequ
 
 class TelegramRequestContent implements TelegramRequestContentInterface
 {
-    public function __construct(
-        public ?string $method = null,
-        public array $data = [],
-        public ?ReplyMarkup $replyMarkup = null
-    ) {
-        //
-    }
-
-    public static function fresh(?string $method = null, array $data = [], ?ReplyMarkup $replyMarkup = null): static
+    public static function fresh(): static
     {
-        return new static($method, $data, $replyMarkup);
+        return new static;
     }
 
     public function setMethod(string $method): static
