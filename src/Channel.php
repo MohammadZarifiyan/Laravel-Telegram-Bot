@@ -5,8 +5,7 @@ namespace MohammadZarifiyan\Telegram;
 use Exception;
 use Illuminate\Http\Client\Response;
 use Illuminate\Notifications\Notification;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
+use Illuminate\Support\Collection;
 use MohammadZarifiyan\Telegram\Exceptions\TelegramNotificationException;
 use MohammadZarifiyan\Telegram\Facades\Telegram;
 use MohammadZarifiyan\Telegram\Interfaces\PendingRequestStack as PendingRequestStackInterface;
@@ -19,7 +18,7 @@ class Channel
 	{
         $responses = Telegram::concurrent(function (PendingRequestStackInterface $pendingRequestStack) use ($notifiable, $notification) {
             $routeNotification = $notifiable->routeNotificationFor('telegram', $notification);
-            $routes = Arr::wrap($routeNotification);
+            $routes = new Collection($routeNotification);
 
             foreach ($routes as $route) {
                 $recipient = $this->getRecipientFromRoute($route);
@@ -28,12 +27,8 @@ class Channel
                 if ($content instanceof TelegramRequestContent) {
                     $pendingRequestStack->add()
                         ->when(
-                            $route instanceof TelegramRequestOptions && Str::of($route->apiKey)->isNotEmpty(),
-                            fn (PendingRequestBuilderInterface $pendingRequestBuilder) => $pendingRequestBuilder->setApiKey($route->apiKey)
-                        )
-                        ->when(
-                            $route instanceof TelegramRequestOptions && Str::of($route->endpoint)->isNotEmpty(),
-                            fn (PendingRequestBuilderInterface $pendingRequestBuilder) => $pendingRequestBuilder->setEndpoint($route->endpoint)
+                            $route instanceof TelegramRequestOptions,
+                            fn (PendingRequestBuilderInterface $pendingRequestBuilder) => $pendingRequestBuilder->setApiKey($route->apiKey)->setEndpoint($route->endpoint)
                         )
                         ->setMethod($content->method)
                         ->setData($content->data)
@@ -72,7 +67,7 @@ class Channel
         }
 	}
 
-    public function getRecipientFromRoute(mixed $route): string|int
+    public function getRecipientFromRoute($route): string|int
     {
         return match (true) {
             $route instanceof TelegramRequestOptions => $route->recipient,
