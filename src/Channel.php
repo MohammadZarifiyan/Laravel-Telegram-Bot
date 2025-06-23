@@ -3,67 +3,28 @@
 namespace MohammadZarifiyan\Telegram;
 
 use Exception;
-use Illuminate\Http\Client\Response;
 use Illuminate\Notifications\Notification;
-use Illuminate\Support\Collection;
-use MohammadZarifiyan\Telegram\Exceptions\TelegramNotificationException;
 use MohammadZarifiyan\Telegram\Facades\Telegram;
-use MohammadZarifiyan\Telegram\Interfaces\PendingRequestStack as PendingRequestStackInterface;
-use MohammadZarifiyan\Telegram\Interfaces\PendingRequestBuilder as PendingRequestBuilderInterface;
-use Throwable;
 
 class Channel
 {
 	public function send($notifiable, Notification $notification): void
 	{
-        $responses = Telegram::concurrent(function (PendingRequestStackInterface $pendingRequestStack) use ($notifiable, $notification) {
-            $routeNotification = $notifiable->routeNotificationFor('telegram', $notification);
-            $routes = new Collection($routeNotification);
+        $route = $notifiable->routeNotificationFor('telegram', $notification);
 
-            foreach ($routes as $route) {
-                $recipient = $this->getRecipientFromRoute($route);
-                $content = $notification->toTelegram($notifiable, $recipient);
+        if (is_null($route)) {
+            return;
+        }
 
-                if ($content instanceof TelegramRequestContent) {
-                    $pendingRequestStack->add()
-                        ->when(
-                            $route instanceof TelegramRequestOptions,
-                            fn (PendingRequestBuilderInterface $pendingRequestBuilder) => $pendingRequestBuilder->setApiKey($route->apiKey)->setEndpoint($route->endpoint)
-                        )
-                        ->setMethod($content->method)
-                        ->setData($content->data)
-                        ->setReplyMarkup($content->replyMarkup);
-                }
-                else {
-                    throw new Exception('toTelegram method must return a TelegramRequestContent');
-                }
-            }
-        });
+        $recipient = $this->getRecipientFromRoute($route);
+        $content = $notification->toTelegram($notifiable, $recipient);
 
-        $exceptions = array_reduce(
-            $responses,
-            function ($carry, $response) {
-                if ($response instanceof Throwable) {
-                    $carry[] = $response;
-
-                    return $carry;
-                }
-
-                if ($response instanceof Response) {
-                    $exception = $response->toException();
-
-                    if (!is_null($exception)) {
-                        $carry[] = $exception;
-                    }
-                }
-
-                return $carry;
-            },
-            []
-        );
-
-        if (count($exceptions) > 0) {
-            throw new TelegramNotificationException($exceptions);
+        if ($content instanceof TelegramRequestContent) {
+            $response = Telegram::fresh($route->apiKey, $route->endpoint)->perform($content->method, $content->data, $content->replyMarkup);
+            $response->throw();
+        }
+        else {
+            throw new Exception('toTelegram method must return a TelegramRequestContent');
         }
 	}
 

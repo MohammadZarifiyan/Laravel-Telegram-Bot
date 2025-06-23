@@ -342,15 +342,15 @@ $pendingRequestBuilder->setEndpoint(?string $endpoint = null): PendingRequestBui
 ```
 
 # Send notification by Telegram bot
-To send a notification via Telegram, define the `routeNotificationForTelegram` method on your notifiable model. This method should return either a single instance or an array of `MohammadZarifiyan\Telegram\TelegramRequestOptions` instances, indicating how the notification should be delivered.
+To send a notification via Telegram, define the `routeNotificationForTelegram` method on your notifiable model. This method should return an instance of `MohammadZarifiyan\Telegram\TelegramRequestOptions` instances, indicating how the notification should be delivered.
 
 ```php
 use Illuminate\Notifications\Notification;
 use MohammadZarifiyan\Telegram\TelegramRequestOptions;
 
-public function routeNotificationForTelegram(Notification $notification): null|string|int|array|TelegramRequestOptions
+public function routeNotificationForTelegram(Notification $notification): null|string|int|TelegramRequestOptions
 {
-    // return an instance or an array of instances of TelegramRequestOptions
+    // return an instance of TelegramRequestOptions
 }
 ```
 Return the `telegram` channel from your notification's `via` method.
@@ -401,7 +401,7 @@ class User extends Model
         'telegram_id' => 'integer'
     ];
 
-    public function routeNotificationForTelegram(Notification $notification): null|string|int|array|TelegramRequestOptions
+    public function routeNotificationForTelegram(Notification $notification): null|string|int|TelegramRequestOptions
     {
         return TelegramRequestOptions::fresh()
             ->setRecipient($this->telegram_id)
