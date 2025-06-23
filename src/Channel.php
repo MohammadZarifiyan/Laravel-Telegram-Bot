@@ -53,7 +53,7 @@ class Channel
                     $exception = $response->toException();
 
                     if (!is_null($exception)) {
-                        $carry[] = $response;
+                        $carry[] = $exception;
                     }
                 }
 
