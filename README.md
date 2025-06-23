@@ -342,11 +342,15 @@ $pendingRequestBuilder->setEndpoint(?string $endpoint = null): PendingRequestBui
 ```
 
 # Send notification by Telegram bot
-To send a notification via Telegram add the `routeNotificationForTelegram` method to your notifiable model. Then, return the Telegram `chat_id` of the notifiable.
+To send a notification via Telegram, define the `routeNotificationForTelegram` method on your notifiable model. This method should return either a single instance or an array of `MohammadZarifiyan\Telegram\TelegramRequestOptions` instances, indicating how the notification should be delivered.
+
 ```php
-public function routeNotificationForTelegram($notification)
+use Illuminate\Notifications\Notification;
+use MohammadZarifiyan\Telegram\TelegramRequestOptions;
+
+public function routeNotificationForTelegram(Notification $notification): null|string|int|array|TelegramRequestOptions
 {
-    // return telegram id
+    // return an instance or an array of instances of TelegramRequestOptions
 }
 ```
 Return the `telegram` channel from your notification's `via` method.
@@ -357,10 +361,10 @@ public function via($notifiable): array
 }
 ```
 Finally, add `toTelegram` to your notification class and use `MohammadZarifiyan\Telegram\TelegramRequestContent` to specify your Telegram notification data.
-```php
-use \MohammadZarifiyan\Telegram\Interfaces\TelegramRequestContent as TelegramRequestContentInterface;
 
-public function toTelegram($notifiable): TelegramRequestContentInterface
+The second parameter of `toTelegram` method is the recipient that you specified in `routeNotificationForTelegram` method.
+```php
+public function toTelegram($notifiable, $recipient)
 {
     // Return an instance of \MohammadZarifiyan\Telegram\TelegramRequestContent
 }
@@ -384,6 +388,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Notifications\Notification;
+use MohammadZarifiyan\Telegram\TelegramRequestOptions;
 
 class User extends Model
 {
@@ -395,9 +401,11 @@ class User extends Model
         'telegram_id' => 'integer'
     ];
 
-    public function routeNotificationForTelegram($notification)
+    public function routeNotificationForTelegram(Notification $notification): null|string|int|array|TelegramRequestOptions
     {
-        return $this->telegram_id;
+        return TelegramRequestOptions::fresh()
+            ->setRecipient($this->telegram_id)
+            ->setApiKey('1234:abcd')// Optional: You can not call this method if you return an API key via the API Key Repository.
     }
 }
 ```
@@ -408,7 +416,6 @@ The `HelloNotification.php` file:
 namespace App\Notifications;
 
 use \Illuminate\Notifications\Notification;
-use \MohammadZarifiyan\Telegram\Interfaces\TelegramRequestContent as TelegramRequestContentInterface;
 use \MohammadZarifiyan\Telegram\TelegramRequestContent;
 
 class PaymentPaidNotification extends Notification
@@ -418,12 +425,13 @@ class PaymentPaidNotification extends Notification
         return ['telegram'];
     }
 
-    public function toTelegram($notifiable): TelegramRequestContentInterface
+    public function toTelegram($notifiable, $recipient)
     {
         return TelegramRequestContent::fresh()
             ->setMethod('sendMessage')
             ->setData([
-                'text' => 'Hello'
+                'text' => 'Hello',
+                'chat_id' => $recipient
             ]);
     }
 }
@@ -507,7 +515,6 @@ namespace App\Notifications;
 
 use \App\Telegram\ReplyMarkups\MyKeyboard;
 use \Illuminate\Notifications\Notification;
-use MohammadZarifiyan\Telegram\Interfaces\TelegramRequestContent as TelegramRequestContentInterface;
 use \MohammadZarifiyan\Telegram\TelegramRequestContent;
 
 class PaymentPaidNotification extends Notification
@@ -517,12 +524,13 @@ class PaymentPaidNotification extends Notification
         return ['telegram'];
     }
 
-    public function toTelegram($notifiable): TelegramRequestContentInterface
+    public function toTelegram($notifiable, $recipient)
     {
         return TelegramRequestContent::fresh()
             ->setMethod('sendMessage')
             ->setData([
-                'text' => 'Hello'
+                'text' => 'Hello',
+                'chat_id' => $recipient
             ])
             ->setReplyMarkup(MyKeyboard::class); 
     }

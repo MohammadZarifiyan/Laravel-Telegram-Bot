@@ -3,10 +3,13 @@
 namespace MohammadZarifiyan\Telegram;
 
 use MohammadZarifiyan\Telegram\Interfaces\ReplyMarkup;
-use MohammadZarifiyan\Telegram\Interfaces\TelegramRequestContent as TelegramRequestContentInterface;
 
-class TelegramRequestContent implements TelegramRequestContentInterface
+class TelegramRequestContent
 {
+    public string $method;
+    public array $data = [];
+    public ?ReplyMarkup $replyMarkup = null;
+
     public static function fresh(): static
     {
         return new static;
@@ -26,7 +29,7 @@ class TelegramRequestContent implements TelegramRequestContentInterface
         return $this;
     }
 
-    public function setReplyMarkup(?ReplyMarkup $replyMarkup): static
+    public function setReplyMarkup(?ReplyMarkup $replyMarkup = null): static
     {
         $this->replyMarkup = $replyMarkup;
 
