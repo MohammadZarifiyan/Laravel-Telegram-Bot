@@ -2,12 +2,15 @@
 
 namespace MohammadZarifiyan\Telegram;
 
+use Illuminate\Support\Traits\Conditionable;
 use MohammadZarifiyan\Telegram\Interfaces\PendingRequest as PendingRequestInterface;
 use MohammadZarifiyan\Telegram\Interfaces\ReplyMarkup;
 use MohammadZarifiyan\Telegram\Interfaces\PendingRequestBuilder as PendingRequestBuilderInterface;
 
 class PendingRequestBuilder implements PendingRequestBuilderInterface
 {
+    use Conditionable;
+
     protected string $method;
     protected array $data = [];
     protected ReplyMarkup|string|null $replyMarkup = null;

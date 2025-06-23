@@ -6,6 +6,10 @@ use MohammadZarifiyan\Telegram\Interfaces\PendingRequest as PendingRequestInterf
 
 interface PendingRequestBuilder
 {
+    public function when($value = null, callable $callback = null, callable $default = null);
+
+    public function unless($value = null, callable $callback = null, callable $default = null);
+
     public function setMethod(string $method): static;
 
     public function setData(array $data = []): static;
