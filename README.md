@@ -342,7 +342,7 @@ $pendingRequestBuilder->setEndpoint(?string $endpoint = null): PendingRequestBui
 ```
 
 # Send notification by Telegram bot
-To send a notification via Telegram, define the `routeNotificationForTelegram` method on your notifiable model. This method should return an instance of `MohammadZarifiyan\Telegram\TelegramRequestOptions` instances, indicating how the notification should be delivered.
+To send a notification via Telegram, define the `routeNotificationForTelegram` method on your notifiable model. This method should return an instance of `MohammadZarifiyan\Telegram\TelegramRequestOptions`, indicating how the notification should be delivered.
 
 ```php
 use Illuminate\Notifications\Notification;
@@ -361,10 +361,8 @@ public function via($notifiable): array
 }
 ```
 Finally, add `toTelegram` to your notification class and use `MohammadZarifiyan\Telegram\TelegramRequestContent` to specify your Telegram notification data.
-
-The second parameter of `toTelegram` method is the recipient that you specified in `routeNotificationForTelegram` method.
 ```php
-public function toTelegram($notifiable, $recipient)
+public function toTelegram($notifiable)
 {
     // Return an instance of \MohammadZarifiyan\Telegram\TelegramRequestContent
 }
@@ -425,13 +423,15 @@ class PaymentPaidNotification extends Notification
         return ['telegram'];
     }
 
-    public function toTelegram($notifiable, $recipient)
+    public function toTelegram($notifiable)
     {
+        $routeNotification = $notifiable->routeNotificationFor('telegram');
+
         return TelegramRequestContent::fresh()
             ->setMethod('sendMessage')
             ->setData([
                 'text' => 'Hello',
-                'chat_id' => $recipient
+                'chat_id' => $routeNotification->recipient
             ]);
     }
 }
@@ -524,13 +524,15 @@ class PaymentPaidNotification extends Notification
         return ['telegram'];
     }
 
-    public function toTelegram($notifiable, $recipient)
+    public function toTelegram($notifiable)
     {
+        $routeNotification = $notifiable->routeNotificationFor('telegram');
+
         return TelegramRequestContent::fresh()
             ->setMethod('sendMessage')
             ->setData([
                 'text' => 'Hello',
-                'chat_id' => $recipient
+                'chat_id' => $routeNotification->recipient
             ])
             ->setReplyMarkup(MyKeyboard::class); 
     }
