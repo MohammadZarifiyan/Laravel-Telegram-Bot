@@ -19,13 +19,19 @@ class Channel
         $recipient = $this->getRecipientFromRoute($route);
         $content = $notification->toTelegram($notifiable, $recipient);
 
-        if ($content instanceof TelegramRequestContent) {
-            $response = Telegram::fresh($route->apiKey, $route->endpoint)->perform($content->method, $content->data, $content->replyMarkup);
-            $response->throw();
-        }
-        else {
+        if ($content instanceof TelegramRequestContent === false) {
             throw new Exception('toTelegram method must return a TelegramRequestContent');
         }
+
+        $telegram = Telegram::fresh();
+
+        if ($route instanceof TelegramRequestOptions) {
+            $telegram->setApiKey($route->apiKey);
+            $telegram->setEndpoint($route->endpoint);
+        }
+
+        $response = $telegram->perform($content->method, $content->data, $content->replyMarkup);
+        $response->throw();
 	}
 
     public function getRecipientFromRoute($route): string|int
