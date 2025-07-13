@@ -4,6 +4,7 @@ namespace MohammadZarifiyan\Telegram;
 
 use Exception;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Str;
 use MohammadZarifiyan\Telegram\Facades\Telegram;
 
 class Channel
@@ -25,8 +26,13 @@ class Channel
         $telegram = Telegram::fresh();
 
         if ($route instanceof TelegramRequestOptions) {
-            $telegram->setApiKey($route->apiKey);
-            $telegram->setEndpoint($route->endpoint);
+            if (Str::of($route->apiKey)->isEmpty()) {
+                $telegram->setApiKey($route->apiKey);
+            }
+
+            if (Str::of($route->endpoint)->isEmpty()) {
+                $telegram->setEndpoint($route->endpoint);
+            }
         }
 
         $response = $telegram->perform($content->method, $content->data, $content->replyMarkup);
