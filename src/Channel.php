@@ -26,11 +26,11 @@ class Channel
         $telegram = Telegram::fresh();
 
         if ($route instanceof TelegramRequestOptions) {
-            if (Str::of($route->apiKey)->isEmpty()) {
+            if (Str::of($route->apiKey)->isNotEmpty()) {
                 $telegram->setApiKey($route->apiKey);
             }
 
-            if (Str::of($route->endpoint)->isEmpty()) {
+            if (Str::of($route->endpoint)->isNotEmpty()) {
                 $telegram->setEndpoint($route->endpoint);
             }
         }
