@@ -78,7 +78,7 @@ class Executor
             foreach ($pendingRequests as $as => $pendingRequest) {
                 $proxies[$as] = $this->getProxy();
                 $finalPendingRequest = empty($requestManipulator) ? $pendingRequest : new $requestManipulator($pendingRequest);
-                $pendingClientRequest = is_string($as) ? $pool->as($as)->acceptJson() : $pool->acceptJson();
+                $pendingClientRequest = is_null($as) ? $pool->acceptJson() : $pool->as($as)->acceptJson();
 
                 $pendingClientRequest
                     ->attach($finalPendingRequest->getAttachments())
