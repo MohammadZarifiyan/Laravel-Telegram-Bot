@@ -3,7 +3,7 @@
     "description": "A Laravel package that helps you to easily create scalable Telegram bots and send notifications through Telegram.",
     "type": "library",
     "keywords": ["Telegram", "Laravel", "PHP"],
-    "version": "10.0.2",
+    "version": "10.0.3",
     "license": "MIT",
     "require": {
         "php": "^8",

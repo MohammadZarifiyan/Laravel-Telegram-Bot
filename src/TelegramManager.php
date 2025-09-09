@@ -133,7 +133,7 @@ class TelegramManager implements TelegramInterface
         }
 
         $authData = collect($data)
-            ->except('hash')
+            ->except(['hash', 'signature'])
             ->sortKeys()
             ->map(fn ($value, $key) => $key . '=' . $value)
             ->sort()
