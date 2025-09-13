@@ -67,7 +67,7 @@ class Telegram extends Facade
 
         $message = $botId . ':WebAppData' . PHP_EOL . $dataCheckString;
 
-        $publicKeyHex = config('services.telegram.public-key');
+        $publicKeyHex = config('services.telegram.public-key-hex');
 
         if (!is_string($publicKeyHex)) {
             throw new RuntimeException('Telegram public key HEX is not properly configured.');
