@@ -45,19 +45,21 @@ class Telegram extends Facade
         return App::makeWith(TelegramInterface::class, compact('apiKey', 'endpoint', 'secretToken'));
     }
 
-    public static function validateWebAppSignature(array $data, int $botId): bool
+    public static function validateWebAppSignature(string $initData, int $botId): bool
     {
-        if (!isset($data['signature']) || !is_string($data['signature'])) {
+        parse_str($initData, $parsedInitData);
+
+        if (!isset($parsedInitData['signature']) || !is_string($parsedInitData['signature'])) {
             return false;
         }
 
-        $signatureBinary = hex2bin($data['signature']);
+        $signatureBinary = hex2bin($parsedInitData['signature']);
 
         if ($signatureBinary === false) {
             return false;
         }
 
-        $dataCheckString = collect($data)
+        $dataCheckString = collect($parsedInitData)
             ->except(['hash', 'signature'])
             ->sortKeys()
             ->map(fn ($value, $key) => $key . '=' . $value)
