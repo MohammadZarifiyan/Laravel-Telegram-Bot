@@ -116,33 +116,42 @@ class TelegramManager implements TelegramInterface
 		);
     }
 
-    public function verifyContentHash(array|string $content): bool
+    public function validateAuthorizationData(array $authData): bool
     {
-        if (is_array($content)) {
-            $data = $content;
-        }
-        else if (json_validate($content)) {
-            $data = json_decode($content);
-        }
-        else {
-            parse_str($content, $data);
-        }
-
-        if (empty($data['hash'])) {
+        if (!isset($authData['hash']) || !is_string($authData['hash'])) {
             return false;
         }
 
-        $authData = collect($data)
-            ->except(['hash', 'signature'])
+        $dataCheckString = collect($authData)
+            ->except('hash')
             ->sortKeys()
-            ->map(fn ($value, $key) => $key . '=' . $value)
-            ->sort()
+            ->map(fn ($key, $value) => $key . '=' . $value)
             ->implode(PHP_EOL);
 
         $secretKey = hash('sha256', $this->apiKey, true);
-        $calculatedHash = hash_hmac('sha256', $authData, $secretKey);
+        $knownString = hash_hmac('sha256', $dataCheckString, $secretKey);
 
-        return hash_equals($data['hash'], $calculatedHash);
+        return hash_equals($knownString, $authData['hash']);
+    }
+
+    public function validateWebAppInitData(string $initData): bool
+    {
+        parse_str($initData, $parsedInitData);
+
+        if (!isset($parsedInitData['hash']) || !is_string($parsedInitData['hash'])) {
+            return false;
+        }
+
+        $dataCheckString = collect($parsedInitData)
+            ->except('hash')
+            ->sortKeys()
+            ->map(fn ($key, $value) => $key . '=' . $value)
+            ->implode(PHP_EOL);
+
+        $secretKey = hash_hmac('sha256', $this->apiKey, 'WebAppData', true);
+        $knownString = hash_hmac('sha256', $dataCheckString, $secretKey);
+
+        return hash_equals($knownString, $parsedInitData['hash']);
     }
 
 	public function generateFileUrl(string $filePath): string

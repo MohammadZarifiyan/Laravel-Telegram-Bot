@@ -30,7 +30,9 @@ interface Telegram
 
     public function concurrent(Closure $closure): array;
 
-    public function verifyContentHash(array|string $content): bool;
+    public function validateAuthorizationData(array $authData): bool;
+
+    public function validateWebAppInitData(string $initData): bool;
 
     public function generateFileUrl(string $filePath): string;
 }

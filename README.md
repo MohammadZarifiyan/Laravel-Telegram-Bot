@@ -6,7 +6,7 @@ Please read [The Telegram API documentation](https://core.telegram.org/bots/api)
 # Installation
 To install the package in your project, run the following command in your project root folder:
 ```shell
-composer require mohammad-zarifiyan/laravel-telegram-bot:^10.0
+composer require mohammad-zarifiyan/laravel-telegram-bot:^10.1
 ```
 
 # Basic configuration
@@ -645,10 +645,79 @@ use MohammadZarifiyan\Telegram\Facades\Telegram;
 echo Telegram::getBotId();// Output: 123456
 ```
 
-# Verify Content Hash
-The `verifyContentHash` method allows you to check if the hash of the provided data is valid.
+# Validate Telegram Login Widget (Authorization) data
+Pass the data received from the Login Widget to the `validateAuthorizationData` method. If the data is valid, it will return `true`; otherwise, it will return `false`.
+## Example
+The `routes/web.php` file:
+```php
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
+use \MohammadZarifiyan\Telegram\Facades\Telegram;
 
-To use this method, your content must include a key named hash. The method hashes the provided data using the bot's API Key and compares it with the hash included in the content. If the data is verified, the method returns `true`.
+Route::get('telegram/login', function (Request $request) {
+    $isValid = Telegram::validateAuthorizationData($request->all());
+    
+    if ($isValid) {
+        $user = User::firstOrCreate([
+            'telegram_id' => $request->query('id')
+        ]);
+        
+        Auth::login($user);
+
+        return 'Success: You are logged into your account!';
+    }
+    else {
+        return 'Error: Telegram authorization data is not valid!';
+    }
+});
+```
+The `app\Models\User.php` file:
+```php
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class User extends Model
+{
+    protected $fillable = ['telegram_id'];
+
+    protected $casts = [
+        'telegram_id' => 'integer',
+    ];
+}
+```
+# Validate WebApp InitData
+There are two ways to verify WebApp data.
+
+## Validating data for First-Party Use
+If you want to validate the WebApp initData for the bot whose API you have configured, pass the `initData` to the `validateWebAppInitData` method. This method validates the initData using the configured bot token.
+
+It returns `true` if the data is valid, and `false` otherwise.
+
+## Validating data for Third-Party Use
+If you want to validate the WebApp initData of another bot, or a bot whose API key you do not have, use the `Telegram::validateWebAppSignature`. This method validates the data without requiring an API key, using only the Telegram bot ID and Telegram’s public key hex.
+
+Note that the public key HEX must be set in your `config/services.php` file.
+
+You can find the public key HEX at this [link](https://core.telegram.org/bots/webapps#validating-data-for-third-party-use).
+
+The `config/services.php` file:
+```php
+<?php
+
+return [
+    // The rest of your code
+
+    'telegram' => [
+        'public-key-hex' => env('TELEGRAM_PUBLIC_KEY_HEX'),
+    ],
+];
+```
+Then add `TELEGRAM_PUBLIC_KEY_HEX` to your `.env` file.
 
 # Configure Secret Token
 It is strongly recommend to set a secret token for your bot to make sure that the updates are sent by Telegram webhook.
