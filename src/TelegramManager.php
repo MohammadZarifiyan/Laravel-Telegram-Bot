@@ -125,7 +125,7 @@ class TelegramManager implements TelegramInterface
         $dataCheckString = collect($authData)
             ->except('hash')
             ->sortKeys()
-            ->map(fn ($key, $value) => $key . '=' . $value)
+            ->map(fn ($value, $key) => $key . '=' . $value)
             ->implode(PHP_EOL);
 
         $secretKey = hash('sha256', $this->apiKey, true);
@@ -145,7 +145,7 @@ class TelegramManager implements TelegramInterface
         $dataCheckString = collect($parsedInitData)
             ->except('hash')
             ->sortKeys()
-            ->map(fn ($key, $value) => $key . '=' . $value)
+            ->map(fn ($value, $key) => $key . '=' . $value)
             ->implode(PHP_EOL);
 
         $secretKey = hash_hmac('sha256', $this->apiKey, 'WebAppData', true);

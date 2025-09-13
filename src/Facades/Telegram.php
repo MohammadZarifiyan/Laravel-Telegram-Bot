@@ -60,7 +60,7 @@ class Telegram extends Facade
         $dataCheckString = collect($data)
             ->except(['hash', 'signature'])
             ->sortKeys()
-            ->map(fn ($key, $value) => $key . '=' . $value)
+            ->map(fn ($value, $key) => $key . '=' . $value)
             ->implode(PHP_EOL);
 
         $message = $botId . ':WebAppData' . PHP_EOL . $dataCheckString;
