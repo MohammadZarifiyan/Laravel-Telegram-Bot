@@ -53,7 +53,8 @@ class Telegram extends Facade
             return false;
         }
 
-        $signatureBinary = hex2bin($parsedInitData['signature']);
+        $signatureBase64 = strtr($parsedInitData['signature'], '-_', '+/');
+        $signatureBinary = base64_decode($signatureBase64, true);
 
         if ($signatureBinary === false) {
             return false;
