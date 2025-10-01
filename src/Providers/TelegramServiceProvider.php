@@ -163,7 +163,7 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
     {
         $this->app->resolving(
             Update::class,
-            fn ($update, Container $app) => Update::createFrom($app['request'], $update)->setContainer($app)
+            fn ($update, Container $app) => Update::createFrom($app['request'], $update)
         );
 
         $this->app->resolving(
