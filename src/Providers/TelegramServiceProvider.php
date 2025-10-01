@@ -87,6 +87,8 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
         $this->app->bind(SecretTokenRepositoryInterface::class, config('telegram.secret-token-repository'));
 
         $this->app->bind(ProxyRepositoryInterface::class, config('telegram.proxy-repository'));
+
+        $this->addTelegramRequestResolver();
     }
 	
 	/**
@@ -151,6 +153,24 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
 			);
 		});
 	}
+
+    /**
+     * Adds Telegram Request resolver to the application.
+     *
+     * @return void
+     */
+    public function addTelegramRequestResolver(): void
+    {
+        $this->app->resolving(
+            Update::class,
+            fn ($update, Container $app) => Update::createFrom($app['request'], $update)->setContainer($app)
+        );
+
+        $this->app->resolving(
+            FormUpdate::class,
+            fn ($formUpdate, Container $app) => FormUpdate::createFrom($app['request'], $formUpdate)->setContainer($app)
+        );
+    }
 	
 	/**
 	 * @return string[]
