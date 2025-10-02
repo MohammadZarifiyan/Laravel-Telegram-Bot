@@ -63,10 +63,15 @@ class TelegramManager implements TelegramInterface
 		}
 	}
 
-	public function getUpdate(): ?Update
-	{
-		return $this->update ?? null;
-	}
+    /**
+     * @inheritDoc
+     */
+    public function getUpdate(): Update
+    {
+        $this->update ??= App::make(Update::class);
+
+        return $this->update;
+    }
 
     /**
      * @throws InvalidTelegramBotApiKeyException

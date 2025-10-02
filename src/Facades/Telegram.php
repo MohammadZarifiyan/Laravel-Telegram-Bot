@@ -18,7 +18,7 @@ use SodiumException;
  * @method static TelegramInterface setApiKey(?string $apiKey = null)
  * @method static TelegramInterface setEndpoint(?string $endpoint = null)
  * @method static TelegramInterface setSecretToken(?string $secretToken = null)
- * @method static Update|null getUpdate()
+ * @method static Update getUpdate()
  * @method static int getBotId()
  * @method static Response perform(string $method, array $data = [], ReplyMarkup|string|null $replyMarkup = null)
  * @method static array<Response> concurrent(Closure $closure)

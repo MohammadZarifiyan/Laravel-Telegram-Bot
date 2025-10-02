@@ -18,7 +18,12 @@ interface Telegram
 
     public function handleRequest(Request $request): void;
 
-    public function getUpdate(): ?Update;
+    /**
+     * Get current update
+     *
+     * @return Update
+     */
+    public function getUpdate(): Update;
 
     /**
      * @throws InvalidTelegramBotApiKeyException
