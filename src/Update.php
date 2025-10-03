@@ -11,7 +11,7 @@ use MohammadZarifiyan\Telegram\Interfaces\RequestParser;
 class Update extends Request
 {
 	protected RequestParser $requestParser;
-    protected ?GainerResolver $gainerResolver = null;
+    protected ?GainerResolver $gainerResolver;
 
     public static function createFrom(Request|Update $from, $to = null): static
     {
@@ -91,7 +91,11 @@ class Update extends Request
 	 */
 	public function getGainerResolver(): ?GainerResolver
 	{
-		return $this->gainerResolver ?? null;
+        if (isset($this->gainerResolver)) {
+            return $this->gainerResolver;
+        }
+
+        return try_resolve(config('telegram.gainer-resolver'));
 	}
 	
 	/**
