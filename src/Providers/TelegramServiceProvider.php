@@ -14,6 +14,9 @@ use MohammadZarifiyan\Telegram\Console\Commands\MakeMiddleware;
 use MohammadZarifiyan\Telegram\Console\Commands\MakeReplyMarkup;
 use MohammadZarifiyan\Telegram\Console\Commands\MakeStage;
 use MohammadZarifiyan\Telegram\Console\Commands\MakeUpdate;
+use MohammadZarifiyan\Telegram\GainerManager;
+use MohammadZarifiyan\Telegram\Interfaces\GainerManager as GainerManagerInterface;
+use MohammadZarifiyan\Telegram\Interfaces\GainerResolver;
 use MohammadZarifiyan\Telegram\Interfaces\ProxyRepository as ProxyRepositoryInterface;
 use MohammadZarifiyan\Telegram\Interfaces\Telegram as TelegramInterface;
 use MohammadZarifiyan\Telegram\Interfaces\ApiKeyRepository as ApiKeyRepositoryInterface;
@@ -84,6 +87,10 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
         $this->app->bind(SecretTokenRepositoryInterface::class, config('telegram.secret-token-repository'));
 
         $this->app->bind(ProxyRepositoryInterface::class, config('telegram.proxy-repository'));
+
+        $this->app->bind(GainerResolver::class, config('telegram.gainer-resolver'));
+
+        $this->app->bind(GainerManagerInterface::class, GainerManager::class);
     }
 	
 	/**
@@ -162,6 +169,8 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
             EndpointRepositoryInterface::class,
             ApiKeyRepositoryInterface::class,
             SecretTokenRepositoryInterface::class,
+            GainerResolver::class,
+            GainerManagerInterface::class,
 		];
 	}
 }

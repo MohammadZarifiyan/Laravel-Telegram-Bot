@@ -5,27 +5,12 @@ namespace MohammadZarifiyan\Telegram;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use MohammadZarifiyan\Telegram\Interfaces\Command as CommandInterface;
-use MohammadZarifiyan\Telegram\Interfaces\GainerResolver;
 use MohammadZarifiyan\Telegram\Interfaces\RequestParser;
+use MohammadZarifiyan\Telegram\Interfaces\GainerManager as GainerManagerInterface;
 
 class Update extends Request
 {
 	protected RequestParser $requestParser;
-    protected ?GainerResolver $gainerResolver;
-
-    public static function createFrom(Request|Update $from, $to = null): static
-    {
-        /**
-         * @var Update $update
-         */
-        $update = parent::createFrom($from, $to);
-
-        if ($from instanceof Update) {
-            $update->setGainerResolver($from->getGainerResolver());
-        }
-
-        return $update;
-    }
 
 	protected function getRequestParser(): RequestParser
 	{
@@ -70,33 +55,6 @@ class Update extends Request
 	{
         return $this->getRequestParser()->getUpdateType();
 	}
-
-    /**
-     * Set the gainer resolver class.
-     *
-     * @param GainerResolver|null $resolver
-     * @return $this
-     */
-    public function setGainerResolver(?GainerResolver $resolver): static
-    {
-        $this->gainerResolver = $resolver;
-
-        return $this;
-    }
-	
-	/**
-	 * Get gainer resolver.
-	 *
-	 * @return null|GainerResolver
-	 */
-	public function getGainerResolver(): ?GainerResolver
-	{
-        if (isset($this->gainerResolver)) {
-            return $this->gainerResolver;
-        }
-
-        return try_resolve(config('telegram.gainer-resolver'));
-	}
 	
 	/**
 	 * Get the gainer making the update.
@@ -105,8 +63,11 @@ class Update extends Request
 	 */
 	public function gainer(): mixed
 	{
-        $resolver = $this->getGainerResolver();
+        /**
+         * @var GainerManagerInterface $gainerManager
+         */
+        $gainerManager = App::make(GainerManagerInterface::class);
 
-        return $resolver instanceof GainerResolver ? call_user_func($resolver, $this) : null;
+        return $gainerManager->getCachedGainer($this);
 	}
 }
