@@ -2,7 +2,6 @@
 
 namespace MohammadZarifiyan\Telegram\Providers;
 
-use Illuminate\Contracts\Container\Container;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Notifications\ChannelManager;
@@ -23,11 +22,8 @@ use MohammadZarifiyan\Telegram\Interfaces\SecretTokenRepository as SecretTokenRe
 use MohammadZarifiyan\Telegram\Interfaces\PendingRequestStack as PendingRequestStackInterface;
 use MohammadZarifiyan\Telegram\Interfaces\RequestParser as RequestParserInterface;
 use MohammadZarifiyan\Telegram\PendingRequestStack;
-use MohammadZarifiyan\Telegram\FormUpdate;
 use MohammadZarifiyan\Telegram\RequestParser;
 use MohammadZarifiyan\Telegram\TelegramManager;
-use MohammadZarifiyan\Telegram\Update;
-use function MohammadZarifiyan\Telegram\try_resolve;
 
 class TelegramServiceProvider extends ServiceProvider implements DeferrableProvider
 {
