@@ -10,10 +10,22 @@ use MohammadZarifiyan\Telegram\Interfaces\RequestParser;
 
 class Update extends Request
 {
-	protected ?string $updateType;
-	protected ?CommandInterface $command;
-	protected mixed $gainer;
 	protected RequestParser $requestParser;
+    protected ?GainerResolver $gainerResolver = null;
+
+    public static function createFrom(Request|Update $from, $to = null): static
+    {
+        /**
+         * @var Update $update
+         */
+        $update = parent::createFrom($from, $to);
+
+        if ($from instanceof Update) {
+            $update->setGainerResolver($from->getGainerResolver());
+        }
+
+        return $update;
+    }
 
 	protected function getRequestParser(): RequestParser
 	{
@@ -37,12 +49,8 @@ class Update extends Request
 	 */
 	public function toCommand(): ?CommandInterface
 	{
-		if (isset($this->command)) {
-			return $this->command;
-		}
-
         if (!$this->isCommand()) {
-            return $this->command = null;
+            return null;
         }
 
         $commandParts = $this->string('message.text')->explode(' ');
@@ -50,7 +58,7 @@ class Update extends Request
         $value = $commandParts->slice(1)->implode(' ');
         $value = trim($value) === '' ? null : trim($value);
 
-        return $this->command = new Command($signature, $value);
+        return new Command($signature, $value);
 	}
 
 	/**
@@ -60,12 +68,21 @@ class Update extends Request
 	 */
 	public function type(): ?string
 	{
-		if (!isset($this->updateType)) {
-			$this->updateType = $this->getRequestParser()->getUpdateType();
-		}
-		
-		return $this->updateType;
+        return $this->getRequestParser()->getUpdateType();
 	}
+
+    /**
+     * Set the gainer resolver class.
+     *
+     * @param GainerResolver|null $resolver
+     * @return $this
+     */
+    public function setGainerResolver(?GainerResolver $resolver): static
+    {
+        $this->gainerResolver = $resolver;
+
+        return $this;
+    }
 	
 	/**
 	 * Get gainer resolver.
@@ -74,24 +91,18 @@ class Update extends Request
 	 */
 	public function getGainerResolver(): ?GainerResolver
 	{
-		return try_resolve(
-			config('telegram.gainer-resolver')
-		);
+		return $this->gainerResolver ?? null;
 	}
 	
 	/**
-	 * Returns gainer if already was set,
-	 * otherwise sets gainer by gainer resolver.
+	 * Get the gainer making the update.
 	 *
 	 * @return mixed
 	 */
 	public function gainer(): mixed
 	{
-		if (!isset($this->gainer)) {
-            $resolver = $this->getGainerResolver();
-            $this->gainer = $resolver instanceof GainerResolver ? call_user_func($resolver, $this) : null;
-		}
+        $resolver = $this->getGainerResolver();
 
-        return $this->gainer;
+        return $resolver instanceof GainerResolver ? call_user_func($resolver, $this) : null;
 	}
 }

@@ -27,6 +27,7 @@ use MohammadZarifiyan\Telegram\FormUpdate;
 use MohammadZarifiyan\Telegram\RequestParser;
 use MohammadZarifiyan\Telegram\TelegramManager;
 use MohammadZarifiyan\Telegram\Update;
+use function MohammadZarifiyan\Telegram\try_resolve;
 
 class TelegramServiceProvider extends ServiceProvider implements DeferrableProvider
 {
@@ -88,7 +89,24 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
 
         $this->app->bind(ProxyRepositoryInterface::class, config('telegram.proxy-repository'));
 
-        $this->addTelegramRequestResolver();
+        $this->app->bind('update', function (Container $app) {
+            $gainerResolver = try_resolve(config('telegram.gainer-resolver'));
+
+            $update = Update::createFrom($app['request']);
+            $update->setGainerResolver($gainerResolver);
+
+            return $update;
+        });
+
+        $this->app->resolving(
+            FormUpdate::class,
+            function ($formUpdate, Container $app) {
+                $instance = FormUpdate::createFrom($app['update'], $formUpdate);
+                $instance->setContainer($app);
+
+                return $instance;
+            }
+        );
     }
 	
 	/**
@@ -153,24 +171,6 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
 			);
 		});
 	}
-
-    /**
-     * Adds Telegram Request resolver to the application.
-     *
-     * @return void
-     */
-    public function addTelegramRequestResolver(): void
-    {
-        $this->app->resolving(
-            Update::class,
-            fn ($update, Container $app) => Update::createFrom($app['request'], $update)
-        );
-
-        $this->app->resolving(
-            FormUpdate::class,
-            fn ($formUpdate, Container $app) => FormUpdate::createFrom($app['request'], $formUpdate)->setContainer($app)
-        );
-    }
 	
 	/**
 	 * @return string[]
@@ -178,6 +178,7 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
 	public function provides(): array
 	{
 		return [
+            'update',
             TelegramInterface::class,
             RequestParserInterface::class,
 			PendingRequestStackInterface::class,

@@ -55,7 +55,16 @@ class TelegramManager implements TelegramInterface
 	 */
 	public function handleRequest(Request $request): void
 	{
-        $this->update = $request instanceof Update ? $request : Update::createFrom($request);
+        if ($request instanceof Update) {
+            $this->update = $request;
+        }
+        else {
+            $gainerResolver = try_resolve(config('telegram.gainer-resolver'));
+
+            $this->update = Update::createFrom($request);
+            $this->update->setGainerResolver($gainerResolver);
+        }
+
 		$updateHandler = new UpdateHandler($this->update, $this->secretToken);
 
 		foreach ($updateHandler->run() as $update) {
@@ -68,7 +77,7 @@ class TelegramManager implements TelegramInterface
      */
     public function getUpdate(): Update
     {
-        $this->update ??= App::make(Update::class);
+        $this->update ??= App::make('update');
 
         return $this->update;
     }
