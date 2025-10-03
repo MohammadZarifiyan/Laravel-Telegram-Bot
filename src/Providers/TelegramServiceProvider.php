@@ -90,7 +90,7 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
 
         $this->app->bind(GainerResolver::class, config('telegram.gainer-resolver'));
 
-        $this->app->bind(GainerManagerInterface::class, GainerManager::class);
+        $this->app->scoped(GainerManagerInterface::class, GainerManager::class);
     }
 	
 	/**
