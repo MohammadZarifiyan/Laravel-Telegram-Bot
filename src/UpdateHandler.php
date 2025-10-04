@@ -4,6 +4,7 @@ namespace MohammadZarifiyan\Telegram;
 
 use Exception;
 use Generator;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
 use MohammadZarifiyan\Telegram\Exceptions\TelegramCommandHandlerNotFoundException;
 use MohammadZarifiyan\Telegram\Exceptions\TelegramException;
@@ -123,7 +124,11 @@ class UpdateHandler
 		}
 		
 		if (is_subclass_of($requestType->getName(), FormUpdate::class)) {
-            return $requestType->getName()::createFrom($this->update);
+            $formUpdate = $requestType->getName()::createFrom($this->update);
+            $formUpdate->setContainer(App::getInstance());
+            $formUpdate->validateResolved();
+
+            return $formUpdate;
 		}
 		
 		return $this->update;
