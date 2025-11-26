@@ -6,7 +6,7 @@ Please read [The Telegram API documentation](https://core.telegram.org/bots/api)
 # Installation
 To install the package in your project, run the following command in your project root folder:
 ```shell
-composer require mohammad-zarifiyan/laravel-telegram-bot:^10.3
+composer require mohammad-zarifiyan/laravel-telegram-bot:^10.4
 ```
 
 # Basic configuration
@@ -630,6 +630,20 @@ else {
     $error = $response->json('description');
     // There was an error receiving file information. You can use $error to display the error.
 }
+```
+
+# Parsing API Key
+You can parse any Telegram API Key.
+
+Using `Telegram::parseApikey($apiKey)` you can extract both the `botId` and the `botTokenHash` from any given API Key. For Example:
+```php
+use MohammadZarifiyan\Telegram\Facades\Telegram;
+
+$apiKey = '123456:abcdefg';
+$parsedApiKey Telegram::getBotId($apiKey);
+
+echo $parsedApiKey->botId;// Output: 123456
+echo $parsedApiKey->botTokenHash;// Output: abcdefg
 ```
 
 # Get bot ID

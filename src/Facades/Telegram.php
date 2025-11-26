@@ -7,8 +7,11 @@ use Illuminate\Http\Client\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Facade;
+use Illuminate\Support\Str;
+use MohammadZarifiyan\Telegram\Exceptions\InvalidTelegramBotApiKeyException;
 use MohammadZarifiyan\Telegram\Interfaces\ReplyMarkup;
 use MohammadZarifiyan\Telegram\Interfaces\Telegram as TelegramInterface;
+use MohammadZarifiyan\Telegram\TelegramBotApiKey;
 use MohammadZarifiyan\Telegram\Update;
 use RuntimeException;
 use SodiumException;
@@ -43,6 +46,19 @@ class Telegram extends Facade
     public static function fresh(string $apiKey = null, string $endpoint = null, ?string $secretToken = null): TelegramInterface
     {
         return App::makeWith(TelegramInterface::class, compact('apiKey', 'endpoint', 'secretToken'));
+    }
+
+    public static function parseApiKey(string $apiKey): TelegramBotApiKey
+    {
+        $parts = explode(':', $apiKey);
+
+        if (count($parts) === 2 && is_numeric($parts[0])) {
+            $botTokenHash = Str::of($apiKey)->remove($parts[0] . ':')->toString();
+
+            return new TelegramBotApiKey((int) $parts[0], $botTokenHash);
+        }
+
+        throw new InvalidTelegramBotApiKeyException('API Key is not valid');
     }
 
     public static function validateWebAppSignature(string $initData, int $botId): bool

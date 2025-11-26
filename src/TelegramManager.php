@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Traits\Macroable;
 use MohammadZarifiyan\Telegram\Exceptions\InvalidTelegramBotApiKeyException;
+use MohammadZarifiyan\Telegram\Facades\Telegram;
 use MohammadZarifiyan\Telegram\Interfaces\Telegram as TelegramInterface;
 use MohammadZarifiyan\Telegram\Interfaces\ReplyMarkup;
 use MohammadZarifiyan\Telegram\Exceptions\TelegramException;
@@ -79,13 +80,9 @@ class TelegramManager implements TelegramInterface
      */
     public function getBotId(): int
     {
-        $parts = explode(':', $this->apiKey);
+        $parseApiKey = Telegram::parseApiKey($this->apiKey);
 
-        if (count($parts) === 2 && is_numeric($parts[0])) {
-            return (int) $parts[0];
-        }
-
-        throw new InvalidTelegramBotApiKeyException('API Key is not valid');
+        return $parseApiKey->botId;
     }
 
     public function perform(string $method, array $data = [], ReplyMarkup|string|null $replyMarkup = null): Response
