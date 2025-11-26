@@ -2,6 +2,7 @@
 
 namespace MohammadZarifiyan\Telegram\Providers;
 
+use Faker\Generator as FakerGenerator;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Notifications\ChannelManager;
@@ -14,6 +15,7 @@ use MohammadZarifiyan\Telegram\Console\Commands\MakeMiddleware;
 use MohammadZarifiyan\Telegram\Console\Commands\MakeReplyMarkup;
 use MohammadZarifiyan\Telegram\Console\Commands\MakeStage;
 use MohammadZarifiyan\Telegram\Console\Commands\MakeUpdate;
+use MohammadZarifiyan\Telegram\FakerProviders\TelegramBotApiKeyProvider;
 use MohammadZarifiyan\Telegram\GainerManager;
 use MohammadZarifiyan\Telegram\Interfaces\GainerManager as GainerManagerInterface;
 use MohammadZarifiyan\Telegram\Interfaces\GainerResolver;
@@ -91,6 +93,12 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
         $this->app->bind(GainerResolver::class, config('telegram.gainer-resolver'));
 
         $this->app->scoped(GainerManagerInterface::class, GainerManager::class);
+
+        $this->app->extend(FakerGenerator::class, function (FakerGenerator $faker) {
+            $faker->addProvider(new TelegramBotApiKeyProvider($faker));
+
+            return $faker;
+        });
     }
 	
 	/**
