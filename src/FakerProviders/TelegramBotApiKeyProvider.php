@@ -10,7 +10,8 @@ class TelegramBotApiKeyProvider extends Base
 {
     public function telegramBotApiKey(): TelegramBotApiKey
     {
-        $id = rand(10000, 18446744073709551615);
+        $maxId = min(PHP_INT_MAX, 18446744073709551615);
+        $id = rand(10000, $maxId);
         $alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-';
         $lastAlphabetIndex = strlen($alphabet) - 1;
         $tokenHash = Collection::times(35)
