@@ -635,7 +635,7 @@ else {
 # Parsing API Key
 You can parse any Telegram API Key.
 
-Using `Telegram::parseApikey($apiKey)` you can extract both the `botId` and the `botTokenHash` from any given API Key. For Example:
+Use `Telegram::parseApikey($apiKey)` to get the `botId` and `botTokenHash` from any Telegram API Key. It returns a `MohammadZarifiyan\Telegram\TelegramBotApiKey` instance containing both values. Example:
 ```php
 use MohammadZarifiyan\Telegram\Facades\Telegram;
 
