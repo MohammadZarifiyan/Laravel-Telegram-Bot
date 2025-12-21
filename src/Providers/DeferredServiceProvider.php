@@ -2,20 +2,9 @@
 
 namespace MohammadZarifiyan\Telegram\Providers;
 
-use Faker\Generator as FakerGenerator;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Support\DeferrableProvider;
-use Illuminate\Notifications\ChannelManager;
-use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\ServiceProvider;
-use MohammadZarifiyan\Telegram\Channel;
-use MohammadZarifiyan\Telegram\Console\Commands\MakeBreaker;
-use MohammadZarifiyan\Telegram\Console\Commands\MakeCommandHandler;
-use MohammadZarifiyan\Telegram\Console\Commands\MakeMiddleware;
-use MohammadZarifiyan\Telegram\Console\Commands\MakeReplyMarkup;
-use MohammadZarifiyan\Telegram\Console\Commands\MakeStage;
-use MohammadZarifiyan\Telegram\Console\Commands\MakeUpdate;
-use MohammadZarifiyan\Telegram\FakerProviders\TelegramBotApiKeyProvider;
 use MohammadZarifiyan\Telegram\GainerManager;
 use MohammadZarifiyan\Telegram\Interfaces\GainerManager as GainerManagerInterface;
 use MohammadZarifiyan\Telegram\Interfaces\GainerResolver;
@@ -30,7 +19,7 @@ use MohammadZarifiyan\Telegram\PendingRequestStack;
 use MohammadZarifiyan\Telegram\RequestParser;
 use MohammadZarifiyan\Telegram\TelegramManager;
 
-class TelegramServiceProvider extends ServiceProvider implements DeferrableProvider
+class DeferredServiceProvider extends ServiceProvider implements DeferrableProvider
 {
     /**
      * Register Telegram service.
@@ -39,8 +28,6 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
      */
     public function register(): void
     {
-		$this->mergeConfigFrom(__DIR__.'/../../config/telegram.php', 'telegram');
-
         $this->app->bind(TelegramInterface::class, function (Application $application, array $parameters = []) {
             if (empty($parameters['apiKey'])) {
                 /**
@@ -93,76 +80,7 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
         $this->app->bind(GainerResolver::class, config('telegram.gainer-resolver'));
 
         $this->app->scoped(GainerManagerInterface::class, GainerManager::class);
-
-        $this->app->extend(FakerGenerator::class, function (FakerGenerator $faker) {
-            $faker->addProvider(new TelegramBotApiKeyProvider($faker));
-
-            return $faker;
-        });
     }
-	
-	/**
-	 * Boots Telegram service.
-	 *
-	 * @return void
-	 * @throws \Illuminate\Contracts\Container\BindingResolutionException
-	 */
-    public function boot(): void
-    {
-        $this->publish();
-
-		$this->addConsoleCommands();
-	
-		$this->addNotificationChannel();
-    }
-
-    /**
-     * Publishes anything that Telegram service needs
-     *
-     * @return void
-     */
-    public function publish(): void
-    {
-        $this->publishes(
-			[__DIR__.'/../../config/telegram.php' => config_path('telegram.php')],
-			'telegram-config'
-		);
-    }
-	
-	/**
-	 * Adds console commands to the application.
-	 *
-	 * @return void
-	 */
-	public function addConsoleCommands(): void
-	{
-		if ($this->app->runningInConsole()) {
-			$this->commands([
-				MakeBreaker::class,
-				MakeCommandHandler::class,
-				MakeMiddleware::class,
-				MakeReplyMarkup::class,
-				MakeStage::class,
-				MakeUpdate::class,
-			]);
-		}
-	}
-	
-	/**
-	 * Adds Telegram notification channel to the application.
-	 *
-	 * @return void
-	 * @throws \Illuminate\Contracts\Container\BindingResolutionException
-	 */
-	public function addNotificationChannel(): void
-	{
-		Notification::resolved(function (ChannelManager $service) {
-			$service->extend(
-				'telegram',
-				fn () => $this->app->make(Channel::class)
-			);
-		});
-	}
 	
 	/**
 	 * @return string[]
@@ -170,13 +88,13 @@ class TelegramServiceProvider extends ServiceProvider implements DeferrableProvi
 	public function provides(): array
 	{
 		return [
-            'update',
             TelegramInterface::class,
+            PendingRequestStackInterface::class,
             RequestParserInterface::class,
-			PendingRequestStackInterface::class,
             EndpointRepositoryInterface::class,
             ApiKeyRepositoryInterface::class,
             SecretTokenRepositoryInterface::class,
+            ProxyRepositoryInterface::class,
             GainerResolver::class,
             GainerManagerInterface::class,
 		];

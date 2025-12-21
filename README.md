@@ -12,7 +12,7 @@ composer require mohammad-zarifiyan/laravel-telegram-bot:^10.5
 # Basic configuration
 If you would like to publish the configuration file, run the following command (optional):
 ```shell
-php artisan vendor:publish --provider="MohammadZarifiyan\Telegram\Providers\TelegramServiceProvider" --tag="telegram-config"
+php artisan vendor:publish --provider="MohammadZarifiyan\Telegram\Providers\InstantServiceProvider" --tag="telegram-config"
 ```
 
 ## Configure API Key
