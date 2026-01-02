@@ -101,54 +101,6 @@ class UpdateHandler
         }
 	}
 	
-	/**
-	 * Returns validated request if exists, otherwise returns initial request.
-	 *
-	 * @param $stage
-	 * @param string $method
-	 * @return ?Update
-	 * @throws ReflectionException
-	 */
-	public function getValidatedRequest($stage, string $method): ?Update
-	{
-		$reflection = new ReflectionMethod($stage, $method);
-		
-		if (empty($parameters = $reflection->getParameters())) {
-			return $this->update;
-		}
-		
-		$requestType = $parameters[0]->getType();
-		
-		if (empty($requestType)) {
-			return null;
-		}
-		
-		if (is_subclass_of($requestType->getName(), FormUpdate::class)) {
-            $formUpdate = $requestType->getName()::createFrom($this->update);
-            $formUpdate->setContainer(App::getInstance());
-            $formUpdate->validateResolved();
-
-            return $formUpdate;
-		}
-		
-		return $this->update;
-	}
-	
-	public function getMethod(object $object): ?string
-	{
-		$handlerMethod = $this->getHandlerMethod();
-		
-		if (method_exists($object, $handlerMethod)) {
-			return $handlerMethod;
-		}
-		
-		if (method_exists($object, 'handle')) {
-			return 'handle';
-		}
-		
-		return null;
-	}
-	
 	public function getMatchedCommand(): null|CommandHandler|AnonymousCommandHandler
 	{
 		foreach ((array) config('telegram.command_handlers') as $commandHandler) {
@@ -226,6 +178,55 @@ class UpdateHandler
 
         $stage->{$method}($validatedRequest);
 	}
+
+    /**
+     * Returns validated request if exists, otherwise returns initial request.
+     *
+     * @param $stage
+     * @param string $method
+     * @return ?Update
+     * @throws ReflectionException
+     */
+    public function getValidatedRequest($stage, string $method): ?Update
+    {
+        $reflection = new ReflectionMethod($stage, $method);
+        $parameters = $reflection->getParameters();
+
+        if (empty($parameters)) {
+            return $this->update;
+        }
+
+        $requestType = $parameters[0]->getType();
+
+        if (empty($requestType)) {
+            return null;
+        }
+
+        if (!is_subclass_of($requestType->getName(), FormUpdate::class)) {
+            return $this->update;
+        }
+
+        $formUpdate = $requestType->getName()::createFrom($this->update);
+        $formUpdate->setContainer(App::getInstance());
+        $formUpdate->validateResolved();
+
+        return $formUpdate;
+    }
+
+    public function getMethod(object $object): ?string
+    {
+        $handlerMethod = $this->getHandlerMethod();
+
+        if (method_exists($object, $handlerMethod)) {
+            return $handlerMethod;
+        }
+
+        if (method_exists($object, 'handle')) {
+            return 'handle';
+        }
+
+        return null;
+    }
 	
 	public function getHandlerMethod(): string
 	{
