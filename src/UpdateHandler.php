@@ -6,6 +6,7 @@ use Exception;
 use Generator;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
+use MohammadZarifiyan\Telegram\Enums\Signal;
 use MohammadZarifiyan\Telegram\Exceptions\TelegramCommandHandlerNotFoundException;
 use MohammadZarifiyan\Telegram\Exceptions\TelegramException;
 use MohammadZarifiyan\Telegram\Exceptions\TelegramMiddlewareFailedException;
@@ -34,19 +35,11 @@ class UpdateHandler
 		
 		yield from $this->runMiddlewares();
 		
-		if ($this->update->isCommand()) {
-			if (empty($command = $this->getMatchedCommand()) && !config('telegram.allow-incognito-command')) {
-				throw new TelegramCommandHandlerNotFoundException(
-					$this->update->toCommand()
-				);
-			}
-			
-			$command->handle($this->update);
-			
-			return;
+		if ($this->update->isCommand() && $this->runCommandHandlers() === Signal::Exit) {
+            return;
 		}
 		
-		if ($this->runBreakers()) {
+		if ($this->runBreakers() === Signal::Exit) {
 			return;
 		}
 		
@@ -101,8 +94,10 @@ class UpdateHandler
         }
 	}
 	
-	public function getMatchedCommand(): null|CommandHandler|AnonymousCommandHandler
+	public function runCommandHandlers(): Signal
 	{
+        $matchedAny = false;
+
 		foreach ((array) config('telegram.command_handlers') as $commandHandler) {
 			/**
 			 * @var CommandHandler|null $commandHandlerInstance
@@ -111,42 +106,61 @@ class UpdateHandler
 
             if ($commandHandlerInstance instanceof CommandHandler) {
                 $signature = $this->update->toCommand()->getSignature();
+                $commandHandlerSignatures = (array) $commandHandlerInstance->getSignature($this->update);
 
-                if (in_array($signature, (array) $commandHandlerInstance->getSignature($this->update))) {
-                    return $commandHandlerInstance;
+                if (!in_array($signature, $commandHandlerSignatures)) {
+                    continue;
                 }
             }
             else if ($commandHandlerInstance instanceof AnonymousCommandHandler) {
-                if ($commandHandlerInstance->matchesSignature($this->update)) {
-                    return $commandHandlerInstance;
+                if (!$commandHandlerInstance->matchesSignature($this->update)) {
+                    continue;
                 }
             }
             else {
-                throw new Exception(
-                    sprintf('(%s) is not a valid command handler', (string) $commandHandler)
-                );
+                throw new Exception(sprintf('(%s) is not a valid command handler', get_class($commandHandler)));
+            }
+
+            $matchedAny = true;
+
+            if ($commandHandlerInstance->handle($commandHandler) === Signal::Exit) {
+                return Signal::Exit;
             }
 		}
+
+        if (!$matchedAny && !config('telegram.allow-incognito-command')) {
+            throw new TelegramCommandHandlerNotFoundException($this->update->toCommand());
+        }
 		
-		return null;
+		return Signal::Continue;
 	}
 	
 	/**
 	 * Handle update using available breakers.
 	 */
-	public function runBreakers(): bool
+	public function runBreakers(): Signal
 	{
         foreach ((array) config('telegram.breakers') as $breaker) {
             $breaker = try_resolve($breaker);
 
             $method = $this->getMethod($breaker);
 
-            if ($method && $breaker->{$method}($this->update)) {
-                return true;
+            if (is_null($method)) {
+                continue;
+            }
+
+            $signal = $breaker->{$method}($this->update);
+
+            if (!is_a($signal, Signal::class)) {
+                throw new TelegramException(sprintf('Breaker %s returned an invalid signal.', get_class($breaker)));
+            }
+
+            if ($signal === Signal::Exit) {
+                return Signal::Exit;
             }
         }
 		
-		return false;
+		return Signal::Continue;
 	}
 	
 	/**

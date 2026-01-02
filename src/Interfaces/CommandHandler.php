@@ -2,6 +2,7 @@
 
 namespace MohammadZarifiyan\Telegram\Interfaces;
 
+use MohammadZarifiyan\Telegram\Enums\Signal;
 use MohammadZarifiyan\Telegram\Update;
 
 interface CommandHandler
@@ -18,6 +19,7 @@ interface CommandHandler
      * Handles the Telegram command.
 	 *
 	 * @param Update $update
+     * @return Signal
      */
-    public function handle(Update $update);
+    public function handle(Update $update): Signal;
 }

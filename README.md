@@ -6,7 +6,7 @@ Please read [The Telegram API documentation](https://core.telegram.org/bots/api)
 # Installation
 To install the package in your project, run the following command in your project root folder:
 ```shell
-composer require mohammad-zarifiyan/laravel-telegram-bot:^10.5
+composer require mohammad-zarifiyan/laravel-telegram-bot:^11.0
 ```
 
 # Basic configuration
@@ -880,6 +880,7 @@ A command handler must implement the `MohammadZarifiyan\Telegram\Interfaces\Comm
 
 namespace App\Telegram\CommandHandlers;
 
+use MohammadZarifiyan\Telegram\Enums\Signal;
 use MohammadZarifiyan\Telegram\Interfaces\CommandHandler;
 use MohammadZarifiyan\Telegram\Update;
 
@@ -900,10 +901,18 @@ class StartCommandHandler implements CommandHandler
      * Handles the Telegram command.
      *
      * @param Update $update
+     * @return Signal
      */
-    public function handle(Update $update)
+    public function handle(Update $update): Signal
     {
-        // Handle command here
+        if (true) {// update can be handled
+            // Handle command here
+
+            return Signal::Exit;
+        }
+        else {
+            return Signal::Continue;
+        }
     }
 }
 ```
@@ -933,6 +942,7 @@ In anonymous command handlers, there is a `matchesSignature` method, in which yo
 
 namespace App\Telegram\CommandHandlers;
 
+use MohammadZarifiyan\Telegram\Enums\Signal;
 use MohammadZarifiyan\Telegram\Interfaces\AnonymousCommandHandler;
 use MohammadZarifiyan\Telegram\Update;
 
@@ -955,10 +965,18 @@ class MyAnonymousCommandHandler implements AnonymousCommandHandler
      * Handles the Telegram command.
      *
      * @param Update $update
+     * @return Signal
      */
-    public function handle(Update $update)
+    public function handle(Update $update): Signal
     {
-        // Handle command here
+        if (true) {// update can be handled
+            // Handle command here
+
+            return Signal::Exit;
+        }
+        else {
+            return Signal::Continue;
+        }
     }
 }
 ```
@@ -968,9 +986,9 @@ If the Update is not handled by a `CommandHandler`, it continues its path and re
 
 The method that is called when a Breaker is executed is exactly like a Telegram middleware.
 
-A Breaker should extend `MohammadZarifiyan\Telegram\Breaker`.
+Every Breaker should return `MohammadZarifiyan\Telegram\Enums\Signal`.
 
-If a Breaker returns `true`, update processing stops; otherwise, the next breakers will be executed. You can also stop processing the update with the `stop` method in your Breaker. If you do not want to stop processing the update through subsequent Breakers or stages, you should return `false` or anything other than `true`. Similarly, you can achieve the same result by calling the `continue` method in your Telegram Breaker.
+If a Breaker returns `Signal::Stop`, update processing stops; If the breaker returns `Signal::Continue`, the next breakers will be executed.
 
 **Note that having too many Telegram Middlewares and Breakers can reduce the performance of your Telegram bot.**
 
@@ -1001,28 +1019,28 @@ In the example below, we handle all callback query updates related to an inline 
 
 namespace App\Telegram\Breakers;
 
-use MohammadZarifiyan\Telegram\Breaker;
+use MohammadZarifiyan\Enums\Signal;
 use MohammadZarifiyan\Telegram\Update;
 
-class CancelBulkNotificationBreaker extends Breaker
+class CancelBulkNotificationBreaker
 {
-   public function handleCallbackQuery(Update $update): bool
+   public function handleCallbackQuery(Update $update): Signal
    {
       if ($update->input('callback_query.data') === 'cancel-sending-all-notifications') {
-         // Cancel sending notifications
-
          /*
+          * Cancel sending notifications
+          * 
           * Stop processing request by other Telegram breakers,
           * Because we already handled the Update and the is no need to continue processing this Update in our application
           */
-         return $this->stop();
+         return Signal::Stop;
       }
       else {
          /*
           * Continue processing the Telegram Update using other Telegram Breakers or Telegram Stages,
           * Because this Telegram breaker could was not able to handle the Telegram update
           */
-         return $this->continue();
+         return Signal::Continue;
       }
    }
 }
