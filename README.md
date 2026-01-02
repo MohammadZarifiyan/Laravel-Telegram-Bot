@@ -1267,10 +1267,6 @@ Telegram::perform('sendMessage', [
     'text' => 'How old are you?'
 ]);
 ```
-## Update flow chart
-By viewing the chart below, you will better understand the update processing.
-
-![Handling process](https://user-images.githubusercontent.com/55022827/210347380-722855a5-d681-43aa-a057-c3be6c49cca4.png)
 
 # Creating Random Telegram Bot API Keys
 Using the `telegramBotApiKey()` method, you can easily generate a random **Telegram Bot API Key**. For example:
