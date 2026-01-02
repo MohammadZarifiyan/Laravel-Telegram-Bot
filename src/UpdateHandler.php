@@ -206,19 +206,25 @@ class UpdateHandler
 	{
 		$gainer = $this->update->gainer();
 		
-		if (!($gainer instanceof HasStage)) {
+		if ($gainer instanceof HasStage === false) {
 			return;
 		}
 		
 		$stage = try_resolve($gainer->getStage());
+
+        if (empty($stage)) {
+            return;
+        }
+
+        $method = $this->getMethod($stage);
 		
-		if (empty($stage) || empty($method = $this->getMethod($stage)) || !method_exists($stage, $method)) {
+		if (empty($method) || !method_exists($stage, $method)) {
 			return;
 		}
-		
-		$stage->{$method}(
-			$this->getValidatedRequest($stage, $method)
-		);
+
+        $validatedRequest = $this->getValidatedRequest($stage, $method);
+
+        $stage->{$method}($validatedRequest);
 	}
 	
 	public function getHandlerMethod(): string
