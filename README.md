@@ -919,6 +919,8 @@ class StartCommandHandler implements CommandHandler
 
 The `getSignature` method must return the name of the command or commands that the `handle` method can handle.
 
+Every Command Handler should return `MohammadZarifiyan\Telegram\Enums\Signal`. If returns `Signal::Stop`, update processing stops; If the Command Handler returns `Signal::Continue`, the next Command Handlers will be executed.
+
 Sometimes a Telegram update comes with a command parameter.
 
 You can access Telegram bot command data by calling the `toCommand` method. Then, you will receive an instance of `MohammadZarifiyan\Telegram\Interfaces\Command`.
@@ -986,9 +988,7 @@ If the Update is not handled by a `CommandHandler`, it continues its path and re
 
 The method that is called when a Breaker is executed is exactly like a Telegram middleware.
 
-Every Breaker should return `MohammadZarifiyan\Telegram\Enums\Signal`.
-
-If a Breaker returns `Signal::Stop`, update processing stops; If the breaker returns `Signal::Continue`, the next breakers will be executed.
+Every Breaker should return `MohammadZarifiyan\Telegram\Enums\Signal`. If returns `Signal::Stop`, update processing stops; If the breaker returns `Signal::Continue`, the next breakers will be executed.
 
 **Note that having too many Telegram Middlewares and Breakers can reduce the performance of your Telegram bot.**
 
