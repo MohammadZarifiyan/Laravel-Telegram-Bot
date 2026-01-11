@@ -3,7 +3,7 @@
 namespace {{ namespace }};
 
 use MohammadZarifiyan\Telegram\Update;
-use MohammadZarifiyan\Telegram\Breaker;
+use MohammadZarifiyan\Telegram\Enums\Signal;
 
 class {{ class }} extends Breaker
 {
@@ -11,9 +11,9 @@ class {{ class }} extends Breaker
 	 * Handles all types of updates
 	 *
 	 * @param Update $update
-	 * @return bool
+	 * @return Signal
 	 */
-	public function handle(Update $update): bool
+	public function handle(Update $update): Signal
 	{
 		// TODO: Implement handle() method.
 	}

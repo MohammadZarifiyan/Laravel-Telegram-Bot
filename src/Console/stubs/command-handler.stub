@@ -4,6 +4,7 @@ namespace {{ namespace }};
 
 use MohammadZarifiyan\Telegram\Interfaces\CommandHandler;
 use MohammadZarifiyan\Telegram\Update;
+use MohammadZarifiyan\Telegram\Enums\Signal;
 
 class {{ class }} implements CommandHandler
 {
@@ -22,8 +23,9 @@ class {{ class }} implements CommandHandler
      * Handles the Telegram command.
 	 *
 	 * @param Update $update
+	 * @return Signal
      */
-	public function handle(Update $update)
+	public function handle(Update $update): Signal
 	{
 		// TODO: Implement handle() method.
 	}
