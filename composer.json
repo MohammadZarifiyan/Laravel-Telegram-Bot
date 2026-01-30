@@ -4,7 +4,6 @@
     "type": "library",
     "keywords": ["Telegram", "Laravel", "PHP"],
     "version": "11.0.0",
-    "license": "SEE LICENSE IN LICENSE",
     "require": {
         "php": ">=8.1",
         "laravel/framework": ">=7",
