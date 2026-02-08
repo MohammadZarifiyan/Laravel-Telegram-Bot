@@ -123,7 +123,7 @@ class UpdateHandler
 
             $matchedAny = true;
 
-            if ($commandHandlerInstance->handle($commandHandler) === Signal::Exit) {
+            if ($commandHandlerInstance->handle($this->update) === Signal::Exit) {
                 return Signal::Exit;
             }
 		}
