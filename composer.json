@@ -9,8 +9,10 @@
         "laravel/framework": ">=7",
         "guzzlehttp/guzzle": ">=5",
         "ext-curl": "*",
-        "ext-sodium": "*",
-        "fakerphp/faker": "^1.24"
+        "ext-sodium": "*"
+    },
+    "require-dev": {
+        "fakerphp/faker": "^1"
     },
     "autoload": {
         "psr-4": {
@@ -36,5 +38,8 @@
                 "Telegram": "MohammadZarifiyan\\Telegram\\Facades\\Telegram"
             }
         }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.5"
     }
 }

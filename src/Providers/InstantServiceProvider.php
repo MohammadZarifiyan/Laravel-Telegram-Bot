@@ -2,7 +2,6 @@
 
 namespace MohammadZarifiyan\Telegram\Providers;
 
-use Faker\Generator as FakerGenerator;
 use Illuminate\Notifications\ChannelManager;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\ServiceProvider;
@@ -26,11 +25,13 @@ class InstantServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__.'/../../config/telegram.php', 'telegram');
 
-        $this->app->extend(FakerGenerator::class, function (FakerGenerator $faker) {
-            $faker->addProvider(new TelegramBotApiKeyProvider($faker));
+        if (class_exists(\Faker\Generator::class)) {
+            $this->app->extend(\Faker\Generator::class, function (\Faker\Generator $faker) {
+                $faker->addProvider(new TelegramBotApiKeyProvider($faker));
 
-            return $faker;
-        });
+                return $faker;
+            });
+        }
     }
 
     /**
