@@ -2,8 +2,6 @@
 
 namespace MohammadZarifiyan\Telegram;
 
-use MohammadZarifiyan\Telegram\Interfaces\PendingRequestBuilder as PendingRequestBuilderInterface;
-
 class PendingRequestStack
 {
     protected array $pendingRequestBuilders;
@@ -13,7 +11,7 @@ class PendingRequestStack
         //
     }
 
-    public function add(?string $as = null): PendingRequestBuilderInterface
+    public function add(?string $as = null): PendingRequestBuilder
     {
         $pendingRequestBuilder = new PendingRequestBuilder($this->endpoint, $this->apiKey);
 
@@ -28,7 +26,7 @@ class PendingRequestStack
     {
         $keys = array_keys($this->pendingRequestBuilders);
         $values = array_map(
-            fn (PendingRequestBuilderInterface $pendingRequestBuilder) => $pendingRequestBuilder->toPendingRequest(),
+            fn (PendingRequestBuilder $pendingRequestBuilder) => $pendingRequestBuilder->toPendingRequest(),
             $this->pendingRequestBuilders
         );
 

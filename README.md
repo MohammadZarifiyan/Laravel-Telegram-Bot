@@ -312,10 +312,10 @@ else {
 }
 ```
 
-The `add` method returns an instance of `MohammadZarifiyan\Telegram\Interfaces\PendingRequestBuilder`, which provides a variety of methods that may be used to modify the request:
+The `add` method returns an instance of `MohammadZarifiyan\Telegram\PendingRequestBuilder`, which provides a variety of methods that may be used to modify the request:
 
 ```php
-use MohammadZarifiyan\Telegram\Interfaces\PendingRequestBuilder;
+use MohammadZarifiyan\Telegram\PendingRequestBuilder;
 
 $pendingRequestBuilder->setMethod(string $method): PendingRequestBuilder;
 $pendingRequestBuilder->setData(array $data = []): PendingRequestBuilder;
