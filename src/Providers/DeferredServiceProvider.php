@@ -13,9 +13,7 @@ use MohammadZarifiyan\Telegram\Interfaces\Telegram as TelegramInterface;
 use MohammadZarifiyan\Telegram\Interfaces\ApiKeyRepository as ApiKeyRepositoryInterface;
 use MohammadZarifiyan\Telegram\Interfaces\EndpointRepository as EndpointRepositoryInterface;
 use MohammadZarifiyan\Telegram\Interfaces\SecretTokenRepository as SecretTokenRepositoryInterface;
-use MohammadZarifiyan\Telegram\Interfaces\PendingRequestStack as PendingRequestStackInterface;
 use MohammadZarifiyan\Telegram\Interfaces\RequestParser as RequestParserInterface;
-use MohammadZarifiyan\Telegram\PendingRequestStack;
 use MohammadZarifiyan\Telegram\RequestParser;
 use MohammadZarifiyan\Telegram\TelegramManager;
 
@@ -65,8 +63,6 @@ class DeferredServiceProvider extends ServiceProvider implements DeferrableProvi
             return new TelegramManager($apiKey, $endpoint, $secretToken);
         });
 	
-		$this->app->bind(PendingRequestStackInterface::class, PendingRequestStack::class);
-		
 		$this->app->bind(RequestParserInterface::class, RequestParser::class);
 
         $this->app->bind(EndpointRepositoryInterface::class, config('telegram.endpoint-repository'));
@@ -89,7 +85,6 @@ class DeferredServiceProvider extends ServiceProvider implements DeferrableProvi
 	{
 		return [
             TelegramInterface::class,
-            PendingRequestStackInterface::class,
             RequestParserInterface::class,
             EndpointRepositoryInterface::class,
             ApiKeyRepositoryInterface::class,

@@ -13,7 +13,6 @@ use MohammadZarifiyan\Telegram\Interfaces\Telegram as TelegramInterface;
 use MohammadZarifiyan\Telegram\Interfaces\ReplyMarkup;
 use MohammadZarifiyan\Telegram\Exceptions\TelegramException;
 use MohammadZarifiyan\Telegram\Exceptions\TelegramOriginException;
-use MohammadZarifiyan\Telegram\Interfaces\PendingRequestStack;
 
 class TelegramManager implements TelegramInterface
 {
@@ -101,21 +100,12 @@ class TelegramManager implements TelegramInterface
 
 	public function concurrent(Closure $closure): array
     {
-		/**
-		 * @var PendingRequestStack $stack
-		 */
-		$stack = App::makeWith(PendingRequestStack::class, [
-            'endpoint' => $this->endpoint,
-            'apiKey' => $this->apiKey
-        ]);
+        $stack = new PendingRequestStack($this->endpoint, $this->apiKey);
+        $closure($stack);
 
-		$closure($stack);
+        $executor = new Executor;
 
-		$executor = new Executor;
-
-		return $executor->runConcurrent(
-			$stack->toArray()
-		);
+        return $executor->runConcurrent($stack->toArray());
     }
 
     public function validateAuthorizationData(array $authData): bool

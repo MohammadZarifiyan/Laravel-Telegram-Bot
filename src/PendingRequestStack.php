@@ -2,10 +2,9 @@
 
 namespace MohammadZarifiyan\Telegram;
 
-use MohammadZarifiyan\Telegram\Interfaces\PendingRequestStack as PendingRequestStackInterface;
 use MohammadZarifiyan\Telegram\Interfaces\PendingRequestBuilder as PendingRequestBuilderInterface;
 
-class PendingRequestStack implements PendingRequestStackInterface
+class PendingRequestStack
 {
     protected array $pendingRequestBuilders;
 

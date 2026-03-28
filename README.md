@@ -231,12 +231,12 @@ Telegram::perform('sendMessage', [
 ## Concurrent Requests
 Sometimes, you may wish to make multiple HTTP requests concurrently. In other words, you want several requests to be dispatched at the same time instead of issuing the requests sequentially.
 
-Thankfully, you may accomplish this using the `concurrent` method. The `concurrent` method accepts a closure which receives an `MohammadZarifiyan\Telegram\Interfaces\PendingRequestStack` instance, allowing you to easily add requests to the request pool for dispatching.
+Thankfully, you may accomplish this using the `concurrent` method. The `concurrent` method accepts a closure which receives an `MohammadZarifiyan\Telegram\PendingRequestStack` instance, allowing you to easily add requests to the request pool for dispatching.
 
 ### Example
 In the example below, three messages are sent to the user simultaneously.
 ```php
-use \MohammadZarifiyan\Telegram\Interfaces\PendingRequestStack;
+use \MohammadZarifiyan\Telegram\PendingRequestStack;
 use \MohammadZarifiyan\Telegram\Facades\Telegram;
  
 $responses = Telegram::concurrent(fn (PendingRequestStack $pendingRequestStack) => [
@@ -276,7 +276,7 @@ As you can see, each response instance is accessible based on the order in which
 
 ### Example
 ```php
-use \MohammadZarifiyan\Telegram\Interfaces\PendingRequestStack;
+use \MohammadZarifiyan\Telegram\PendingRequestStack;
 use \MohammadZarifiyan\Telegram\Facades\Telegram;
  
 $responses = Telegram::concurrent(fn (PendingRequestStack $pendingRequestStack) => [
