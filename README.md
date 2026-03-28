@@ -239,26 +239,28 @@ In the example below, three messages are sent to the user simultaneously.
 use \MohammadZarifiyan\Telegram\PendingRequestStack;
 use \MohammadZarifiyan\Telegram\Facades\Telegram;
  
-$responses = Telegram::concurrent(fn (PendingRequestStack $pendingRequestStack) => [
+$responses = Telegram::concurrent(function (PendingRequestStack $pendingRequestStack) {
     $pendingRequestStack->add()
         ->setMethod('sendMessage')
         ->setData([
             'text' => 'Message 1',
             'chat_id' => 1234
-        ]),
+        ]);
+
     $pendingRequestStack->add()
         ->setMethod('sendMessage')
         ->setData([
             'text' => 'Message 2',
             'chat_id' => 1234
-        ]),
+        ]);
+
     $pendingRequestStack->add()
         ->setMethod('sendMessage')
         ->setData([
             'text' => 'Message 3',
             'chat_id' => 1234
-        ]),
-]);
+        ]);
+});
 
 $result = $responses[0]->json('ok')
     && $responses[1]->json('ok')
@@ -279,26 +281,28 @@ As you can see, each response instance is accessible based on the order in which
 use \MohammadZarifiyan\Telegram\PendingRequestStack;
 use \MohammadZarifiyan\Telegram\Facades\Telegram;
  
-$responses = Telegram::concurrent(fn (PendingRequestStack $pendingRequestStack) => [
+$responses = Telegram::concurrent(function (PendingRequestStack $pendingRequestStack) {
     $pendingRequestStack->add('first_message')
         ->setMethod('sendMessage')
         ->setData([
             'text' => 'Message 1',
             'chat_id' => 1234
-        ]),
+        ]);
+
     $pendingRequestStack->add('second_message')
         ->setMethod('sendMessage')
         ->setData([
             'text' => 'Message 2',
             'chat_id' => 1234
-        ]),
+        ]);
+
     $pendingRequestStack->add('third_message')
         ->setMethod('sendMessage')
         ->setData([
             'text' => 'Message 3',
             'chat_id' => 1234
-        ]),
-]);
+        ]);
+});
 
 $result = $responses['first_message']->json('ok')
     && $responses['second_message']->json('ok')
