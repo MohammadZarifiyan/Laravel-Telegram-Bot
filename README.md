@@ -528,8 +528,8 @@ Use the `MohammadZarifiyan\Telegram\Attachment` class to attach a file stored on
 ## Example
 In the example below, The photo stored on the server will be sent in the chat.
 ```php
-use MohammadZarifiyan\Telegram\Facades\Telegram;
 use MohammadZarifiyan\Telegram\Attachment;
+use MohammadZarifiyan\Telegram\Facades\Telegram;
 
 $fileContents = file_get_contents('path/to/file.png');
 $fileName = 'my-file.png';
