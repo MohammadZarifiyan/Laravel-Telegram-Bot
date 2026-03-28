@@ -15,7 +15,10 @@ use MohammadZarifiyan\Telegram\Interfaces\ProxyRepository;
 
 class Executor
 {
-    private Collection $proxyList;
+    protected Collection $proxyList;
+    protected array $retry;
+    protected bool $verifyEndpoint;
+    protected ?string $requestManipulator;
 
     public function __construct()
     {
@@ -24,16 +27,17 @@ class Executor
          */
         $proxyRepository = App::make(ProxyRepository::class);
         $this->proxyList = $proxyRepository->get();
+
+        $this->retry = config('telegram.retry');
+        $this->verifyEndpoint = config('telegram.verify-endpoint');
+        $this->requestManipulator = config('telegram.pending-request-manipulator');
     }
 
 	public function run(PendingRequestInterface $pendingRequest): Response
 	{
         $proxy = $this->getProxy();
-        $retry = config('telegram.retry');
-        $verifyEndpoint = config('telegram.verify-endpoint');
         $throwHttpException = config('telegram.throw-http-exception');
-        $requestManipulator = config('telegram.pending-request-manipulator');
-        $finalPendingRequest = empty($requestManipulator) ? $pendingRequest : new $requestManipulator($pendingRequest);
+        $finalPendingRequest = empty($this->requestManipulator) ? $pendingRequest : new $this->requestManipulator($pendingRequest);
         $data = $this->getData($finalPendingRequest);
 
         try {
@@ -43,10 +47,10 @@ class Executor
                     is_null($proxy),
                     fn ($pendingRequest) => $pendingRequest->withOptions(['proxy' => $proxy->configuration])
                 )
-                ->unless($verifyEndpoint, fn ($pendingRequest) => $pendingRequest->withoutVerifying())
+                ->unless($this->verifyEndpoint, fn ($pendingRequest) => $pendingRequest->withoutVerifying())
                 ->retry(
-                    $retry['times'],
-                    $retry['sleep'],
+                    $this->retry['times'],
+                    $this->retry['sleep'],
                     fn ($exception, $request) => $exception instanceof ConnectionException,
                     false
                 )
@@ -70,13 +74,9 @@ class Executor
         $proxies = [];
 
 		$responses = Http::pool(function (Pool $pool) use ($pendingRequests, &$proxies) {
-            $requestManipulator = config('telegram.pending-request-manipulator');
-            $verifyEndpoint = config('telegram.verify-endpoint');
-            $retry = config('telegram.retry');
-
             foreach ($pendingRequests as $as => $pendingRequest) {
                 $proxies[$as] = $this->getProxy();
-                $finalPendingRequest = empty($requestManipulator) ? $pendingRequest : new $requestManipulator($pendingRequest);
+                $finalPendingRequest = empty($this->requestManipulator) ? $pendingRequest : new $this->requestManipulator($pendingRequest);
                 $pendingClientRequest = is_null($as) ? $pool->acceptJson() : $pool->as($as)->acceptJson();
 
                 $pendingClientRequest
@@ -85,10 +85,10 @@ class Executor
                         is_null($proxies[$as]),
                         fn ($pendingClientRequest) => $pendingClientRequest->withOptions(['proxy' => $proxies[$as]->configuration])
                     )
-                    ->unless($verifyEndpoint, fn ($pendingClientRequest) => $pendingClientRequest->withoutVerifying())
+                    ->unless($this->verifyEndpoint, fn ($pendingClientRequest) => $pendingClientRequest->withoutVerifying())
                     ->retry(
-                        $retry['times'],
-                        $retry['sleep'],
+                        $this->retry['times'],
+                        $this->retry['sleep'],
                         fn ($exception, $request) => $exception instanceof ConnectionException,
                         false
                     )
@@ -112,7 +112,7 @@ class Executor
         return $responses;
 	}
 
-    private function getData(PendingRequestInterface $pendingRequest): array
+    protected function getData(PendingRequestInterface $pendingRequest): array
     {
         $attachments = $pendingRequest->getAttachments();
 
@@ -126,7 +126,7 @@ class Executor
         );
     }
 
-    private function getProxy(): ?Proxy
+    protected function getProxy(): ?Proxy
     {
         static $index = 0;
         $proxy = $this->proxyList[$index] ?? null;
