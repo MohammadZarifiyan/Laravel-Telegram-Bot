@@ -4,9 +4,8 @@ namespace MohammadZarifiyan\Telegram;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
-use MohammadZarifiyan\Telegram\Interfaces\Command as CommandInterface;
-use MohammadZarifiyan\Telegram\Interfaces\RequestParser;
 use MohammadZarifiyan\Telegram\Interfaces\GainerManager as GainerManagerInterface;
+use MohammadZarifiyan\Telegram\Interfaces\RequestParser;
 
 class Update extends Request
 {
@@ -30,9 +29,9 @@ class Update extends Request
 	/**
 	 * Converts Telegram update to command instance.
 	 *
-	 * @return ?CommandInterface
+	 * @return ?Command
 	 */
-	public function toCommand(): ?CommandInterface
+	public function toCommand(): ?Command
 	{
         if (!$this->isCommand()) {
             return null;

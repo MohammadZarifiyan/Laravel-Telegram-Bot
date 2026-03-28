@@ -906,7 +906,7 @@ Every Command Handler should return `MohammadZarifiyan\Telegram\Enums\Signal`. I
 
 Sometimes a Telegram update comes with a command parameter.
 
-You can access Telegram bot command data by calling the `toCommand` method. Then, you will receive an instance of `MohammadZarifiyan\Telegram\Interfaces\Command`.
+You can access Telegram bot command data by calling the `toCommand` method. Then, you will receive an instance of `MohammadZarifiyan\Telegram\Command`.
 
 For example, if your Telegram bot username is `MyAwesomeBot`, then you can add a parameter to your `/start` command:
 `https://t.me/MyAwesomeBot?start=abc`
@@ -914,8 +914,8 @@ For example, if your Telegram bot username is `MyAwesomeBot`, then you can add a
 ```php
 $command = $update->toCommand();
 
-$command->getSignature(); // Returns 'start'
-$command->getValue(); // Returns 'abc'
+$command->signature; // Returns 'start'
+$command->value; // Returns 'abc'
 ```
 
 ## Anonymous command handler

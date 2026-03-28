@@ -2,7 +2,7 @@
 
 namespace MohammadZarifiyan\Telegram\Exceptions;
 
-use MohammadZarifiyan\Telegram\Interfaces\Command;
+use MohammadZarifiyan\Telegram\Command;
 use Symfony\Component\HttpFoundation\Response;
 
 class TelegramCommandHandlerNotFoundException extends TelegramException

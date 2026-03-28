@@ -2,22 +2,12 @@
 
 namespace MohammadZarifiyan\Telegram;
 
-use MohammadZarifiyan\Telegram\Interfaces\Command as CommandInterface;
-
-class Command implements CommandInterface
+class Command
 {
-	public function __construct(public string $signature, public ?string $value)
-	{
+	public function __construct(
+        public readonly string $signature,
+        public readonly ?string $value
+    ) {
 		//
-	}
-	
-	public function getSignature(): string
-	{
-		return $this->signature;
-	}
-	
-	public function getValue(): ?string
-	{
-		return $this->value;
 	}
 }
