@@ -175,40 +175,23 @@ If you want to get the proxies through another way, such as a database, you can 
 
 namespace App\Repositories;
 
-use Illuminate\Support\Collection;
-use MohammadZarifiyan\Telegram\Interfaces\Proxy;
-use MohammadZarifiyan\Telegram\Interfaces\ProxyRepository;
 use App\Models\TelegramProxy;
+use Illuminate\Support\Collection;
+use MohammadZarifiyan\Telegram\Interfaces\ProxyRepository;
+use MohammadZarifiyan\Telegram\Proxy;
 
 class TelegramProxyRepository implements ProxyRepository
 {
-    public function get(): Collection
+    public function get(): Collection// Must return a collection of Proxy objects
     {
         return TelegramProxy::active()// Only get active proxies
             ->orderByDesc('score')// Sort by score
             ->get()
             ->toBase()
-            ->map([$this, 'mapToProxy']);// Must return a collection of Proxy objects
-    }
-    
-    public function mapToProxy(TelegramProxy $telegramProxy): Proxy
-    {
-        return new class ($telegramProxy) implements Proxy {
-            public function __construct(public TelegramProxy $telegramProxy)
-            {
-                //
-            }
-
-            public function getKey(): string
-            {
-                return (string) $this->telegramProxy->getKey();
-            }
-
-            public function getConfiguration(): string
-            {
-                return $this->telegramProxy->schema'://'.$this->telegramProxy->username.':'.$this->telegramProxy->password.'@'.$this->telegramProxy->hostname.':'.$this->telegramProxy->port;
-            }
-        };
+            ->map(fn (TelegramProxy $telegramProxy) => new Proxy(
+                $this->telegramProxy->schema'://'.$this->telegramProxy->username.':'.$this->telegramProxy->password.'@'.$this->telegramProxy->hostname.':'.$this->telegramProxy->port,
+                $telegramProxy->getKey(),
+            ));
     }
 }
 ```

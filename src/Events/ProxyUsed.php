@@ -3,7 +3,7 @@
 namespace MohammadZarifiyan\Telegram\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
-use MohammadZarifiyan\Telegram\Interfaces\Proxy;
+use MohammadZarifiyan\Telegram\Proxy;
 
 class ProxyUsed
 {

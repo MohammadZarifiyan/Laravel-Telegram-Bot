@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Http;
 use MohammadZarifiyan\Telegram\Events\ProxyFailed;
 use MohammadZarifiyan\Telegram\Events\ProxyUsed;
 use MohammadZarifiyan\Telegram\Interfaces\PendingRequest as PendingRequestInterface;
-use MohammadZarifiyan\Telegram\Interfaces\Proxy;
 use MohammadZarifiyan\Telegram\Interfaces\ProxyRepository;
 
 class Executor
@@ -40,9 +39,9 @@ class Executor
         try {
             $response = Http::acceptJson()
                 ->attach($finalPendingRequest->getAttachments())
-                ->when(
-                    $proxy instanceof Proxy,
-                    fn ($pendingRequest) => $pendingRequest->withOptions(['proxy' => $proxy->getConfiguration()])
+                ->unless(
+                    is_null($proxy),
+                    fn ($pendingRequest) => $pendingRequest->withOptions(['proxy' => $proxy->configuration])
                 )
                 ->unless($verifyEndpoint, fn ($pendingRequest) => $pendingRequest->withoutVerifying())
                 ->retry(
@@ -54,12 +53,12 @@ class Executor
                 ->post($finalPendingRequest->getUrl(), $data);
         }
         catch (ConnectionException $exception) {
-            ProxyFailed::dispatchIf($proxy instanceof Proxy, $proxy);
+            ProxyFailed::dispatchUnless(is_null($proxy), $proxy);
 
             throw $exception;
         }
 
-        ProxyUsed::dispatchIf($proxy instanceof Proxy, $proxy);
+        ProxyUsed::dispatchUnless(is_null($proxy), $proxy);
 
         $response->throwIf($throwHttpException);
 
@@ -82,9 +81,9 @@ class Executor
 
                 $pendingClientRequest
                     ->attach($finalPendingRequest->getAttachments())
-                    ->when(
-                        $proxies[$as] instanceof Proxy,
-                        fn ($pendingClientRequest) => $pendingClientRequest->withOptions(['proxy' => $proxies[$as]->getConfiguration()])
+                    ->unless(
+                        is_null($proxies[$as]),
+                        fn ($pendingClientRequest) => $pendingClientRequest->withOptions(['proxy' => $proxies[$as]->configuration])
                     )
                     ->unless($verifyEndpoint, fn ($pendingClientRequest) => $pendingClientRequest->withoutVerifying())
                     ->retry(
