@@ -5,7 +5,6 @@ namespace MohammadZarifiyan\Telegram;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use MohammadZarifiyan\Telegram\Interfaces\GainerManager as GainerManagerInterface;
-use MohammadZarifiyan\Telegram\Interfaces\RequestParser;
 
 class Update extends Request
 {
@@ -13,7 +12,7 @@ class Update extends Request
 
 	protected function getRequestParser(): RequestParser
 	{
-		return $this->requestParser ??= App::makeWith(RequestParser::class, ['request' => $this]);
+		return $this->requestParser ??= new RequestParser($this);
 	}
 	
 	/**

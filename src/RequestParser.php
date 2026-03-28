@@ -4,9 +4,8 @@ namespace MohammadZarifiyan\Telegram;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
-use MohammadZarifiyan\Telegram\Interfaces\RequestParser as RequestParserInterface;
 
-class RequestParser implements RequestParserInterface
+class RequestParser
 {
 	public ?string $updateType;
 	
