@@ -8,15 +8,15 @@ use MohammadZarifiyan\Telegram\Interfaces\ReplyMarkup;
 
 class PendingRequest implements PendingRequestInterface
 {
-    public array $body;
-    public array $attachments = [];
+    protected array $body;
+    protected array $attachments = [];
 
     public function __construct(
-        protected string $endpoint,
-        protected string $apiKey,
-        public string $method,
-        public array $data = [],
-        public ReplyMarkup|string|null $replyMarkup = null
+        protected readonly string $endpoint,
+        protected readonly string $apiKey,
+        protected readonly string $method,
+        protected readonly array $data = [],
+        protected readonly ReplyMarkup|string|null $replyMarkup = null
     ) {
         $this->setContents();
     }
