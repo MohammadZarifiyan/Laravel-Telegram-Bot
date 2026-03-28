@@ -3,28 +3,22 @@
 namespace MohammadZarifiyan\Telegram;
 
 use Illuminate\Support\Str;
-use MohammadZarifiyan\Telegram\Interfaces\PendingRequest as PendingRequestInterface;
-use MohammadZarifiyan\Telegram\Interfaces\ReplyMarkup;
+use MohammadZarifiyan\Telegram\Interfaces\PendingHttpRequest as PendingHttpRequestInterface;
 
-class PendingRequest implements PendingRequestInterface
+class PendingHttpRequest implements PendingHttpRequestInterface
 {
     protected array $body;
     protected array $attachments = [];
 
-    public function __construct(
-        protected readonly string $endpoint,
-        protected readonly string $apiKey,
-        protected readonly string $method,
-        protected readonly array $data = [],
-        protected readonly ReplyMarkup|string|null $replyMarkup = null
-    ) {
+    public function __construct(protected PendingTelegramRequest $pendingTelegramRequest)
+    {
         $this->setContents();
     }
 
     private function setContents(): void
     {
         $contents = array_merge(
-            $this->data,
+            $this->pendingTelegramRequest->data,
             $this->getReplyMarkup(),
         );
 
@@ -72,7 +66,7 @@ class PendingRequest implements PendingRequestInterface
      */
     public function getUrl(): string
     {
-        return sprintf('%s/bot%s/%s', $this->endpoint, $this->apiKey, $this->method);
+        return sprintf('%s/bot%s/%s', $this->pendingTelegramRequest->endpoint, $this->pendingTelegramRequest->apiKey, $this->pendingTelegramRequest->method);
     }
 
     /**
@@ -100,9 +94,9 @@ class PendingRequest implements PendingRequestInterface
      *
      * @return array
      */
-    public function getReplyMarkup(): array
+    protected function getReplyMarkup(): array
     {
-        $resolvedReplyMarkup = try_resolve($this->replyMarkup);
+        $resolvedReplyMarkup = try_resolve($this->pendingTelegramRequest->replyMarkup);
 
         if (empty($resolvedReplyMarkup)) {
             return [];

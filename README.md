@@ -231,30 +231,30 @@ Telegram::perform('sendMessage', [
 ## Concurrent Requests
 Sometimes, you may wish to make multiple HTTP requests concurrently. In other words, you want several requests to be dispatched at the same time instead of issuing the requests sequentially.
 
-Thankfully, you may accomplish this using the `concurrent` method. The `concurrent` method accepts a closure which receives an `MohammadZarifiyan\Telegram\PendingRequestStack` instance, allowing you to easily add requests to the request pool for dispatching.
+Thankfully, you may accomplish this using the `concurrent` method. The `concurrent` method accepts a closure which receives an `MohammadZarifiyan\Telegram\PendingTelegramRequestStack` instance, allowing you to easily add requests to the request pool for dispatching.
 
 ### Example
 In the example below, three messages are sent to the user simultaneously.
 ```php
-use \MohammadZarifiyan\Telegram\PendingRequestStack;
+use \MohammadZarifiyan\Telegram\PendingTelegramRequestStack;
 use \MohammadZarifiyan\Telegram\Facades\Telegram;
  
-$responses = Telegram::concurrent(function (PendingRequestStack $pendingRequestStack) {
-    $pendingRequestStack->add()
+$responses = Telegram::concurrent(function (PendingTelegramRequestStack $stack) {
+    $stack->add()
         ->setMethod('sendMessage')
         ->setData([
             'text' => 'Message 1',
             'chat_id' => 1234
         ]);
 
-    $pendingRequestStack->add()
+    $stack->add()
         ->setMethod('sendMessage')
         ->setData([
             'text' => 'Message 2',
             'chat_id' => 1234
         ]);
 
-    $pendingRequestStack->add()
+    $stack->add()
         ->setMethod('sendMessage')
         ->setData([
             'text' => 'Message 3',
@@ -278,25 +278,25 @@ As you can see, each response instance is accessible based on the order in which
 
 ### Example
 ```php
-use \MohammadZarifiyan\Telegram\PendingRequestStack;
+use \MohammadZarifiyan\Telegram\PendingTelegramRequestStack;
 use \MohammadZarifiyan\Telegram\Facades\Telegram;
  
-$responses = Telegram::concurrent(function (PendingRequestStack $pendingRequestStack) {
-    $pendingRequestStack->add('first_message')
+$responses = Telegram::concurrent(function (PendingTelegramRequestStack $stack) {
+    $stack->add('first_message')
         ->setMethod('sendMessage')
         ->setData([
             'text' => 'Message 1',
             'chat_id' => 1234
         ]);
 
-    $pendingRequestStack->add('second_message')
+    $stack->add('second_message')
         ->setMethod('sendMessage')
         ->setData([
             'text' => 'Message 2',
             'chat_id' => 1234
         ]);
 
-    $pendingRequestStack->add('third_message')
+    $stack->add('third_message')
         ->setMethod('sendMessage')
         ->setData([
             'text' => 'Message 3',
@@ -316,16 +316,16 @@ else {
 }
 ```
 
-The `add` method returns an instance of `MohammadZarifiyan\Telegram\PendingRequestBuilder`, which provides a variety of methods that may be used to modify the request:
+The `add` method returns an instance of `MohammadZarifiyan\Telegram\PendingTelegramRequestBuilder`, which provides a variety of methods that may be used to modify the request:
 
 ```php
-use MohammadZarifiyan\Telegram\PendingRequestBuilder;
+use MohammadZarifiyan\Telegram\PendingTelegramRequestBuilder;
 
-$pendingRequestBuilder->setMethod(string $method): PendingRequestBuilder;
-$pendingRequestBuilder->setData(array $data = []): PendingRequestBuilder;
-$pendingRequestBuilder->setReplyMarkup(ReplyMarkup|string|null $replyMarkup = null): PendingRequestBuilder;
-$pendingRequestBuilder->setApiKey(?string $apikey = null): PendingRequestBuilder;
-$pendingRequestBuilder->setEndpoint(?string $endpoint = null): PendingRequestBuilder;
+$pendingTelegramRequestBuilder->setMethod(string $method): PendingTelegramRequestBuilder;
+$pendingTelegramRequestBuilder->setData(array $data = []): PendingTelegramRequestBuilder;
+$pendingTelegramRequestBuilder->setReplyMarkup(ReplyMarkup|string|null $replyMarkup = null): PendingTelegramRequestBuilder;
+$pendingTelegramRequestBuilder->setApiKey(?string $apikey = null): PendingTelegramRequestBuilder;
+$pendingTelegramRequestBuilder->setEndpoint(?string $endpoint = null): PendingTelegramRequestBuilder;
 ```
 
 # Send notification by Telegram bot
@@ -544,12 +544,12 @@ Telegram::perform('sendPhoto', [
 ]);
 ```
 
-# Manipulating requests
-Sometimes, you may want to manipulate request before sending executing it.
+# Manipulating HTTP requests
+Sometimes, you may want to manipulate HTTP request before sending it.
 
-First, create a class and implement `\MohammadZarifiyan\Telegram\Interfaces\PendingRequest`. Then, retrieve `\MohammadZarifiyan\Telegram\Interfaces\PendingRequest` in its constructor.
+First, create a class and implement `\MohammadZarifiyan\Telegram\Interfaces\PendingHttpRequest`. Then, retrieve `\MohammadZarifiyan\Telegram\Interfaces\PendingHttpRequest` in its constructor.
 
-Next, in the `telegram.php` configuration file, set the value of `pending-request-manipulator` to the address of your class.
+Next, in the `telegram.php` configuration file, set the value of `pending-http-request-manipulator` to the address of your class.
 
 You can then manipulate the request received in the constructor as needed.
 
@@ -560,39 +560,39 @@ The `telegram.php` configuration file:
 return [
     // The rest of the file
     
-    'pending-request-manipulator' => App\Telegram\PendingRequestManipulator::class,
+    'pending-http-request-manipulator' => App\Telegram\PendingHttpRequestManipulator::class,
     
     // The rest of the file
 ];
 ```
-The `PendingRequestManipulator.php` file:
+The `PendingHttpRequestManipulator.php` file:
 ```php
 <?php
 
 namespace App\Telegram;
 
-use MohammadZarifiyan\Telegram\Interfaces\PendingRequest as PendingRequestInterface;
+use MohammadZarifiyan\Telegram\Interfaces\PendingHttpRequest as PendingHttpRequestInterface;
 
-class PendingRequestManipulator implements PendingRequestInterface
+class PendingHttpRequestManipulator implements PendingHttpRequestInterface
 {
-    public function __construct(public PendingRequestInterface $pendingRequest)
+    public function __construct(public PendingHttpRequestInterface $pendingHttpRequest)
     {
         //
     }
     
     public function getUrl(): string
     {
-        return $this->pendingRequest->getUrl();// You can change the URL of the request here.
+        return $this->pendingHttpRequest->getUrl();// You can change the URL of the request here.
     }
     
     public function getBody(): array
     {
-        return $this->pendingRequest->getBody();// You can change the body of the request here.
+        return $this->pendingHttpRequest->getBody();// You can change the body of the request here.
     }
     
     public function getAttachments(): array
     {
-        return $this->pendingRequest->getAttachments();// You can change the attachments of the request here.
+        return $this->pendingHttpRequest->getAttachments();// You can change the attachments of the request here.
     }
 }
 ```

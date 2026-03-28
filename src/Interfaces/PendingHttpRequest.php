@@ -2,7 +2,7 @@
 
 namespace MohammadZarifiyan\Telegram\Interfaces;
 
-interface PendingRequest
+interface PendingHttpRequest
 {
     /**
      * Returns URL for pending request.

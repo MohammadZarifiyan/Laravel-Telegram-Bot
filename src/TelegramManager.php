@@ -86,7 +86,7 @@ class TelegramManager implements TelegramInterface
 
     public function perform(string $method, array $data = [], ReplyMarkup|string|null $replyMarkup = null): Response
     {
-        $pendingRequest = new PendingRequest(
+        $pendingTelegramRequest = new PendingTelegramRequest(
             $this->endpoint,
             $this->apiKey,
             $method,
@@ -95,12 +95,12 @@ class TelegramManager implements TelegramInterface
         );
 
         $executor = new Executor;
-        return $executor->run($pendingRequest);
+        return $executor->run($pendingTelegramRequest);
     }
 
 	public function concurrent(Closure $closure): array
     {
-        $stack = new PendingRequestStack($this->endpoint, $this->apiKey);
+        $stack = new PendingTelegramRequestStack($this->endpoint, $this->apiKey);
         $closure($stack);
 
         $executor = new Executor;

@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Http;
 use MohammadZarifiyan\Telegram\Events\ProxyFailed;
 use MohammadZarifiyan\Telegram\Events\ProxyUsed;
-use MohammadZarifiyan\Telegram\Interfaces\PendingRequest as PendingRequestInterface;
+use MohammadZarifiyan\Telegram\Interfaces\PendingHttpRequest as PendingHttpRequestInterface;
 use MohammadZarifiyan\Telegram\Interfaces\ProxyRepository;
 
 class Executor
@@ -18,7 +18,7 @@ class Executor
     protected Collection $proxyList;
     protected array $retry;
     protected bool $verifyEndpoint;
-    protected ?string $requestManipulator;
+    protected ?string $httpRequestManipulator;
 
     public function __construct()
     {
@@ -30,31 +30,36 @@ class Executor
 
         $this->retry = config('telegram.retry');
         $this->verifyEndpoint = config('telegram.verify-endpoint');
-        $this->requestManipulator = config('telegram.pending-request-manipulator');
+        $this->httpRequestManipulator = config('telegram.pending-http-request-manipulator');
     }
 
-	public function run(PendingRequestInterface $pendingRequest): Response
+	public function run(PendingTelegramRequest $pendingTelegramRequest): Response
 	{
         $proxy = $this->getProxy();
         $throwHttpException = config('telegram.throw-http-exception');
-        $finalPendingRequest = empty($this->requestManipulator) ? $pendingRequest : new $this->requestManipulator($pendingRequest);
-        $data = $this->getData($finalPendingRequest);
+        $pendingHttpRequest = new PendingHttpRequest($pendingTelegramRequest);
+
+        if ($this->httpRequestManipulator) {
+            $pendingHttpRequest = new $this->httpRequestManipulator($pendingHttpRequest);
+        }
+
+        $data = $this->getData($pendingHttpRequest);
 
         try {
             $response = Http::acceptJson()
-                ->attach($finalPendingRequest->getAttachments())
+                ->attach($pendingHttpRequest->getAttachments())
                 ->unless(
                     is_null($proxy),
-                    fn ($pendingRequest) => $pendingRequest->withOptions(['proxy' => $proxy->configuration])
+                    fn ($pendingClientRequest) => $pendingClientRequest->withOptions(['proxy' => $proxy->configuration])
                 )
-                ->unless($this->verifyEndpoint, fn ($pendingRequest) => $pendingRequest->withoutVerifying())
+                ->unless($this->verifyEndpoint, fn ($pendingClientRequest) => $pendingClientRequest->withoutVerifying())
                 ->retry(
                     $this->retry['times'],
                     $this->retry['sleep'],
                     fn ($exception, $request) => $exception instanceof ConnectionException,
                     false
                 )
-                ->post($finalPendingRequest->getUrl(), $data);
+                ->post($pendingHttpRequest->getUrl(), $data);
         }
         catch (ConnectionException $exception) {
             ProxyFailed::dispatchUnless(is_null($proxy), $proxy);
@@ -69,18 +74,23 @@ class Executor
         return $response;
 	}
 
-	public function runConcurrent(array $pendingRequests): array
+	public function runConcurrent(array $pendingTelegramRequests): array
 	{
         $proxies = [];
 
-		$responses = Http::pool(function (Pool $pool) use ($pendingRequests, &$proxies) {
-            foreach ($pendingRequests as $as => $pendingRequest) {
+		$responses = Http::pool(function (Pool $pool) use ($pendingTelegramRequests, &$proxies) {
+            foreach ($pendingTelegramRequests as $as => $pendingTelegramRequest) {
                 $proxies[$as] = $this->getProxy();
-                $finalPendingRequest = empty($this->requestManipulator) ? $pendingRequest : new $this->requestManipulator($pendingRequest);
+                $pendingHttpRequest = new PendingHttpRequest($pendingTelegramRequest);
+
+                if ($this->httpRequestManipulator) {
+                    $pendingHttpRequest = new $this->httpRequestManipulator($pendingHttpRequest);
+                }
+
                 $pendingClientRequest = is_null($as) ? $pool->acceptJson() : $pool->as($as)->acceptJson();
 
                 $pendingClientRequest
-                    ->attach($finalPendingRequest->getAttachments())
+                    ->attach($pendingHttpRequest->getAttachments())
                     ->unless(
                         is_null($proxies[$as]),
                         fn ($pendingClientRequest) => $pendingClientRequest->withOptions(['proxy' => $proxies[$as]->configuration])
@@ -92,7 +102,7 @@ class Executor
                         fn ($exception, $request) => $exception instanceof ConnectionException,
                         false
                     )
-                    ->post($finalPendingRequest->getUrl(), $this->getData($finalPendingRequest));
+                    ->post($pendingHttpRequest->getUrl(), $this->getData($pendingHttpRequest));
             }
         });
 
@@ -112,17 +122,17 @@ class Executor
         return $responses;
 	}
 
-    protected function getData(PendingRequestInterface $pendingRequest): array
+    protected function getData(PendingHttpRequestInterface $pendingHttpRequest): array
     {
-        $attachments = $pendingRequest->getAttachments();
+        $attachments = $pendingHttpRequest->getAttachments();
 
         if (count($attachments) === 0) {
-            return $pendingRequest->getBody();
+            return $pendingHttpRequest->getBody();
         }
 
         return array_map(
             fn ($item) => is_array($item) ? json_encode($item) : $item,
-            $pendingRequest->getBody()
+            $pendingHttpRequest->getBody()
         );
     }
 

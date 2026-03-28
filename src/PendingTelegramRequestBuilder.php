@@ -3,10 +3,9 @@
 namespace MohammadZarifiyan\Telegram;
 
 use Illuminate\Support\Traits\Conditionable;
-use MohammadZarifiyan\Telegram\Interfaces\PendingRequest as PendingRequestInterface;
 use MohammadZarifiyan\Telegram\Interfaces\ReplyMarkup;
 
-class PendingRequestBuilder
+class PendingTelegramRequestBuilder
 {
     use Conditionable;
 
@@ -58,9 +57,9 @@ class PendingRequestBuilder
         return $this;
     }
 
-    public function toPendingRequest(): PendingRequestInterface
+    public function toPendingTelegramRequest(): PendingTelegramRequest
     {
-        return new PendingRequest(
+        return new PendingTelegramRequest(
             $this->endpoint ?? $this->initialEndpoint,
             $this->apiKey ?? $this->initialApiKey,
             $this->method,
