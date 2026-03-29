@@ -1264,3 +1264,68 @@ $apiKey = $faker->telegramBotApiKey();
 ```
 
 This method returns an instance of the `MohammadZarifiyan\Telegram\TelegramBotApiKey` class, containing both the `botId` and `botTokenHash`.
+
+# Mocking
+This package provides similar methods to Laravel `Http` to assist you in testing interactions with the Telegram API by faking its behavior. This approach allows you to simulate responses and assert expected calls without making actual network requests.
+
+The `MohammadZarifiyan\Telegram\Facades\Telegram` class provides several methods to control and verify interactions.
+
+To begin faking the Telegram service, you can use the `fake` method. This method allows you to optionally provide a promise, an array of promises, or a promise to define the behavior of the fake service.
+```php
+use MohammadZarifiyan\Telegram\Facades\Telegram;
+use MohammadZarifiyan\Telegram\PendingTelegramRequest;
+use Illuminate\Http\Client\Response;
+
+Telegram::fake();
+
+Telegram::perform('sendMessage', [
+    'chat_id' => 123,
+    'text' => 'Hello World!'
+]);
+
+Telegram::assertSent(function (PendingTelegramRequest $pendingTelegramRequest, Response $response) {
+    $pendingTelegramRequest->apiKey;// The API Key that used for request
+    $pendingTelegramRequest->endpoint;// The endpoint that used for request
+    $pendingTelegramRequest->method;// The method that used for request (sendMessage)
+    $pendingTelegramRequest->data;// The data that sent to Telegram API (['chat_id' => 123, 'text' => 'Hello World!']])
+    $pendingTelegramRequest->replyMarkup;
+    
+    return true;// return true if the $pendingTelegramRequest matches your expected request
+});
+```
+
+You can define the response that your are expecting from the `Telegram::perform(...)` by giving an instance of `MohammadZarifiyan\Telegram\Promise` to `Telegram::fake()`.
+
+For example:
+```php
+use MohammadZarifiyan\Telegram\Facades\Telegram;
+use MohammadZarifiyan\Telegram\Promise;
+
+Telegram::fake([
+    Promise::on('sendMessage')
+        ->onlyApiKeys('123:abcdefg')
+        ->setStatusCode(400)
+        ->body([
+            'ok' => false,
+            'message' => 'Your message cannot be delivered.'
+        ]),
+]);
+
+$response = Telegram::fresh('123:abcdefg')->perform('sendMessage', [
+    'chat_id' => 44444,
+    'message' => 'Hello World!'
+]);
+
+$response->json('ok');// returns false
+$response->json('message');// returns 'Your message cannot be delivered.'
+```
+
+So you can use the following methods to test your Telegram bot.
+```php
+Telegram::fake(...);
+Telegram::assertSent(...);
+Telegram::assertSentInOrder(...);
+Telegram::assertNotSent(...);
+Telegram::assertNothingSent();
+Telegram::assertSentCount(...);
+```

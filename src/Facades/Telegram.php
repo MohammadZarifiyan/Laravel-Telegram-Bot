@@ -11,12 +11,19 @@ use Illuminate\Support\Str;
 use MohammadZarifiyan\Telegram\Exceptions\InvalidTelegramBotApiKeyException;
 use MohammadZarifiyan\Telegram\Interfaces\ReplyMarkup;
 use MohammadZarifiyan\Telegram\Interfaces\Telegram as TelegramInterface;
+use MohammadZarifiyan\Telegram\Promise;
 use MohammadZarifiyan\Telegram\TelegramBotApiKey;
 use MohammadZarifiyan\Telegram\Update;
 use RuntimeException;
 use SodiumException;
 
 /**
+ * @method static void assertSent(callable $callback)
+ * @method static void assertSentInOrder(array $callbacks)
+ * @method static void assertNotSent(callable $callback)
+ * @method static void assertNothingSent()
+ * @method static void assertSentCount(int $count)
+ * @method static void fake(null|array|Closure|Promise $promise = null)
  * @method static void handleRequest(Request $request)
  * @method static TelegramInterface setApiKey(?string $apiKey = null)
  * @method static TelegramInterface setEndpoint(?string $endpoint = null)

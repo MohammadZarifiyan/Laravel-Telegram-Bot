@@ -6,6 +6,7 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Support\ServiceProvider;
 use MohammadZarifiyan\Telegram\GainerManager;
+use MohammadZarifiyan\Telegram\Interfaces\MockManager as MockManagerInterface;
 use MohammadZarifiyan\Telegram\Interfaces\GainerManager as GainerManagerInterface;
 use MohammadZarifiyan\Telegram\Interfaces\GainerResolver;
 use MohammadZarifiyan\Telegram\Interfaces\ProxyRepository as ProxyRepositoryInterface;
@@ -13,6 +14,7 @@ use MohammadZarifiyan\Telegram\Interfaces\Telegram as TelegramInterface;
 use MohammadZarifiyan\Telegram\Interfaces\ApiKeyRepository as ApiKeyRepositoryInterface;
 use MohammadZarifiyan\Telegram\Interfaces\EndpointRepository as EndpointRepositoryInterface;
 use MohammadZarifiyan\Telegram\Interfaces\SecretTokenRepository as SecretTokenRepositoryInterface;
+use MohammadZarifiyan\Telegram\MockManager;
 use MohammadZarifiyan\Telegram\TelegramManager;
 
 class DeferredServiceProvider extends ServiceProvider implements DeferrableProvider
@@ -72,6 +74,8 @@ class DeferredServiceProvider extends ServiceProvider implements DeferrableProvi
         $this->app->bind(GainerResolver::class, config('telegram.gainer-resolver'));
 
         $this->app->scoped(GainerManagerInterface::class, GainerManager::class);
+
+        $this->app->scoped(MockManagerInterface::class, MockManager::class);
     }
 	
 	/**
@@ -87,6 +91,7 @@ class DeferredServiceProvider extends ServiceProvider implements DeferrableProvi
             ProxyRepositoryInterface::class,
             GainerResolver::class,
             GainerManagerInterface::class,
+            MockManagerInterface::class,
 		];
 	}
 }

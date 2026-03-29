@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Http\Client\Response;
 use Illuminate\Http\Request;
 use MohammadZarifiyan\Telegram\Exceptions\InvalidTelegramBotApiKeyException;
+use MohammadZarifiyan\Telegram\Promise;
 use MohammadZarifiyan\Telegram\Update;
 
 interface Telegram
@@ -40,4 +41,16 @@ interface Telegram
     public function validateWebAppInitData(string $initData): bool;
 
     public function generateFileUrl(string $filePath): string;
+
+    public function fake(null|array|Promise $promise = null): void;
+
+    public function assertSent(callable $callback): void;
+
+    public function assertSentInOrder(array $callbacks): void;
+
+    public function assertNotSent(callable $callback): void;
+
+    public function assertNothingSent(): void;
+
+    public function assertSentCount(int $count): void;
 }

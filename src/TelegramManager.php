@@ -5,14 +5,17 @@ namespace MohammadZarifiyan\Telegram;
 use Closure;
 use Illuminate\Http\Client\Response;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Traits\Macroable;
 use MohammadZarifiyan\Telegram\Exceptions\InvalidTelegramBotApiKeyException;
-use MohammadZarifiyan\Telegram\Facades\Telegram;
-use MohammadZarifiyan\Telegram\Interfaces\Telegram as TelegramInterface;
-use MohammadZarifiyan\Telegram\Interfaces\ReplyMarkup;
 use MohammadZarifiyan\Telegram\Exceptions\TelegramException;
 use MohammadZarifiyan\Telegram\Exceptions\TelegramOriginException;
+use MohammadZarifiyan\Telegram\Facades\Telegram;
+use MohammadZarifiyan\Telegram\Interfaces\MockManager;
+use MohammadZarifiyan\Telegram\Interfaces\ReplyMarkup;
+use MohammadZarifiyan\Telegram\Interfaces\Telegram as TelegramInterface;
+use PHPUnit\Framework\Assert as PHPUnit;
 
 class TelegramManager implements TelegramInterface
 {
@@ -150,4 +153,87 @@ class TelegramManager implements TelegramInterface
 	{
 		return sprintf('%s/file/bot%s/%s', $this->endpoint, $this->apiKey, $filePath);
 	}
+
+    public function fake(null|array|Promise $promise = null): void
+    {
+        /**
+         * @var MockManager $mockManager
+         */
+        $mockManager = App::make(MockManager::class);
+        $mockManager->startRecording();
+
+        foreach (Arr::wrap($promise) as $item) {
+            $mockManager->addPromise($item);
+        }
+    }
+
+    public function assertSent(callable $callback): void
+    {
+        /**
+         * @var MockManager $mockManager
+         */
+        $mockManager = App::make(MockManager::class);
+
+        PHPUnit::assertTrue(
+            $mockManager->recorded($callback)->count() > 0,
+            'An expected request was not recorded.'
+        );
+    }
+
+    public function assertSentInOrder(array $callbacks): void
+    {
+        /**
+         * @var MockManager $mockManager
+         */
+        $mockManager = App::make(MockManager::class);
+        $recorded = $mockManager->recorded();
+
+        $this->assertSentCount(count($callbacks));
+
+        foreach ($callbacks as $index => $callback) {
+            PHPUnit::assertTrue($callback(
+                $recorded[$index][0],
+                $recorded[$index][1]
+            ), 'An expected request (#'.($index + 1).') was not recorded.');
+        }
+    }
+
+    public function assertNotSent(callable $callback): void
+    {
+        /**
+         * @var MockManager $mockManager
+         */
+        $mockManager = App::make(MockManager::class);
+
+        PHPUnit::assertFalse(
+            $mockManager->recorded($callback)->count() > 0,
+            'Unexpected request was recorded.'
+        );
+    }
+
+    public function assertNothingSent(): void
+    {
+        /**
+         * @var MockManager $mockManager
+         */
+        $mockManager = App::make(MockManager::class);
+
+        PHPUnit::assertEmpty(
+            $mockManager->recorded()->toArray(),
+            'Requests were recorded.'
+        );
+    }
+
+    public function assertSentCount(int $count): void
+    {
+        /**
+         * @var MockManager $mockManager
+         */
+        $mockManager = App::make(MockManager::class);
+
+        PHPUnit::assertCount(
+            $count,
+            $mockManager->recorded()->toArray(),
+        );
+    }
 }
