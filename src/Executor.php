@@ -35,15 +35,10 @@ class Executor
 
 	public function run(PendingTelegramRequest $pendingTelegramRequest): Response
 	{
-        $proxy = $this->getProxy();
+        $proxy = $this->getNextProxy();
         $throwHttpException = config('telegram.throw-http-exception');
-        $pendingHttpRequest = new PendingHttpRequest($pendingTelegramRequest);
-
-        if ($this->httpRequestManipulator) {
-            $pendingHttpRequest = new $this->httpRequestManipulator($pendingHttpRequest);
-        }
-
-        $data = $this->getData($pendingHttpRequest);
+        $pendingHttpRequest = $this->buildPendingHttpRequest($pendingTelegramRequest);
+        $data = $this->getPendingHttpRequestData($pendingHttpRequest);
 
         try {
             $response = Http::acceptJson()
@@ -80,13 +75,8 @@ class Executor
 
 		$responses = Http::pool(function (Pool $pool) use ($pendingTelegramRequests, &$proxies) {
             foreach ($pendingTelegramRequests as $as => $pendingTelegramRequest) {
-                $proxies[$as] = $this->getProxy();
-                $pendingHttpRequest = new PendingHttpRequest($pendingTelegramRequest);
-
-                if ($this->httpRequestManipulator) {
-                    $pendingHttpRequest = new $this->httpRequestManipulator($pendingHttpRequest);
-                }
-
+                $proxies[$as] = $this->getNextProxy();
+                $pendingHttpRequest = $this->buildPendingHttpRequest($pendingTelegramRequest);
                 $pendingClientRequest = is_null($as) ? $pool->acceptJson() : $pool->as($as)->acceptJson();
 
                 $pendingClientRequest
@@ -102,7 +92,7 @@ class Executor
                         fn ($exception, $request) => $exception instanceof ConnectionException,
                         false
                     )
-                    ->post($pendingHttpRequest->getUrl(), $this->getData($pendingHttpRequest));
+                    ->post($pendingHttpRequest->getUrl(), $this->getPendingHttpRequestData($pendingHttpRequest));
             }
         });
 
@@ -122,7 +112,18 @@ class Executor
         return $responses;
 	}
 
-    protected function getData(PendingHttpRequestInterface $pendingHttpRequest): array
+    protected function buildPendingHttpRequest(PendingTelegramRequest $pendingTelegramRequest): PendingHttpRequestInterface
+    {
+        $pendingHttpRequest = new PendingHttpRequest($pendingTelegramRequest);
+
+        if (is_null($this->httpRequestManipulator)) {
+            return $pendingHttpRequest;
+        }
+
+        return new $this->httpRequestManipulator($pendingHttpRequest);
+    }
+
+    protected function getPendingHttpRequestData(PendingHttpRequestInterface $pendingHttpRequest): array
     {
         $attachments = $pendingHttpRequest->getAttachments();
 
@@ -136,7 +137,7 @@ class Executor
         );
     }
 
-    protected function getProxy(): ?Proxy
+    protected function getNextProxy(): ?Proxy
     {
         static $index = 0;
         $proxy = $this->proxyList[$index] ?? null;
