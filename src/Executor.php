@@ -3,6 +3,7 @@
 namespace MohammadZarifiyan\Telegram;
 
 use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Pool;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Collection;
@@ -60,9 +61,9 @@ class Executor
                 ->attach($pendingHttpRequest->getAttachments())
                 ->unless(
                     is_null($proxy),
-                    fn ($pendingClientRequest) => $pendingClientRequest->withOptions(['proxy' => $proxy->configuration])
+                    fn (PendingRequest $pendingRequest) => $pendingRequest->withOptions(['proxy' => $proxy->configuration])
                 )
-                ->unless($this->verifyEndpoint, fn ($pendingClientRequest) => $pendingClientRequest->withoutVerifying())
+                ->unless($this->verifyEndpoint, fn (PendingRequest $pendingRequest) => $pendingRequest->withoutVerifying())
                 ->retry(
                     $this->retry['times'],
                     $this->retry['sleep'],
@@ -117,9 +118,9 @@ class Executor
                     ->attach($pendingHttpRequest->getAttachments())
                     ->unless(
                         is_null($proxies[$as]),
-                        fn ($pendingClientRequest) => $pendingClientRequest->withOptions(['proxy' => $proxies[$as]->configuration])
+                        fn (PendingRequest $pendingRequest) => $pendingRequest->withOptions(['proxy' => $proxies[$as]->configuration])
                     )
-                    ->unless($this->verifyEndpoint, fn ($pendingClientRequest) => $pendingClientRequest->withoutVerifying())
+                    ->unless($this->verifyEndpoint, fn (PendingRequest $pendingRequest) => $pendingRequest->withoutVerifying())
                     ->retry(
                         $this->retry['times'],
                         $this->retry['sleep'],
