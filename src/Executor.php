@@ -87,7 +87,7 @@ class Executor
 	public function runConcurrent(array $pendingTelegramRequests): array
 	{
         $proxies = array_map(
-            fn () => $this->getNextProxy(),
+			$this->getNextProxy(...),
             $pendingTelegramRequests
         );
 
