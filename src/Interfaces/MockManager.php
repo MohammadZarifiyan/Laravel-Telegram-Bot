@@ -3,7 +3,6 @@
 namespace MohammadZarifiyan\Telegram\Interfaces;
 
 use Closure;
-use GuzzleHttp\Promise\PromiseInterface;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Collection;
 use MohammadZarifiyan\Telegram\PendingTelegramRequest;
@@ -17,7 +16,7 @@ interface MockManager
 
     public function addPromise(Promise $promise): static;
 
-    public function promisedHttpResponse(string $apiKey, string $endpoint, string $method): PromiseInterface;
+    public function promisedHttpResponse(string $apiKey, string $endpoint, string $method): Response;
 
     public function pair(PendingTelegramRequest $pendingTelegramRequest, Response $response): static;
 

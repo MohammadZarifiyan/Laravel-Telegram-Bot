@@ -3,10 +3,9 @@
 namespace MohammadZarifiyan\Telegram;
 
 use Closure;
-use GuzzleHttp\Promise\PromiseInterface;
+use Illuminate\Http\Client\Factory;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use MohammadZarifiyan\Telegram\Enums\RestrictionType;
 use MohammadZarifiyan\Telegram\Interfaces\MockManager as MockManagerInterface;
@@ -38,8 +37,8 @@ class MockManager implements MockManagerInterface
         return $this;
     }
 
-    public function promisedHttpResponse(string $apiKey, string $endpoint, string $method): PromiseInterface
-    {
+    public function promisedHttpResponse(string $apiKey, string $endpoint, string $method): Response
+	{
         $normalizedEndpoint = Str::of($endpoint)
             ->lower()
             ->remove(['http://', 'https://']);
@@ -72,11 +71,11 @@ class MockManager implements MockManagerInterface
             return strtolower($promise->method) === strtolower($method);
         });
 
-        if (is_null($promise)) {
-            return Http::response();
-        }
+		$psr7Response = is_null($promise)
+			? Factory::psr7Response()
+			: Factory::psr7Response($promise->body, $promise->statusCode, $promise->headers);
 
-        return Http::response($promise->body, $promise->statusCode, $promise->headers);
+		return new Response($psr7Response);
     }
 
     public function pair(PendingTelegramRequest $pendingTelegramRequest, Response $response): static
