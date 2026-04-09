@@ -68,7 +68,7 @@ class MockManager implements MockManagerInterface
                 return false;
             }
 
-            return strtolower($promise->method) === strtolower($method);
+            return is_null($promise->method) || strtolower($promise->method) === strtolower($method);
         });
 
 		$psr7Response = is_null($promise)
