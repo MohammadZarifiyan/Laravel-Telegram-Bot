@@ -16,7 +16,7 @@ interface MockManager
 
     public function addPromise(Promise $promise): static;
 
-    public function promisedHttpResponse(string $apiKey, string $endpoint, string $method): Response;
+    public function promisedHttpResponse(string $apiKey, string $endpoint, string $method): ?Response;
 
     public function pair(PendingTelegramRequest $pendingTelegramRequest, Response $response): static;
 

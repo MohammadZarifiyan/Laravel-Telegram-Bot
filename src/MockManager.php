@@ -37,16 +37,17 @@ class MockManager implements MockManagerInterface
         return $this;
     }
 
-    public function promisedHttpResponse(string $apiKey, string $endpoint, string $method): Response
+    public function promisedHttpResponse(string $apiKey, string $endpoint, string $method): ?Response
 	{
-        $normalizedEndpoint = Str::of($endpoint)
+		$promises = new Collection($this->promises);
+		$normalizedEndpoint = Str::of($endpoint)
             ->lower()
             ->remove(['http://', 'https://']);
 
         /**
          * @var ?Promise $promise
          */
-        $promise = collect($this->promises)->firstWhere(function (Promise $promise) use ($apiKey, $endpoint, $method, $normalizedEndpoint) {
+        $promise = $promises->firstWhere(function (Promise $promise) use ($apiKey, $endpoint, $method, $normalizedEndpoint) {
             if ($promise->apiKeyRestrictionType === RestrictionType::Legalization && !in_array($apiKey, $promise->apiKeys)) {
                 return false;
             }
@@ -71,9 +72,17 @@ class MockManager implements MockManagerInterface
             return is_null($promise->method) || strtolower($promise->method) === strtolower($method);
         });
 
-		$psr7Response = is_null($promise)
-			? Factory::psr7Response()
-			: Factory::psr7Response($promise->body, $promise->statusCode, $promise->headers);
+		if ($promise instanceof Promise) {
+			$psr7Response = Factory::psr7Response($promise->body, $promise->statusCode, $promise->headers);
+
+			return new Response($psr7Response);
+		}
+
+		if ($promises->isNotEmpty()) {
+			return null;
+		}
+
+		$psr7Response = Factory::psr7Response();
 
 		return new Response($psr7Response);
     }
