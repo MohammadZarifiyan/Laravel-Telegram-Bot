@@ -111,9 +111,9 @@ class Executor
 		$responses = Http::pool(function (Pool $pool) use ($pendingTelegramRequests, $proxies) {
             foreach ($pendingTelegramRequests as $as => $pendingTelegramRequest) {
                 $pendingHttpRequest = $this->buildPendingHttpRequest($pendingTelegramRequest);
-                $pendingClientRequest = is_null($as) ? $pool->acceptJson() : $pool->as($as)->acceptJson();
 
-                $pendingClientRequest
+				$pool->as($as)
+					->acceptJson()
                     ->attach($pendingHttpRequest->getAttachments())
                     ->unless(
                         is_null($proxies[$as]),
