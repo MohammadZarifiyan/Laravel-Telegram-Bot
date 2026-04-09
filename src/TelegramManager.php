@@ -90,8 +90,8 @@ class TelegramManager implements TelegramInterface
     public function perform(string $method, array $data = [], ReplyMarkup|string|null $replyMarkup = null): Response
     {
         $pendingTelegramRequest = new PendingTelegramRequest(
+			$this->apiKey,
             $this->endpoint,
-            $this->apiKey,
             $method,
             $data,
             $replyMarkup
