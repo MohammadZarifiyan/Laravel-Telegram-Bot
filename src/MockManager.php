@@ -9,6 +9,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use MohammadZarifiyan\Telegram\Enums\RestrictionType;
 use MohammadZarifiyan\Telegram\Interfaces\MockManager as MockManagerInterface;
+use Throwable;
 
 class MockManager implements MockManagerInterface
 {
@@ -87,7 +88,7 @@ class MockManager implements MockManagerInterface
 		return new Response($psr7Response);
     }
 
-    public function pair(PendingTelegramRequest $pendingTelegramRequest, Response $response): static
+    public function pair(PendingTelegramRequest $pendingTelegramRequest, Response|Throwable $response): static
     {
         $this->pairs[] = compact('pendingTelegramRequest', 'response');
 
