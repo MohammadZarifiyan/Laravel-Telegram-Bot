@@ -110,8 +110,6 @@ class Executor
 					$telegramRequestsWithoutMock[$key] = $pendingTelegramRequest;
 				}
 				else {
-					$this->mockManager->pair($pendingTelegramRequest, $promisedHttpResponse);
-
 					ProxyUsed::dispatchIf($proxies[$key] instanceof Proxy, $proxies[$key]);
 
 					$mockedHttpResponses[$key] = $promisedHttpResponse;
@@ -120,13 +118,13 @@ class Executor
 
 			$pollHttpResponses = Http::pool($this->getPoolRequestClosure($telegramRequestsWithoutMock, $proxies));
 
-			foreach ($pollHttpResponses as $key => $response) {
-				$this->mockManager->pair($telegramRequestsWithoutMock[$key], $response);
-			}
-
 			$this->dispatchProxyEventsFromPool($pollHttpResponses, $proxies);
 
 			$combinedHttpResponses = $mockedHttpResponses->union($pollHttpResponses);
+
+			foreach ($pendingTelegramRequests as $key => $pendingTelegramRequest) {
+				$this->mockManager->pair($pendingTelegramRequest, $combinedHttpResponses[$key]);
+			}
 
 			return $pendingTelegramRequests->map(fn ($value, $key) => $combinedHttpResponses[$key])->toArray();
         }
