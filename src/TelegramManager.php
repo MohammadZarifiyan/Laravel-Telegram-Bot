@@ -192,8 +192,8 @@ class TelegramManager implements TelegramInterface
 
         foreach ($callbacks as $index => $callback) {
             PHPUnit::assertTrue($callback(
-                $recorded[$index][0],
-                $recorded[$index][1]
+				$recorded[$index]['pendingTelegramRequest'],
+				$recorded[$index]['response']
             ), 'An expected request (#'.($index + 1).') was not recorded.');
         }
     }
