@@ -105,10 +105,10 @@ class UpdateHandler
 			$commandHandlerInstance = try_resolve($commandHandler);
 
             if ($commandHandlerInstance instanceof CommandHandler) {
-                $signature = $this->update->toCommand()->getSignature();
+                $command = $this->update->toCommand();
                 $commandHandlerSignatures = (array) $commandHandlerInstance->getSignature($this->update);
 
-                if (!in_array($signature, $commandHandlerSignatures)) {
+                if (!in_array($command->signature, $commandHandlerSignatures)) {
                     continue;
                 }
             }

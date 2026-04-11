@@ -20,8 +20,8 @@ class TelegramCommandHandlerNotFoundException extends TelegramException
 	public function context(): array
     {
 		return [
-			'signature' => $this->command->getSignature(),
-			'value' => $this->command->getValue()
+			'signature' => $this->command->signature,
+			'value' => $this->command->value
 		];
 	}
 }

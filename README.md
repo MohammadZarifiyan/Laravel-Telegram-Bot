@@ -945,9 +945,9 @@ class MyAnonymousCommandHandler implements AnonymousCommandHandler
      */
     public function matchesSignature(Update $update): bool
     {
-        $signature = $update->toCommand()->getSignature();
+        $command = $update->toCommand();
         
-        return $signature === 'start';
+        return $command->signature === 'start';
     }
     
     /**
