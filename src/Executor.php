@@ -110,20 +110,26 @@ class Executor
 					$telegramRequestsWithoutMock[$key] = $pendingTelegramRequest;
 				}
 				else {
-					ProxyUsed::dispatchIf($proxies[$key] instanceof Proxy, $proxies[$key]);
-
 					$mockedHttpResponses[$key] = $promisedHttpResponse;
 				}
 			}
 
 			$pollHttpResponses = Http::pool($this->getPoolRequestClosure($telegramRequestsWithoutMock, $proxies));
-
-			$this->dispatchProxyEventsFromPool($pollHttpResponses, $proxies);
-
 			$combinedHttpResponses = $mockedHttpResponses->union($pollHttpResponses);
 
 			foreach ($pendingTelegramRequests as $key => $pendingTelegramRequest) {
 				$this->mockManager->pair($pendingTelegramRequest, $combinedHttpResponses[$key]);
+
+				if ($proxies[$key] instanceof Proxy === false) {
+					continue;
+				}
+
+				if ($combinedHttpResponses[$key] instanceof ConnectionException) {
+					ProxyFailed::dispatch($proxies[$key]);
+				}
+				else if ($combinedHttpResponses[$key] instanceof Response) {
+					ProxyUsed::dispatch($proxies[$key]);
+				}
 			}
 
 			return $pendingTelegramRequests->map(fn ($value, $key) => $combinedHttpResponses[$key])->toArray();
@@ -131,7 +137,18 @@ class Executor
 
 		$responses = Http::pool($this->getPoolRequestClosure($pendingTelegramRequests, $proxies));
 
-		$this->dispatchProxyEventsFromPool($responses, $proxies);
+		foreach ($responses as $as => $response) {
+			if ($proxies[$as] instanceof Proxy === false) {
+				continue;
+			}
+
+			if ($response instanceof ConnectionException) {
+				ProxyFailed::dispatch($proxies[$as]);
+			}
+			else if ($response instanceof Response) {
+				ProxyUsed::dispatch($proxies[$as]);
+			}
+		}
 
         return $responses;
 	}
@@ -213,21 +230,5 @@ class Executor
 					->post($pendingHttpRequest->getUrl(), $this->getPendingHttpRequestData($pendingHttpRequest));
 			}
 		};
-	}
-
-	protected function dispatchProxyEventsFromPool(array $pollHttpResponses, Collection $proxies): void
-	{
-		foreach ($pollHttpResponses as $as => $response) {
-			if ($proxies[$as] instanceof Proxy === false) {
-				continue;
-			}
-
-			if ($response instanceof ConnectionException) {
-				ProxyFailed::dispatch($proxies[$as]);
-			}
-			else if ($response instanceof Response) {
-				ProxyUsed::dispatch($proxies[$as]);
-			}
-		}
 	}
 }
