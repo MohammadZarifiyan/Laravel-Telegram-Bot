@@ -222,11 +222,20 @@ In the following example, _Hello world_ is sent.
 ```php
 use \MohammadZarifiyan\Telegram\Facades\Telegram;
 
-Telegram::perform('sendMessage', [
+$response = Telegram::perform('sendMessage', [
     'text' => 'Hello world!',
     'chat_id' => 1234
 ]);
+
+echo $response->json('ok');// Reads ok value from the response
 ```
+
+## Events
+The `\MohammadZarifiyan\Telegram\Events\RequestSending` event is dispatched just before a request is sent to the Telegram API, allowing you to perform actions or inspect the request before it leaves.
+
+The `\MohammadZarifiyan\Telegram\Events\ConnectionFailed` event is triggered when there's an issue establishing a connection to the Telegram API.
+
+The `\MohammadZarifiyan\Telegram\Events\ResponseReceived` event is triggered once a response from the Telegram API has been successfully received, indicating the completion of a request-response cycle.
 
 ## Concurrent Requests
 Sometimes, you may wish to make multiple HTTP requests concurrently. In other words, you want several requests to be dispatched at the same time instead of issuing the requests sequentially.
@@ -1329,3 +1338,6 @@ Telegram::assertNotSent(...);
 Telegram::assertNothingSent();
 Telegram::assertSentCount(...);
 ```
+
+# Events
+

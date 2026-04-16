@@ -3,6 +3,7 @@
 namespace MohammadZarifiyan\Telegram;
 
 use Closure;
+use GuzzleHttp\Exception\ConnectException;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Pool;
@@ -10,8 +11,11 @@ use Illuminate\Http\Client\Response;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Http;
+use MohammadZarifiyan\Telegram\Events\ConnectionFailed;
 use MohammadZarifiyan\Telegram\Events\ProxyFailed;
 use MohammadZarifiyan\Telegram\Events\ProxyUsed;
+use MohammadZarifiyan\Telegram\Events\RequestSending;
+use MohammadZarifiyan\Telegram\Events\ResponseReceived;
 use MohammadZarifiyan\Telegram\Interfaces\PendingHttpRequest as PendingHttpRequestInterface;
 use MohammadZarifiyan\Telegram\Interfaces\ProxyRepository;
 use MohammadZarifiyan\Telegram\Interfaces\MockManager;
@@ -41,51 +45,35 @@ class Executor
 
 	public function run(PendingTelegramRequest $pendingTelegramRequest): Response
 	{
-        $proxy = $this->getNextProxy();
-        $throwHttpException = config('telegram.throw-http-exception');
-        $pendingHttpRequest = $this->buildPendingHttpRequest($pendingTelegramRequest);
+		$pendingHttpRequest = $this->buildPendingHttpRequest($pendingTelegramRequest);
+		$proxy = $this->getNextProxy();
 
-        if ($this->mockManager->isRecording()) {
-            $promisedHttpResponse = $this->mockManager->promisedHttpResponse($pendingTelegramRequest->apiKey, $pendingTelegramRequest->endpoint, $pendingTelegramRequest->method);
+		RequestSending::dispatch($pendingTelegramRequest, $pendingHttpRequest);
 
-			if ($promisedHttpResponse instanceof Promise) {
-				$this->mockManager->pair($pendingTelegramRequest, $promisedHttpResponse);
-
-				ProxyUsed::dispatchUnless(is_null($proxy), $proxy);
-
-				return $promisedHttpResponse;
-			}
-
-			try {
-				$response = $this->getResponse($pendingHttpRequest, $proxy);
+        try {
+			if ($this->mockManager->isRecording()) {
+				$promisedHttpResponse = $this->mockManager->promisedHttpResponse($pendingTelegramRequest->apiKey, $pendingTelegramRequest->endpoint, $pendingTelegramRequest->method);
+				$response = is_null($promisedHttpResponse) ? $this->getResponse($pendingHttpRequest, $proxy) : $promisedHttpResponse;
 
 				$this->mockManager->pair($pendingTelegramRequest, $response);
 			}
-			catch (ConnectionException $exception) {
-				ProxyFailed::dispatchUnless(is_null($proxy), $proxy);
-
-				throw $exception;
+			else {
+				$response = $this->getResponse($pendingHttpRequest, $proxy);
 			}
 
+			ResponseReceived::dispatch($pendingTelegramRequest, $pendingHttpRequest, $response);
 			ProxyUsed::dispatchUnless(is_null($proxy), $proxy);
-
-			$response->throwIf($throwHttpException);
-
-			return $response;
-        }
-
-        try {
-            $response = $this->getResponse($pendingHttpRequest, $proxy);
-        }
+		}
         catch (ConnectionException $exception) {
+			ConnectionFailed::dispatch($pendingTelegramRequest, $pendingHttpRequest, $exception);
             ProxyFailed::dispatchUnless(is_null($proxy), $proxy);
 
             throw $exception;
         }
 
-        ProxyUsed::dispatchUnless(is_null($proxy), $proxy);
-
-        $response->throwIf($throwHttpException);
+        $response->throwIf(
+			config('telegram.throw-http-exception')
+		);
 
         return $response;
 	}
@@ -93,64 +81,66 @@ class Executor
 	public function runConcurrent(array $pendingTelegramRequests): array
 	{
 		$pendingTelegramRequests = new Collection($pendingTelegramRequests);
+		$pendingHttpRequests = $pendingTelegramRequests->map($this->buildPendingHttpRequest(...));
         $proxies = $pendingTelegramRequests->map($this->getNextProxy(...));
 
-        if ($this->mockManager->isRecording()) {
-			$mockedHttpResponses = new Collection;
-			$telegramRequestsWithoutMock = new Collection;
+		return $pendingTelegramRequests->keys()
+			->each(function ($key) use ($pendingTelegramRequests, $pendingHttpRequests) {
+				RequestSending::dispatch($pendingTelegramRequests[$key], $pendingHttpRequests[$key]);
+			})
+			->when(
+				$this->mockManager->isRecording(),
+				function (Collection $keys) use ($pendingTelegramRequests, $pendingHttpRequests, $proxies) {
+					$mockedHttpResponses = new Collection;
+					$pendingHttpRequestsWithoutMock = new Collection;
 
-			foreach ($pendingTelegramRequests as $key => $pendingTelegramRequest) {
-				$promisedHttpResponse = $this->mockManager->promisedHttpResponse(
-					$pendingTelegramRequest->apiKey,
-					$pendingTelegramRequest->endpoint,
-					$pendingTelegramRequest->method
-				);
+					foreach ($keys as $key) {
+						$promisedHttpResponse = $this->mockManager->promisedHttpResponse(
+							$pendingTelegramRequests[$key]->apiKey,
+							$pendingTelegramRequests[$key]->endpoint,
+							$pendingTelegramRequests[$key]->method
+						);
 
-				if (is_null($promisedHttpResponse)) {
-					$telegramRequestsWithoutMock[$key] = $pendingTelegramRequest;
+						if (is_null($promisedHttpResponse)) {
+							$pendingHttpRequestsWithoutMock[$key] = $pendingHttpRequests[$key];
+						}
+						else {
+							$mockedHttpResponses[$key] = $promisedHttpResponse;
+						}
+					}
+
+					$pollHttpResponses = Http::pool($this->getPoolRequestClosure($pendingHttpRequestsWithoutMock, $proxies));
+					$combinedHttpResponses = $mockedHttpResponses->union($pollHttpResponses);
+
+					foreach ($keys as $key) {
+						$this->mockManager->pair($pendingTelegramRequests[$key], $combinedHttpResponses[$key]);
+					}
+
+					return $keys->map(fn ($value, $key) => $combinedHttpResponses[$key]);
+				},
+				fn () => Http::pool($this->getPoolRequestClosure($pendingHttpRequests, $proxies))
+			)
+			->each(function ($response, $key) use ($pendingTelegramRequests, $pendingHttpRequests) {
+				if ($response instanceof ConnectException) {
+					ConnectionFailed::dispatch($pendingTelegramRequests[$key], $pendingHttpRequests[$key], $response);
 				}
-				else {
-					$mockedHttpResponses[$key] = $promisedHttpResponse;
+				else if ($response instanceof Response) {
+					ResponseReceived::dispatch($pendingTelegramRequests[$key], $pendingHttpRequests[$key], $response);
 				}
-			}
-
-			$pollHttpResponses = Http::pool($this->getPoolRequestClosure($telegramRequestsWithoutMock, $proxies));
-			$combinedHttpResponses = $mockedHttpResponses->union($pollHttpResponses);
-
-			foreach ($pendingTelegramRequests as $key => $pendingTelegramRequest) {
-				$this->mockManager->pair($pendingTelegramRequest, $combinedHttpResponses[$key]);
-
+			})
+			->each(function ($response, $key) use ($proxies) {
 				if ($proxies[$key] instanceof Proxy === false) {
-					continue;
+					return;
 				}
 
-				if ($combinedHttpResponses[$key] instanceof ConnectionException) {
+				if ($response instanceof ConnectionException) {
 					ProxyFailed::dispatch($proxies[$key]);
 				}
-				else if ($combinedHttpResponses[$key] instanceof Response) {
+				else if ($response instanceof Response) {
 					ProxyUsed::dispatch($proxies[$key]);
 				}
-			}
-
-			return $pendingTelegramRequests->map(fn ($value, $key) => $combinedHttpResponses[$key])->toArray();
-        }
-
-		$responses = Http::pool($this->getPoolRequestClosure($pendingTelegramRequests, $proxies));
-
-		foreach ($responses as $as => $response) {
-			if ($proxies[$as] instanceof Proxy === false) {
-				continue;
-			}
-
-			if ($response instanceof ConnectionException) {
-				ProxyFailed::dispatch($proxies[$as]);
-			}
-			else if ($response instanceof Response) {
-				ProxyUsed::dispatch($proxies[$as]);
-			}
-		}
-
-        return $responses;
+			})
+			->toArray();
 	}
 
     protected function buildPendingHttpRequest(PendingTelegramRequest $pendingTelegramRequest): PendingHttpRequestInterface
@@ -207,12 +197,10 @@ class Executor
 			->post($pendingHttpRequest->getUrl(), $data);
 	}
 
-	protected function getPoolRequestClosure(Collection $pendingTelegramRequests, Collection $proxies): Closure
+	protected function getPoolRequestClosure(Collection $pendingHttpRequests, Collection $proxies): Closure
 	{
-		return function (Pool $pool) use ($pendingTelegramRequests, $proxies) {
-			foreach ($pendingTelegramRequests as $as => $pendingTelegramRequest) {
-				$pendingHttpRequest = $this->buildPendingHttpRequest($pendingTelegramRequest);
-
+		return function (Pool $pool) use ($pendingHttpRequests, $proxies) {
+			foreach ($pendingHttpRequests as $as => $pendingHttpRequest) {
 				$pool->as($as)
 					->acceptJson()
 					->attach($pendingHttpRequest->getAttachments())
