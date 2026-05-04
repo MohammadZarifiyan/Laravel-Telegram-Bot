@@ -60,8 +60,8 @@ class PendingTelegramRequestBuilder
     public function toPendingTelegramRequest(): PendingTelegramRequest
     {
         return new PendingTelegramRequest(
+			$this->apiKey ?? $this->initialApiKey,
             $this->endpoint ?? $this->initialEndpoint,
-            $this->apiKey ?? $this->initialApiKey,
             $this->method,
             $this->data,
             $this->replyMarkup
