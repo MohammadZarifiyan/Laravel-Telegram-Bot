@@ -118,7 +118,11 @@ class Executor
 
 					return $keys->map(fn ($value, $key) => $combinedHttpResponses[$key]);
 				},
-				fn () => Http::pool($this->getPoolRequestClosure($pendingHttpRequests, $proxies))
+				function () use ($pendingHttpRequests, $proxies) {
+					$responses = Http::pool($this->getPoolRequestClosure($pendingHttpRequests, $proxies));
+
+					return new Collection($responses);
+				}
 			)
 			->each(function ($response, $key) use ($pendingTelegramRequests, $pendingHttpRequests) {
 				if ($response instanceof ConnectException) {
