@@ -3,6 +3,7 @@
 namespace MohammadZarifiyan\Telegram\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Http\Client\ConnectionException;
 use MohammadZarifiyan\Telegram\PendingHttpRequest;
 use MohammadZarifiyan\Telegram\PendingTelegramRequest;
 
@@ -13,7 +14,7 @@ class ConnectionFailed
 	public function __construct(
 		public PendingTelegramRequest $pendingTelegramRequest,
 		public PendingHttpRequest $pendingHttpRequest,
-		public ConnectionFailed $exception
+		public ConnectionException $exception
 	) {
 		//
 	}
