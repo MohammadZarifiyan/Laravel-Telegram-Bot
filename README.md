@@ -1338,6 +1338,3 @@ Telegram::assertNotSent(...);
 Telegram::assertNothingSent();
 Telegram::assertSentCount(...);
 ```
-
-# Events
-
